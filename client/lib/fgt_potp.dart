@@ -37,6 +37,8 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
   }
 
   void _startCountdown() {
+    _countdown = 59;
+    _isCountdownFinished = false;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdown > 0) {
@@ -132,9 +134,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             Center(
               child: _isCountdownFinished
                   ? GestureDetector(
-                      onTap: () {
-                        // Add your logic to resend the OTP code here
-                      },
+                      onTap: _handleResendCode,
                       child: RichText(
                         text: const TextSpan(
                           style: TextStyle(
@@ -189,7 +189,6 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  // Check if the OTP boxes are filled with the correct values
                   bool isOTPCorrect = true;
                   for (var controller in _otpControllers) {
                     if (controller.text != '0') {
@@ -199,7 +198,6 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                   }
 
                   if (isOTPCorrect) {
-                    // Navigate to the ResetPasswordScreen
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -246,7 +244,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
         controller: _otpControllers[index],
         maxLength: 1,
         textAlign: TextAlign.center,
-        obscureText: true, // Hide the digit
+        obscureText: true,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
@@ -272,9 +270,26 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
         onChanged: (value) {
           if (value.isNotEmpty && index < _otpControllers.length - 1) {
             FocusScope.of(context).nextFocus();
+          } else if (value.isEmpty) {
+            if (index > 0) {
+              FocusScope.of(context).previousFocus();
+            }
+          }
+        },
+        onSubmitted: (_) {
+          if (index > 0) {
+            for (int i = 0; i <= index; i++) {
+              _otpControllers[i].clear();
+            }
+          } else {
+            _otpControllers[index].clear();
           }
         },
       ),
     );
+  }
+
+  void _handleResendCode() {
+    _startCountdown();
   }
 }
