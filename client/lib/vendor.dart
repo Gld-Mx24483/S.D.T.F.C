@@ -317,8 +317,7 @@ class VendorScreenState extends State<VendorScreen> {
                     obscureText: isObscure,
                     onChanged: (value) {
                       setState(() {
-                        isObscure =
-                            true; // Reset the visibility of the password
+                        isObscure = true;
                       });
                     },
                     decoration: InputDecoration(
