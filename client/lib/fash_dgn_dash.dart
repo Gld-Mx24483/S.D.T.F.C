@@ -255,9 +255,39 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.grey.shade400,
                       ),
-                      child: Image.asset(
-                        'pics/${index + 1}.png',
-                        fit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Image.asset(
+                            'pics/${index + 1}.png',
+                            fit: BoxFit.cover,
+                          ),
+                          Positioned(
+                            top: 5,
+                            right: 1,
+                            child: Container(
+                              width: 45,
+                              height: 35,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 0),
+                                  child: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                      Icons.favorite_border,
+                                      color: Colors.black,
+                                      size: 22,
+                                    ),
+                                    alignment: Alignment.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
