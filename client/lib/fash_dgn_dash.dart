@@ -1,4 +1,3 @@
-// fash_dgn_dash.dart
 import 'package:flutter/material.dart';
 
 class DesignerDashboard extends StatefulWidget {
@@ -236,6 +235,34 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: SizedBox(
+                width: 324,
+                height: 671,
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.95,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.grey.shade400,
+                      ),
+                      child: Image.asset(
+                        'pics/${index + 1}.png',
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ),
