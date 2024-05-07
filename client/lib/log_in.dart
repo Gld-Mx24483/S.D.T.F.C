@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'fgt.dart';
 import 'role.dart';
+import 'fash_dgn_dash.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,13 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    if (email == 'selldometech@gmail.com' && password == '1234') {
-      // Login successful
-      // Add login logic here
-      setState(() {
-        _showError = false;
-        _errorMessage = '';
-      });
+    if (email == 'designer@gmail.com' && password == '1234') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DesignerDashboard()),
+      );
+    } else if (email == 'vendor@gmail.com' && password == '1234') {
+      // Add vendor login logic here
     } else {
       // Login failed
       setState(() {

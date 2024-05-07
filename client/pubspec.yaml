@@ -67,6 +67,8 @@ flutter:
     - pics/slide3.png
     - pics/fd.png
     - pics/vd.png
+    - pics/bell.png
+    - pics/shopping-bag.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
