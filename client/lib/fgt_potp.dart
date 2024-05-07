@@ -51,6 +51,52 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     });
   }
 
+  void _validateOTPAndProceed() {
+    String enteredOTP = '';
+    for (var controller in _otpControllers) {
+      enteredOTP += controller.text;
+    }
+
+    // Hardcoded OTP value for testing
+    const validOTP = '000000';
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => LoadingModal(
+        showNextModal: enteredOTP == validOTP
+            ? _showVerificationSuccessModal
+            : _showVerificationFailedModal,
+      ),
+    );
+  }
+
+  void _showVerificationSuccessModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => VerificationSuccessModal(
+        onContinue: () {
+          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ResetPasswordScreen(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showVerificationFailedModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const VerificationFailedModal(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -188,26 +234,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             const SizedBox(height: 40),
             Center(
               child: GestureDetector(
-                onTap: () {
-                  bool isOTPCorrect = true;
-                  for (var controller in _otpControllers) {
-                    if (controller.text != '0') {
-                      isOTPCorrect = false;
-                      break;
-                    }
-                  }
-
-                  if (isOTPCorrect) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ResetPasswordScreen(),
-                      ),
-                    );
-                  } else {
-                    ('Incorrect OTP');
-                  }
-                },
+                onTap: _validateOTPAndProceed,
                 child: Container(
                   width: 337,
                   height: 50,
@@ -276,20 +303,282 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             }
           }
         },
-        onSubmitted: (_) {
-          if (index > 0) {
-            for (int i = 0; i <= index; i++) {
-              _otpControllers[i].clear();
-            }
-          } else {
-            _otpControllers[index].clear();
-          }
-        },
+        onSubmitted: (value) {},
       ),
     );
   }
 
   void _handleResendCode() {
     _startCountdown();
+  }
+}
+
+class LoadingModal extends StatefulWidget {
+  const LoadingModal({super.key, required this.showNextModal});
+  final Function showNextModal;
+  @override
+  LoadingModalState createState() => LoadingModalState();
+}
+
+class LoadingModalState extends State<LoadingModal> {
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    Timer(const Duration(seconds: 5), () {
+      Navigator.of(context).pop();
+      widget.showNextModal();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 260,
+          height: 72,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(4),
+              bottomRight: Radius.circular(4),
+              bottomLeft: Radius.circular(4),
+              topRight: Radius.circular(4),
+            ),
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
+              ),
+              SizedBox(width: 20),
+              Text(
+                'Please wait...',
+                style: TextStyle(
+                  fontFamily: 'SF Pro Display',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF212121),
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VerificationSuccessModal extends StatelessWidget {
+  const VerificationSuccessModal({super.key, required this.onContinue});
+  final VoidCallback onContinue;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 329,
+          height: 287,
+          padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 222,
+                height: 139,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF00AC47),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Verification Successful',
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Press continue to proceed",
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF263238),
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: onContinue,
+                child: Container(
+                  width: 265,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBE5AA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF621B2B),
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VerificationFailedModal extends StatelessWidget {
+  const VerificationFailedModal({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 329,
+          height: 287,
+          padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 222,
+                height: 139,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.cancel,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Verification Failed',
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Please try again',
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF263238),
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+// Add your logic to try again here
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  width: 265,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBE5AA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Try Again',
+                      style: TextStyle(
+                        fontFamily: 'SF Pro Display',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF621B2B),
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

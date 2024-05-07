@@ -31,7 +31,7 @@ class _SplashScreen2State extends State<SplashScreen2>
     'Transforming Ideas into Trends',
   ];
 
-  final String _paragraphText = 'Discover, Connect, Create';
+  final String _paragraphText = 'Discover. Connect. Create.';
 
   @override
   void initState() {
