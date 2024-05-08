@@ -1,4 +1,3 @@
-//fash_dgn_dash.dart
 import 'package:flutter/material.dart';
 import 'bottom_navigation_bar.dart';
 
@@ -15,6 +14,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   bool _isLatestSelected = false;
   bool _isNewSelected = false;
   final List<bool> _favoriteStatus = List.filled(6, false);
+  int? _selectedIndex;
 
   @override
   void initState() {
@@ -259,88 +259,125 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                   ),
                   itemCount: 6,
                   itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey.shade400,
-                      ),
-                      child: Stack(
-                        children: [
-                          Image.asset(
-                            'pics/${index + 1}.png',
-                            fit: BoxFit.cover,
-                          ),
-                          Positioned(
-                            top: 5,
-                            right: 1,
-                            child: Container(
-                              width: 45,
-                              height: 35,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _favoriteStatus[index]
-                                    ? const Color.fromARGB(231, 250, 215, 118)
-                                    : const Color.fromARGB(220, 255, 255, 255),
-                              ),
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 0),
-                                  child: IconButton(
-                                    onPressed: () => _toggleFavorite(index),
-                                    icon: Icon(
-                                      Icons.favorite_border,
-                                      color: _favoriteStatus[index]
-                                          ? Colors.white
-                                          : Colors.black,
-                                      size: 22,
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex =
+                              (_selectedIndex == index) ? null : index;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade400,
+                        ),
+                        child: Stack(
+                          children: [
+                            Image.asset(
+                              'pics/${index + 1}.png',
+                              fit: BoxFit.cover,
+                            ),
+                            if (_selectedIndex == index)
+                              Positioned.fill(
+                                child: Container(
+                                  width: 155,
+                                  height: 162,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        // Color.fromARGB(177, 249, 217, 131),
+                                        Color.fromARGB(130, 255, 221, 129),
+                                        Color.fromARGB(130, 255, 221, 129),
+                                      ],
                                     ),
-                                    alignment: Alignment.center,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Color.fromARGB(36, 0, 0, 0),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            Positioned(
+                              top: 5,
+                              right: 1,
+                              child: Container(
+                                width: 45,
+                                height: 35,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _favoriteStatus[index]
+                                      ? const Color.fromARGB(231, 250, 215, 118)
+                                      : const Color.fromARGB(
+                                          220, 255, 255, 255),
+                                ),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 0),
+                                    child: IconButton(
+                                      onPressed: () => _toggleFavorite(index),
+                                      icon: Icon(
+                                        Icons.favorite_border,
+                                        color: _favoriteStatus[index]
+                                            ? Colors.white
+                                            : Colors.black,
+                                        size: 22,
+                                      ),
+                                      alignment: Alignment.center,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            top: 123,
-                            left: 67,
-                            child: Container(
-                              width: 81,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: const Color.fromARGB(220, 255, 255, 255),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.fromLTRB(6, 2, 2, 2),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Bomber Jackets',
-                                      style: TextStyle(
-                                        fontFamily: 'Nunito',
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        height: 1.5,
-                                        color: Color(0xFF061023),
+                            Positioned(
+                              top: 123,
+                              left: 67,
+                              child: Container(
+                                width: 81,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  color:
+                                      const Color.fromARGB(220, 255, 255, 255),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.fromLTRB(6, 2, 2, 2),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Bomber Jackets',
+                                        style: TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.5,
+                                          color: Color(0xFF061023),
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      '\$49.99',
-                                      style: TextStyle(
-                                        fontFamily: 'Nunito',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.5,
-                                        color: Color(0xFF061023),
+                                      Text(
+                                        '\$49.99',
+                                        style: TextStyle(
+                                          fontFamily: 'Nunito',
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.5,
+                                          color: Color(0xFF061023),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   },
