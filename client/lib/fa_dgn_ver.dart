@@ -1,6 +1,7 @@
 // fa_dgn_ver.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'log_in.dart';
 
 class FashVerScreen extends StatefulWidget {
   final String emailAddress;
@@ -73,7 +74,14 @@ class _FashVerScreenState extends State<FashVerScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => const VerificationSuccessModal(),
-    );
+    ).then((value) {
+      if (value != null && value) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    });
   }
 
   void _showVerificationFailedModal() {
@@ -417,7 +425,7 @@ class VerificationSuccessModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      "Let's continue setting up your account",
+                      "Continue to login",
                       style: TextStyle(
                         fontFamily: 'SF Pro Display',
                         fontSize: 14,
@@ -433,8 +441,7 @@ class VerificationSuccessModal extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  // Add logic to continue here
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
                 },
                 child: Container(
                   width: 265,

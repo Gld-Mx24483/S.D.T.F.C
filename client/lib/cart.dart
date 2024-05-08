@@ -13,7 +13,7 @@ class CartScreen extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 35), // Add some top padding
+              padding: const EdgeInsets.only(top: 35),
               child: Container(
                 width: 375,
                 height: 56,
