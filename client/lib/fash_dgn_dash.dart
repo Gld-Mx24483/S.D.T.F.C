@@ -63,7 +63,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -288,7 +288,6 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                       colors: [
-                                        // Color.fromARGB(177, 249, 217, 131),
                                         Color.fromARGB(130, 255, 221, 129),
                                         Color.fromARGB(130, 255, 221, 129),
                                       ],
