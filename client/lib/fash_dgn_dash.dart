@@ -1,5 +1,8 @@
+// fash_dgn_dash.dart
 import 'package:flutter/material.dart';
 import 'bottom_navigation_bar.dart';
+import 'notification.dart';
+import 'cart.dart';
 
 class DesignerDashboard extends StatefulWidget {
   const DesignerDashboard({super.key});
@@ -101,27 +104,47 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                 ),
                 Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 85.0),
-                      child: Image.asset(
-                        'pics/bell.png',
-                        color: const Color(0xFF621B2B),
-                        width: 20,
-                        height: 20,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationScreen(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 85.0),
+                        child: Image.asset(
+                          'pics/bell.png',
+                          color: const Color(0xFF621B2B),
+                          width: 20,
+                          height: 20,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 85.0),
-                      child: Image.asset(
-                        'pics/shopping-bag.png',
-                        color: const Color(0xFF621B2B),
-                        width: 20,
-                        height: 20,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CartScreen(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 85.0),
+                        child: Image.asset(
+                          'pics/shopping-bag.png',
+                          color: const Color(0xFF621B2B),
+                          width: 20,
+                          height: 20,
+                        ),
                       ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
             Padding(
