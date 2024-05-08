@@ -1,4 +1,6 @@
+//fash_dgn_dash.dart
 import 'package:flutter/material.dart';
+import 'bottom_navigation_bar.dart';
 
 class DesignerDashboard extends StatefulWidget {
   const DesignerDashboard({super.key});
@@ -54,7 +56,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -68,7 +70,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 60.0),
                       child: Text(
-                        '$_greeting,', // Add a comma here after the _greeting variable
+                        '$_greeting,',
                         style: const TextStyle(
                           fontFamily: 'Nunito',
                           fontSize: 16,
@@ -269,7 +271,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                               height: 35,
                               decoration: const BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white,
+                                color: Color.fromARGB(220, 255, 255, 255),
                               ),
                               child: Center(
                                 child: Padding(
@@ -287,6 +289,46 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                               ),
                             ),
                           ),
+                          Positioned(
+                            top: 123,
+                            left: 67,
+                            child: Container(
+                              width: 81,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: const Color.fromARGB(220, 255, 255, 255),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.fromLTRB(6, 2, 2, 2),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Bomber Jackets',
+                                      style: TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.5,
+                                        color: Color(0xFF061023),
+                                      ),
+                                    ),
+                                    Text(
+                                      '\$49.99',
+                                      style: TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.5,
+                                        color: Color(0xFF061023),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     );
@@ -297,6 +339,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
           ],
         ),
       ),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
     );
   }
 }
