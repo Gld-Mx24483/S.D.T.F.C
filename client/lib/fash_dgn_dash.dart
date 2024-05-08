@@ -14,6 +14,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   bool _isAllItemsSelected = true;
   bool _isLatestSelected = false;
   bool _isNewSelected = false;
+  final List<bool> _favoriteStatus = List.filled(6, false);
 
   @override
   void initState() {
@@ -49,6 +50,12 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
           _isNewSelected = true;
           break;
       }
+    });
+  }
+
+  void _toggleFavorite(int index) {
+    setState(() {
+      _favoriteStatus[index] = !_favoriteStatus[index];
     });
   }
 
@@ -269,18 +276,22 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             child: Container(
                               width: 45,
                               height: 35,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Color.fromARGB(220, 255, 255, 255),
+                                color: _favoriteStatus[index]
+                                    ? const Color.fromARGB(231, 250, 215, 118)
+                                    : const Color.fromARGB(220, 255, 255, 255),
                               ),
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 0),
                                   child: IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(
+                                    onPressed: () => _toggleFavorite(index),
+                                    icon: Icon(
                                       Icons.favorite_border,
-                                      color: Colors.black,
+                                      color: _favoriteStatus[index]
+                                          ? Colors.white
+                                          : Colors.black,
                                       size: 22,
                                     ),
                                     alignment: Alignment.center,
