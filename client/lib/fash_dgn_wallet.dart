@@ -82,14 +82,14 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color.fromARGB(255, 253, 250, 250),
-                    offset: Offset(0, 1),
+                    color: Color.fromARGB(48, 255, 255, 255),
+                    offset: Offset(0, -10),
                     blurRadius: 4,
                     spreadRadius: 0,
                   ),
                   BoxShadow(
-                    color: Color.fromARGB(255, 248, 248, 248),
-                    offset: Offset(0, -1),
+                    color: Color.fromARGB(47, 152, 152, 152),
+                    offset: Offset(0, 10),
                     blurRadius: 4,
                     spreadRadius: 0,
                   ),
@@ -110,7 +110,9 @@ class _WalletScreenState extends State<WalletScreen> {
                             Row(
                               children: [
                                 Text(
-                                  'Naira Wallet',
+                                  _isNGNSelected
+                                      ? 'Naira Wallet'
+                                      : 'USD Wallet',
                                   style: GoogleFonts.nunito(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -141,7 +143,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                   height: 34,
                                   padding: const EdgeInsets.all(3),
                                   child: Text(
-                                    '₦',
+                                    _isNGNSelected ? '₦' : '\$',
                                     style: GoogleFonts.nunito(
                                       fontSize: 26,
                                       fontWeight: FontWeight.w600,
@@ -150,14 +152,26 @@ class _WalletScreenState extends State<WalletScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  '0.00',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF621B2B),
-                                  ),
-                                ),
+                                _isAmountVisible
+                                    ? Text(
+                                        _isNGNSelected ? '0.00' : '200,000',
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF621B2B),
+                                        ),
+                                      )
+                                    : Transform.translate(
+                                        offset: const Offset(0, 5),
+                                        child: Text(
+                                          '***',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 28,
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF621B2B),
+                                          ),
+                                        ),
+                                      ),
                               ],
                             ),
                           ],
@@ -176,7 +190,7 @@ class _WalletScreenState extends State<WalletScreen> {
               margin: const EdgeInsets.only(top: 20),
               padding: const EdgeInsets.fromLTRB(26, 14, 19, 14),
               decoration: BoxDecoration(
-                color: const Color(0xFFFBE5AA),
+                color: const Color.fromARGB(255, 255, 236, 184),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(8),
                   topRight: Radius.circular(8),
@@ -189,7 +203,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
                 boxShadow: const [
                   BoxShadow(
-                    color: Color(0xFF747A74),
+                    color: Color.fromARGB(255, 160, 162, 160),
                     offset: Offset(0, 0),
                     blurRadius: 1,
                     spreadRadius: 0,
