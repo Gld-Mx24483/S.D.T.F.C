@@ -19,6 +19,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   bool _isNewSelected = false;
   final List<bool> _favoriteStatus = List.filled(6, false);
   int? _selectedIndex;
+  bool _isSearchBarEnabled = true;
 
   @override
   void initState() {
@@ -67,7 +68,10 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus(); // Dismiss the keyboard
+          FocusScope.of(context).unfocus();
+          setState(() {
+            _isSearchBarEnabled = true;
+          });
         },
         child: Scaffold(
           body: Padding(
@@ -163,6 +167,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: TextField(
+                      enabled: _isSearchBarEnabled,
                       decoration: const InputDecoration(
                         hintText: 'Search',
                         hintStyle: TextStyle(
@@ -181,10 +186,17 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
                       onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
+                        setState(() {
+                          _isSearchBarEnabled =
+                              true; // Enable the search bar when tapped
+                        });
                       },
                       textInputAction: TextInputAction.search,
                       onEditingComplete: () {
+                        setState(() {
+                          _isSearchBarEnabled =
+                              false; // Disable the search bar after editing is complete
+                        });
                         FocusScope.of(context).unfocus();
                       },
                     ),
