@@ -1,6 +1,7 @@
 //fash_dgn_wallet.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'trans_hist.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -254,12 +255,22 @@ class _WalletScreenState extends State<WalletScreen> {
                       color: const Color(0xFF4F4F4F),
                     ),
                   ),
-                  Text(
-                    'See all',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF636A64),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TransactionHistoryPage(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'See all',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFF636A64),
+                      ),
                     ),
                   ),
                 ],
