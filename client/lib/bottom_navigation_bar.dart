@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
@@ -78,8 +79,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             ),
             Text(
               label,
-              style: TextStyle(
-                fontFamily: 'Nunito',
+              style: GoogleFonts.nunito(
+                // fontFamily: 'Nunito',
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: color,

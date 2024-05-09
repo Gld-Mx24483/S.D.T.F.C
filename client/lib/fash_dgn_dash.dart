@@ -1,5 +1,6 @@
 // fash_dgn_dash.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'notification.dart';
 import 'cart.dart';
 
@@ -88,23 +89,22 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                           padding: const EdgeInsets.only(top: 60.0),
                           child: Text(
                             '$_greeting,',
-                            style: const TextStyle(
-                              fontFamily: 'Nunito',
+                            style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               height: 1.5,
-                              color: Color.fromARGB(75, 0, 0, 0),
+                              color: const Color.fromARGB(75, 0, 0, 0),
                             ),
                           ),
                         ),
-                        const Text(
+                        Text(
                           'Designer',
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
+                          style: GoogleFonts.nunito(
+                            // fontFamily: 'Nunito',
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                             height: 1.35,
-                            color: Color(0xFF621B2B),
+                            color: const Color(0xFF621B2B),
                           ),
                         ),
                       ],
@@ -166,34 +166,31 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                     ),
                     child: TextField(
                       enabled: _isSearchBarEnabled,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Search',
-                        hintStyle: TextStyle(
-                          fontFamily: 'Nunito',
+                        hintStyle: GoogleFonts.nunito(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFFD9D9D9),
+                          color: const Color(0xFFD9D9D9),
                         ),
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.search,
                           color: Color(0xFFD9D9D9),
                           size: 25,
                         ),
                         border: InputBorder.none,
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
                       onTap: () {
                         setState(() {
-                          _isSearchBarEnabled =
-                              true; // Enable the search bar when tapped
+                          _isSearchBarEnabled = true;
                         });
                       },
                       textInputAction: TextInputAction.search,
                       onEditingComplete: () {
                         setState(() {
-                          _isSearchBarEnabled =
-                              false; // Disable the search bar after editing is complete
+                          _isSearchBarEnabled = false;
                         });
                         FocusScope.of(context).unfocus();
                       },
@@ -221,8 +218,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                         ),
                         child: Text(
                           'All Items(15400)',
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             color: _isAllItemsSelected
@@ -251,8 +247,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                         ),
                         child: Text(
                           'Latest(5000)',
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             color:
@@ -265,8 +260,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                     GestureDetector(
                       onTap: () => _handleFilterSelection('New'),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         decoration: BoxDecoration(
                           color: _isNewSelected
                               ? const Color.fromARGB(189, 250, 215, 118)
@@ -280,8 +274,7 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                         ),
                         child: Text(
                           'New(500)',
-                          style: TextStyle(
-                            fontFamily: 'Nunito',
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             color: _isNewSelected ? Colors.white : Colors.black,
@@ -394,30 +387,29 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                                       color: const Color.fromARGB(
                                           220, 255, 255, 255),
                                     ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.fromLTRB(6, 2, 2, 2),
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(6, 2, 2, 2),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Bomber Jackets',
-                                            style: TextStyle(
-                                              fontFamily: 'Nunito',
+                                            style: GoogleFonts.nunito(
                                               fontSize: 10,
                                               fontWeight: FontWeight.w400,
                                               height: 1.5,
-                                              color: Color(0xFF061023),
+                                              color: const Color(0xFF061023),
                                             ),
                                           ),
                                           Text(
                                             '\$49.99',
-                                            style: TextStyle(
-                                              fontFamily: 'Nunito',
+                                            style: GoogleFonts.nunito(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
                                               height: 1.5,
-                                              color: Color(0xFF061023),
+                                              color: const Color(0xFF061023),
                                             ),
                                           ),
                                         ],
