@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'fgt.dart';
 import 'role.dart';
-import 'fash_dgn_dash.dart';
+// import 'fash_dgn_dash.dart';
+import 'designer_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email == 'designer@gmail.com' && password == '1234') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const DesignerDashboard()),
+        MaterialPageRoute(builder: (context) => const DesignerMainScreen()),
       );
     } else if (email == 'vendor@gmail.com' && password == '1234') {
       // Add vendor login logic here

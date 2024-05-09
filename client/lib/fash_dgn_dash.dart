@@ -1,9 +1,7 @@
 // fash_dgn_dash.dart
 import 'package:flutter/material.dart';
-import 'bottom_navigation_bar.dart';
 import 'notification.dart';
 import 'cart.dart';
-// import 'package:flutter/services.dart';
 
 class DesignerDashboard extends StatefulWidget {
   const DesignerDashboard({super.key});
@@ -438,7 +436,6 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
               ],
             ),
           ),
-          bottomNavigationBar: const CustomBottomNavigationBar(),
         ));
   }
 }
