@@ -1,6 +1,8 @@
+//designer_main_screen.dart
 import 'package:flutter/material.dart';
 import 'fash_dgn_dash.dart';
 import 'bottom_navigation_bar.dart';
+import 'fash_dgn_wallet.dart';
 
 class DesignerMainScreen extends StatefulWidget {
   const DesignerMainScreen({super.key});
@@ -19,13 +21,13 @@ class _DesignerMainScreenState extends State<DesignerMainScreen> {
           _currentScreen = const DesignerDashboard();
           break;
         case 'Wallet':
-          // _currentScreen = const WalletScreen(); // Replace with your wallet screen
+          _currentScreen = const WalletScreen();
           break;
         case 'Insight':
-          // _currentScreen = const InsightScreen(); // Replace with your insight screen
+          // _currentScreen = const InsightScreen();
           break;
         case 'Profile':
-          // _currentScreen = const ProfileScreen(); // Replace with your profile screen
+          // _currentScreen = const ProfileScreen();
           break;
       }
     });
