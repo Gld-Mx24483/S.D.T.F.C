@@ -450,17 +450,15 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   void initiatePaystackPayment(BuildContext context) async {
-    // final publicKey = 'pk_live_7d23af7cfd5254be23c8c471db0d3489c7f978d7';
     const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
-    final amount =
-        double.parse(_amountController.text) * 100; // Convert amount to kobo
+    final amount = double.parse(_amountController.text) * 100;
     final currency =
         _isNGNSelected ? PaystackCurrency.ngn : PaystackCurrency.usd;
 
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
-      email: 'your_email@example.com', // Replace with the user's email
+      email: 'selldometech@gmail.com',
       amount: amount,
       currency: currency,
       channel: [
