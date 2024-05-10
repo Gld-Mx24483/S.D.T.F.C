@@ -13,16 +13,14 @@ class TransactionHistoryPage extends StatelessWidget {
             Container(
               width: 375,
               height: 56,
-              padding:
-                  const EdgeInsets.fromLTRB(15, 26, 135, 5), // Adjusted padding
+              padding: const EdgeInsets.fromLTRB(15, 26, 135, 5),
               decoration: const BoxDecoration(),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pop(
-                          context); // Navigate back to the previous page
+                      Navigator.pop(context);
                     },
                     child: Container(
                       width: 24,
@@ -46,7 +44,7 @@ class TransactionHistoryPage extends StatelessWidget {
               child: Container(
                 width: 231,
                 height: 153,
-                margin: const EdgeInsets.only(top: 250), // Adjusted margin
+                margin: const EdgeInsets.only(top: 250),
                 child: Column(
                   children: [
                     Image.asset(
