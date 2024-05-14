@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'fgt.dart';
 import 'role.dart';
-// import 'fash_dgn_dash.dart';
 import 'designer_main_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -71,26 +71,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Welcome Back',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: Text(
                 'Sign in to your account',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   height: 1.5,
@@ -104,15 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Email Address',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
                       letterSpacing: -0.019,
-                      color: Colors.black,
+                      color: const Color(0xFF000000),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -149,10 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Password',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -232,16 +228,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     const ForgotPasswordScreen()),
                           );
                         },
-                        child: const Padding(
-                          padding: EdgeInsets.only(top: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
                           child: Text(
                             'Forgot Password?',
-                            style: TextStyle(
-                              fontFamily: 'SF Pro Display',
+                            style: GoogleFonts.nunito(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               height: 1.4,
-                              color: Color(0xFF621B2B),
+                              color: const Color(0xFF621B2B),
                             ),
                           ),
                         ),
@@ -262,15 +257,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Login',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                       ),
                     ),
                   ),
@@ -281,15 +275,14 @@ class _LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "Don't have an account? ",
-                  style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.5,
                     letterSpacing: -0.019,
-                    color: Color(0xFF8F92A1),
+                    color: const Color(0xFF8F92A1),
                   ),
                 ),
                 GestureDetector(
@@ -300,15 +293,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           builder: (context) => const RoleScreen()),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     'Sign Up',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
                       letterSpacing: -0.019,
-                      color: Color(0xFF621B2B),
+                      color: const Color(0xFF621B2B),
                     ),
                   ),
                 ),
