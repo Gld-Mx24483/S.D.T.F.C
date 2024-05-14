@@ -1,7 +1,7 @@
-//splash_screen2.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'log_in.dart'; // Import the log_in.dart file
+import 'log_in.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen2 extends StatefulWidget {
   const SplashScreen2({super.key, required this.onGetStartedPressed});
@@ -89,62 +89,64 @@ class _SplashScreen2State extends State<SplashScreen2>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: AnimatedOpacity(
-              opacity: _isAnimating ? 0.0 : 1.0,
-              duration: const Duration(milliseconds: 300),
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _slideImages.length,
-                onPageChanged: _handlePageChanged,
-                itemBuilder: (context, index) {
-                  return Image.asset(
-                    _slideImages[index],
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                  );
-                },
+          Padding(
+            padding:
+                EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.20),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: AnimatedOpacity(
+                opacity: _isAnimating ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 300),
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _slideImages.length,
+                  onPageChanged: _handlePageChanged,
+                  itemBuilder: (context, index) {
+                    return Image.asset(
+                      _slideImages[index],
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      fit: BoxFit.contain,
+                    );
+                  },
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 140),
           SizedBox(
-            width: MediaQuery.of(context).size.width *
-                0.6, // Adjust this value as needed
+            width: MediaQuery.of(context).size.width * 0.6,
             child: Text(
               _headerTexts[_currentSlide],
-              style: const TextStyle(
-                fontFamily: 'SF Pro Display',
+              style: GoogleFonts.nunito(
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
                 height: 1.5,
                 letterSpacing: -0.019,
-                color: Color(0xFF621B2B),
+                color: const Color(0xFF621B2B),
                 decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16), // Adjusted spacing
           SizedBox(
-            width: MediaQuery.of(context).size.width *
-                0.8, // Adjust this value as needed
+            width: MediaQuery.of(context).size.width * 0.8,
             child: Text(
               _paragraphText,
-              style: const TextStyle(
-                fontFamily: 'SF Pro Display',
+              style: GoogleFonts.nunito(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
                 letterSpacing: -0.019,
-                color: Color(0xFF000000),
+                color: const Color(0xFF000000),
                 decoration: TextDecoration.none,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24), // Increased spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
@@ -163,9 +165,9 @@ class _SplashScreen2State extends State<SplashScreen2>
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24), // Increased spacing
           GestureDetector(
-            onTap: widget.onGetStartedPressed, // Call the callback function
+            onTap: widget.onGetStartedPressed,
             child: Container(
               width: 337,
               height: 44,
@@ -173,15 +175,14 @@ class _SplashScreen2State extends State<SplashScreen2>
                 color: const Color(0xFFFBE5AA),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Get started',
-                  style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     height: 1.5,
-                    color: Color(0xFF621B2B),
+                    color: const Color(0xFF621B2B),
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -204,17 +205,17 @@ class _SplashScreen2State extends State<SplashScreen2>
                   color: const Color(0xFFFBE5AA),
                   width: 1,
                 ),
-                color: const Color(0xFFFAF6EB),
+                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFFFFFFFF),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Sign in',
-                  style: TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     height: 1.5,
-                    color: Color(0xFF621B2B),
+                    color: const Color(0xFF621B2B),
                     decoration: TextDecoration.none,
                   ),
                 ),

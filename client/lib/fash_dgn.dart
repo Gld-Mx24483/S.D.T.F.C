@@ -585,6 +585,7 @@
 //fash_dgn.dart
 import 'package:flutter/material.dart';
 import 'fa_dgn_ver.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FashionDesignerScreen extends StatefulWidget {
   const FashionDesignerScreen({super.key});
@@ -711,26 +712,24 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Create Account',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: Text(
                 'Fill in the form',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   height: 1.5,
@@ -744,10 +743,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'First Name',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -786,10 +784,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                     ),
                   ),
                   const SizedBox(height: 16), // Fixed line
-                  const Text(
+                  Text(
                     'Last Name',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -828,10 +825,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                     ),
                   ),
                   const SizedBox(height: 16), // Fixed line
-                  const Text(
+                  Text(
                     'Email Address',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -881,10 +877,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                     ),
                   ),
                   const SizedBox(height: 16), // Fixed line
-                  const Text(
+                  Text(
                     'Password',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -898,8 +893,7 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                     obscureText: isObscure,
                     onChanged: (value) {
                       setState(() {
-                        isObscure =
-                            true; // Reset the visibility of the password
+                        isObscure = true;
                       });
                     },
                     decoration: InputDecoration(
@@ -954,9 +948,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'At least 8 characters',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -976,9 +970,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'Contains a number',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -998,9 +992,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'Contains a letter',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -1114,15 +1108,14 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                       ),
                     ),
                   ),

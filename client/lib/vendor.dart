@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ven_ver.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class VendorScreen extends StatefulWidget {
   const VendorScreen({super.key});
@@ -130,26 +131,24 @@ class VendorScreenState extends State<VendorScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Create Account',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: Text(
                 'Fill in the form',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   height: 1.5,
@@ -163,10 +162,9 @@ class VendorScreenState extends State<VendorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'First Name',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -205,10 +203,9 @@ class VendorScreenState extends State<VendorScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Last Name',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -247,10 +244,9 @@ class VendorScreenState extends State<VendorScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Email Address',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -300,10 +296,9 @@ class VendorScreenState extends State<VendorScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Password',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       height: 1.5,
@@ -372,9 +367,9 @@ class VendorScreenState extends State<VendorScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'At least 8 characters',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -394,9 +389,9 @@ class VendorScreenState extends State<VendorScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'Contains a number',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -416,9 +411,9 @@ class VendorScreenState extends State<VendorScreen> {
                         size: 18,
                       ),
                       const SizedBox(width: 4),
-                      const Text(
+                      Text(
                         'Contains a letter',
-                        style: TextStyle(
+                        style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -532,15 +527,14 @@ class VendorScreenState extends State<VendorScreen> {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                       ),
                     ),
                   ),

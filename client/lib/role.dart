@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'fash_dgn.dart';
 import 'vendor.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RoleScreen extends StatefulWidget {
   const RoleScreen({super.key});
@@ -51,33 +52,31 @@ class RoleScreenState extends State<RoleScreen> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             width: 255,
             height: 36,
             top: 114,
             left: 5,
             child: Text(
               'Select your Preference',
-              style: TextStyle(
-                fontFamily: 'SF Pro Display',
+              style: GoogleFonts.nunito(
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
                 height: 1.5,
                 letterSpacing: -0.019,
-                color: Color(0xFF621B2B),
+                color: const Color(0xFF621B2B),
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          const Positioned(
+          Positioned(
             width: 278,
             height: 29,
             top: 152,
             left: 20,
             child: Text(
               'Sign up as a Fashion Designer or Vendor',
-              style: TextStyle(
-                fontFamily: 'SF Pro Display',
+              style: GoogleFonts.nunito(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.5,
@@ -177,8 +176,7 @@ class RoleScreenState extends State<RoleScreen> {
                           left: 26,
                           child: Text(
                             'Fashion Designer',
-                            style: TextStyle(
-                              fontFamily: 'SF Pro Display',
+                            style: GoogleFonts.nunito(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               height: 1.5,
@@ -281,8 +279,7 @@ class RoleScreenState extends State<RoleScreen> {
                           left: 57,
                           child: Text(
                             'Vendor',
-                            style: TextStyle(
-                              fontFamily: 'SF Pro Display',
+                            style: GoogleFonts.nunito(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               height: 1.5,
@@ -324,8 +321,7 @@ class RoleScreenState extends State<RoleScreen> {
                 child: Center(
                   child: Text(
                     'Continue',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       height: 1.5,
