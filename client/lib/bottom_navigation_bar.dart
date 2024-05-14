@@ -27,34 +27,44 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildIconContainer(
-            'Shop',
-            'pics/shop.png',
-          ),
-          _buildIconContainer(
-            'Wallet',
-            'pics/wallet.png',
-          ),
-          _buildIconContainer(
-            'Insight',
-            'pics/insight.png',
-          ),
-          _buildIconContainer(
-            'Profile',
-            'pics/profile.png',
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 12,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildIconContainer(
+              'Shop',
+              'pics/shop.png',
+            ),
+            _buildIconContainer(
+              'Wallet',
+              'pics/wallet.png',
+              padding: const EdgeInsets.only(left: 6),
+            ),
+            _buildNewIconButton(),
+            _buildIconContainer(
+              'Products',
+              'pics/insight.png',
+              padding: const EdgeInsets.only(right: 4),
+            ),
+            _buildIconContainer(
+              'Profile',
+              'pics/profile.png',
+              padding: const EdgeInsets.only(right: 4),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildIconContainer(
     String label,
-    String iconPath,
-  ) {
+    String iconPath, {
+    EdgeInsets? padding,
+  }) {
     final isSelected = _selectedIcon == label;
     final color =
         isSelected ? const Color(0xFFFAD776) : const Color(0xFF000000);
@@ -68,7 +78,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       },
       child: Container(
         height: 44,
-        padding: const EdgeInsets.symmetric(vertical: 0),
+        padding: padding ?? EdgeInsets.zero,
         child: Column(
           children: [
             Image.asset(
@@ -80,7 +90,6 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             Text(
               label,
               style: GoogleFonts.nunito(
-                // fontFamily: 'Nunito',
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: color,
@@ -91,4 +100,58 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ),
     );
   }
+
+  Widget _buildNewIconButton() {
+    return Positioned(
+      bottom: 30,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Transform.translate(
+          offset: const Offset(2, -24),
+          child: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withOpacity(0),
+            ),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Container(
+                width: 3,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      body: Center(
+        child: CustomBottomNavigationBar(
+          onItemTapped: (String label) {
+            // Handle item tapped
+          },
+        ),
+      ),
+    ),
+  ));
 }

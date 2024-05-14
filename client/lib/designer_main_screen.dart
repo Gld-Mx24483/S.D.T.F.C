@@ -3,16 +3,27 @@ import 'package:flutter/material.dart';
 import 'fash_dgn_dash.dart';
 import 'bottom_navigation_bar.dart';
 import 'fash_dgn_wallet.dart';
+import 'no_record_screen.dart';
 
 class DesignerMainScreen extends StatefulWidget {
-  const DesignerMainScreen({super.key});
+  final bool isNewDesigner;
+
+  const DesignerMainScreen({super.key, this.isNewDesigner = false});
 
   @override
   State<DesignerMainScreen> createState() => _DesignerMainScreenState();
 }
 
 class _DesignerMainScreenState extends State<DesignerMainScreen> {
-  Widget _currentScreen = const DesignerDashboard();
+  late Widget _currentScreen;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentScreen = widget.isNewDesigner
+        ? const NoRecordScreen()
+        : const DesignerDashboard();
+  }
 
   void _onBottomNavigationBarItemTapped(String label) {
     setState(() {

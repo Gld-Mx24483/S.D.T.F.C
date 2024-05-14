@@ -13,9 +13,12 @@ class DesignerDashboard extends StatefulWidget {
 
 class _DesignerDashboardState extends State<DesignerDashboard> {
   String _greeting = '';
-  bool _isAllItemsSelected = true;
-  bool _isLatestSelected = false;
-  bool _isNewSelected = false;
+  bool _isFabrics = true;
+  bool _isEmbellishments = false;
+  bool _isLinings = false;
+  bool _isTrimmings = false;
+  bool _isColourCode = false;
+  bool _isPrice = false;
   final List<bool> _favoriteStatus = List.filled(6, false);
   int? _selectedIndex;
   bool _isSearchBarEnabled = true;
@@ -39,19 +42,31 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
 
   void _handleFilterSelection(String filter) {
     setState(() {
-      _isAllItemsSelected = false;
-      _isLatestSelected = false;
-      _isNewSelected = false;
+      _isFabrics = false;
+      _isEmbellishments = false;
+      _isLinings = false;
+      _isTrimmings = false;
+      _isColourCode = false;
+      _isPrice = false;
 
       switch (filter) {
-        case 'All Items':
-          _isAllItemsSelected = true;
+        case 'Fabrics':
+          _isFabrics = true;
           break;
-        case 'Latest':
-          _isLatestSelected = true;
+        case 'Embellishments':
+          _isEmbellishments = true;
           break;
-        case 'New':
-          _isNewSelected = true;
+        case 'Linings':
+          _isLinings = true;
+          break;
+        case 'Trimmings':
+          _isTrimmings = true;
+          break;
+        case 'Colour Code':
+          _isColourCode = true;
+          break;
+        case 'Price':
+          _isPrice = true;
           break;
       }
     });
@@ -100,7 +115,6 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                         Text(
                           'Designer',
                           style: GoogleFonts.nunito(
-                            // fontFamily: 'Nunito',
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                             height: 1.35,
@@ -198,91 +212,176 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                   ),
                 ),
                 const SizedBox(height: 25),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _handleFilterSelection('All Items'),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _isAllItemsSelected
-                              ? const Color.fromARGB(189, 250, 215, 118)
-                              : const Color(0xFFD9D9D9),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Fabrics'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isFabrics
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'All Items(15400)',
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: _isAllItemsSelected
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 17),
-                    GestureDetector(
-                      onTap: () => _handleFilterSelection('Latest'),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 7, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _isLatestSelected
-                              ? const Color.fromARGB(189, 250, 215, 118)
-                              : const Color(0xFFD9D9D9),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Latest(5000)',
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color:
-                                _isLatestSelected ? Colors.white : Colors.black,
+                          child: Text(
+                            'Fabrics',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: _isFabrics ? Colors.white : Colors.black,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 17),
-                    GestureDetector(
-                      onTap: () => _handleFilterSelection('New'),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _isNewSelected
-                              ? const Color.fromARGB(189, 250, 215, 118)
-                              : const Color(0xFFD9D9D9),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            topRight: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
+                      const SizedBox(width: 17),
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Embellishments'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isEmbellishments
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          'New(500)',
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: _isNewSelected ? Colors.white : Colors.black,
+                          child: Text(
+                            'Embellishments',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: _isEmbellishments
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 17),
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Linings'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isLinings
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Linings',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: _isLinings ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 17),
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Trimmings'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isTrimmings
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Trimmings',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: _isTrimmings ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 17),
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Colour Code'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isColourCode
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Colour Code',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color:
+                                  _isColourCode ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 17),
+                      GestureDetector(
+                        onTap: () => _handleFilterSelection('Price'),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 7, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _isPrice
+                                ? const Color.fromARGB(189, 250, 215, 118)
+                                : const Color(0xFFD9D9D9),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Price',
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: _isPrice ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Expanded(
