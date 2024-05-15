@@ -89,11 +89,12 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
 
   void _nextTutorialStep() {
     setState(() {
-      _tutorialStep++;
-      if (_tutorialStep == 7) {
-        _showTutorial = false;
-        _controller.reverse();
+      if (_tutorialStep == 6) {
+        // Navigate to DesignerDashboard and stop displaying tutorial
+        _currentScreen = const DesignerDashboard();
+        _showTutorial = false; // Stop displaying tutorial
       } else {
+        _tutorialStep++;
         _controller.forward();
       }
     });
@@ -107,6 +108,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           body: _currentScreen,
           bottomNavigationBar: CustomBottomNavigationBar(
             onItemTapped: _onBottomNavigationBarItemTapped,
+            tutorialStep: _tutorialStep,
           ),
         ),
         if (_showTutorial)
@@ -176,11 +178,10 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                                 fit: BoxFit.cover,
                               ),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Next',
-                                style: TextStyle(
-                                  fontFamily: 'Nunito',
+                                _tutorialStep == 6 ? 'Begin' : 'Next',
+                                style: GoogleFonts.nunito(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,

@@ -4,8 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
+  final int tutorialStep; // Add this line
 
-  const CustomBottomNavigationBar({super.key, required this.onItemTapped});
+  const CustomBottomNavigationBar({
+    super.key,
+    required this.onItemTapped,
+    required this.tutorialStep, // Add this line
+  });
 
   @override
   State<CustomBottomNavigationBar> createState() =>
@@ -67,8 +72,11 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     EdgeInsets? padding,
   }) {
     final isSelected = _selectedIcon == label;
-    final color =
-        isSelected ? const Color(0xFFFAD776) : const Color(0xFF000000);
+    final isDescribed =
+        widget.tutorialStep == _getDescriptionStepForLabel(label);
+    final color = isSelected || isDescribed
+        ? const Color(0xFFFAD776)
+        : const Color(0xFF000000);
 
     return GestureDetector(
       onTap: () {
@@ -100,6 +108,21 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         ),
       ),
     );
+  }
+
+  int _getDescriptionStepForLabel(String label) {
+    switch (label) {
+      case 'Market Place':
+        return 0;
+      case 'Wallet':
+        return 1;
+      case 'Shop':
+        return 3;
+      case 'Profile':
+        return 4;
+      default:
+        return -1;
+    }
   }
 
   Widget _buildNewIconButton() {
@@ -151,6 +174,7 @@ void main() {
           onItemTapped: (String label) {
             // Handle item tapped
           },
+          tutorialStep: 0, // Pass an initial value for tutorialStep
         ),
       ),
     ),
