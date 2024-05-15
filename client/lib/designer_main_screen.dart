@@ -1,9 +1,10 @@
-//designer_main_screen.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'fash_dgn_dash.dart';
 import 'bottom_navigation_bar.dart';
 import 'fash_dgn_wallet.dart';
 import 'no_record_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DesignerMainScreen extends StatefulWidget {
   final bool isNewDesigner;
@@ -14,27 +15,69 @@ class DesignerMainScreen extends StatefulWidget {
   State<DesignerMainScreen> createState() => _DesignerMainScreenState();
 }
 
-class _DesignerMainScreenState extends State<DesignerMainScreen> {
+class _DesignerMainScreenState extends State<DesignerMainScreen>
+    with TickerProviderStateMixin {
   late Widget _currentScreen;
+  bool _showTutorial = false;
+  int _tutorialStep = 0;
+  Timer? _tutorialTimer;
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     _currentScreen = widget.isNewDesigner
-        ? const NoRecordScreen()
+        ? const NoRecordScreen(key: ValueKey('NoRecordScreen'))
         : const DesignerDashboard();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    if (widget.isNewDesigner) {
+      _tutorialTimer = Timer(const Duration(seconds: 2), () {
+        setState(() {
+          _showTutorial = true;
+          _controller.forward();
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _tutorialTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
   }
 
   void _onBottomNavigationBarItemTapped(String label) {
     setState(() {
       switch (label) {
-        case 'Shop':
+        case 'Market Place':
           _currentScreen = const DesignerDashboard();
           break;
         case 'Wallet':
           _currentScreen = const WalletScreen();
           break;
-        case 'Insight':
+        case 'Shop':
           // _currentScreen = const InsightScreen();
           break;
         case 'Profile':
@@ -44,13 +87,227 @@ class _DesignerMainScreenState extends State<DesignerMainScreen> {
     });
   }
 
+  void _nextTutorialStep() {
+    setState(() {
+      _tutorialStep++;
+      if (_tutorialStep == 5) {
+        _showTutorial = false;
+        _controller.reverse();
+      } else {
+        _controller.forward();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _currentScreen,
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onItemTapped: _onBottomNavigationBarItemTapped,
-      ),
+    return Stack(
+      children: [
+        Scaffold(
+          body: _currentScreen,
+          bottomNavigationBar: CustomBottomNavigationBar(
+            onItemTapped: _onBottomNavigationBarItemTapped,
+          ),
+        ),
+        if (_showTutorial)
+          FadeTransition(
+            opacity: _fadeAnimation,
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: Positioned.fill(
+                child: Container(
+                  color: const Color(0xFF000000).withOpacity(0.7),
+                  child: Stack(
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                          Offset beginOffset;
+                          switch (_tutorialStep) {
+                            case 0:
+                              beginOffset = const Offset(0.0, 1.0);
+                              break;
+                            case 1:
+                              beginOffset = const Offset(-1.0, 0.0);
+                              break;
+                            case 2:
+                              beginOffset = const Offset(1.0, 0.0);
+                              break;
+                            case 3:
+                              beginOffset = const Offset(0.0, -1.0);
+                              break;
+                            case 4:
+                              beginOffset = const Offset(0.0, 1.0);
+                              break;
+                            default:
+                              beginOffset = const Offset(0.0, 1.0);
+                          }
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: beginOffset,
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _buildCurrentTutorialBubble(),
+                      ),
+                      Positioned(
+                        top: 541,
+                        left: 278,
+                        child: GestureDetector(
+                          onTap: _nextTutorialStep,
+                          child: Container(
+                            width: 57,
+                            height: 16,
+                            decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('pics/NB.png'),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Next',
+                                style: TextStyle(
+                                  fontFamily: 'Nunito',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
+  }
+
+  Widget _buildCurrentTutorialBubble() {
+    switch (_tutorialStep) {
+      case 0:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep0'),
+          top: 673,
+          left: 5,
+          text: 'View Market Place',
+          triangleOffset: -12,
+        );
+      case 1:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep1'),
+          top: 673,
+          left: 65,
+          text: 'For funding and buying points',
+        );
+      case 2:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep2'),
+          top: 653,
+          left: 130,
+          text: 'Connect with your vendor',
+        );
+      case 3:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep3'),
+          top: 673,
+          left: 198,
+          text: 'My Products Uploaded',
+        );
+      case 4:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep4'),
+          top: 673,
+          left: 255,
+          text: 'My Profile and settings',
+          triangleOffset: 17,
+        );
+      default:
+        return Container();
+    }
+  }
+
+  Widget _buildTutorialBubble({
+    required Key key,
+    required double top,
+    required double left,
+    required String text,
+    double triangleOffset = 0,
+  }) {
+    return Stack(
+      key: key,
+      children: [
+        Positioned(
+          top: top,
+          left: left,
+          child: Container(
+            width: 100,
+            decoration: BoxDecoration(
+              color: const Color(0xFF621B2B),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                text,
+                style: GoogleFonts.nunito(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: top + 35,
+          left: left + (100 / 2) - 10 + triangleOffset,
+          child: CustomPaint(
+            size: const Size(20, 15),
+            painter: TrianglePainter(color: const Color(0xFF621B2B)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class TrianglePainter extends CustomPainter {
+  final Color color;
+
+  TrianglePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(size.width / 2, size.height);
+    path.lineTo(size.width / 2 - 10, 0);
+    path.lineTo(size.width / 2 + 10, 0);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }

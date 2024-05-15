@@ -85,7 +85,8 @@ flutter:
     - pics/insight.png
     - pics/profile.png
     - pics/nothinghere.png
-
+    - pics/speechbubble.png
+    - pics/NB.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

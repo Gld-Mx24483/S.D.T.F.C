@@ -1,3 +1,4 @@
+//bottom_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -12,7 +13,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
-  String _selectedIcon = 'Shop';
+  String _selectedIcon = 'Market Place';
 
   @override
   Widget build(BuildContext context) {
@@ -29,30 +30,30 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ),
       child: Padding(
         padding: const EdgeInsets.only(
-          left: 12,
+          left: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildIconContainer(
-              'Shop',
+              'Market Place',
               'pics/shop.png',
             ),
             _buildIconContainer(
               'Wallet',
               'pics/wallet.png',
-              padding: const EdgeInsets.only(left: 6),
+              padding: const EdgeInsets.only(right: 5),
             ),
             _buildNewIconButton(),
             _buildIconContainer(
-              'Products',
+              'Shop',
               'pics/insight.png',
-              padding: const EdgeInsets.only(right: 4),
+              padding: const EdgeInsets.only(right: 21),
             ),
             _buildIconContainer(
               'Profile',
               'pics/profile.png',
-              padding: const EdgeInsets.only(right: 4),
+              padding: const EdgeInsets.only(right: 10),
             ),
           ],
         ),
@@ -108,7 +109,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       right: 0,
       child: Center(
         child: Transform.translate(
-          offset: const Offset(2, -24),
+          offset: const Offset(-6, -24),
           child: Container(
             width: 48,
             height: 48,
