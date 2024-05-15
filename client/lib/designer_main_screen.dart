@@ -78,7 +78,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           _currentScreen = const WalletScreen();
           break;
         case 'Shop':
-          // _currentScreen = const InsightScreen();
+          // _currentScreen = const ShopScreen();
           break;
         case 'Profile':
           // _currentScreen = const ProfileScreen();
@@ -90,7 +90,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   void _nextTutorialStep() {
     setState(() {
       _tutorialStep++;
-      if (_tutorialStep == 5) {
+      if (_tutorialStep == 7) {
         _showTutorial = false;
         _controller.reverse();
       } else {
@@ -139,6 +139,12 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                               break;
                             case 4:
                               beginOffset = const Offset(0.0, 1.0);
+                              break;
+                            case 5:
+                              beginOffset = const Offset(0.0, 1.0);
+                              break;
+                            case 6:
+                              beginOffset = const Offset(-1.0, 0.0);
                               break;
                             default:
                               beginOffset = const Offset(0.0, 1.0);
@@ -234,6 +240,24 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           text: 'My Profile and settings',
           triangleOffset: 17,
         );
+      case 5:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep5'),
+          top: 95,
+          left: 215,
+          text: 'Notifications',
+          triangleOffset: 34.5,
+          isAbove: true,
+        );
+      case 6:
+        return _buildTutorialBubble(
+          key: const ValueKey('tutorialStep6'),
+          top: 95,
+          left: 242,
+          text: 'Cart',
+          triangleOffset: 38,
+          isAbove: true,
+        );
       default:
         return Container();
     }
@@ -245,12 +269,13 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
     required double left,
     required String text,
     double triangleOffset = 0,
+    bool isAbove = false,
   }) {
     return Stack(
       key: key,
       children: [
         Positioned(
-          top: top,
+          top: isAbove ? top + 30 : top,
           left: left,
           child: Container(
             width: 100,
@@ -274,11 +299,13 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           ),
         ),
         Positioned(
-          top: top + 35,
+          top: isAbove ? top : top + 35,
           left: left + (100 / 2) - 10 + triangleOffset,
           child: CustomPaint(
             size: const Size(20, 15),
-            painter: TrianglePainter(color: const Color(0xFF621B2B)),
+            painter: isAbove
+                ? TrianglePainterUpright(color: const Color(0xFF621B2B))
+                : TrianglePainter(color: const Color(0xFF621B2B)),
           ),
         ),
       ],
@@ -301,6 +328,33 @@ class TrianglePainter extends CustomPainter {
     path.moveTo(size.width / 2, size.height);
     path.lineTo(size.width / 2 - 10, 0);
     path.lineTo(size.width / 2 + 10, 0);
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class TrianglePainterUpright extends CustomPainter {
+  final Color color;
+  final double offset;
+
+  TrianglePainterUpright({required this.color, this.offset = 22.0});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    path.moveTo(size.width / 2, 0 + offset);
+    path.lineTo(size.width / 2 - 10, size.height + offset);
+    path.lineTo(size.width / 2 + 10, size.height + offset);
     path.close();
 
     canvas.drawPath(path, paint);
