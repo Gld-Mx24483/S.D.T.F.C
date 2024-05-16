@@ -24,6 +24,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  String _selectedLabel = '';
 
   @override
   void initState() {
@@ -70,6 +71,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
 
   void _onBottomNavigationBarItemTapped(String label) {
     setState(() {
+      _selectedLabel = label;
       switch (label) {
         case 'Market Place':
           _currentScreen = const DesignerDashboard();
@@ -90,9 +92,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   void _nextTutorialStep() {
     setState(() {
       if (_tutorialStep == 6) {
-        // Navigate to DesignerDashboard and stop displaying tutorial
         _currentScreen = const DesignerDashboard();
-        _showTutorial = false; // Stop displaying tutorial
+        _showTutorial = false;
       } else {
         _tutorialStep++;
         _controller.forward();
@@ -109,6 +110,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           bottomNavigationBar: CustomBottomNavigationBar(
             onItemTapped: _onBottomNavigationBarItemTapped,
             tutorialStep: _tutorialStep,
+            selectedLabel: _selectedLabel,
           ),
         ),
         if (_showTutorial)
@@ -316,15 +318,12 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
 
 class TrianglePainter extends CustomPainter {
   final Color color;
-
   TrianglePainter({required this.color});
-
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-
     final path = Path();
     path.moveTo(size.width / 2, size.height);
     path.lineTo(size.width / 2 - 10, 0);
@@ -343,15 +342,12 @@ class TrianglePainter extends CustomPainter {
 class TrianglePainterUpright extends CustomPainter {
   final Color color;
   final double offset;
-
   TrianglePainterUpright({required this.color, this.offset = 22.0});
-
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
-
     final path = Path();
     path.moveTo(size.width / 2, 0 + offset);
     path.lineTo(size.width / 2 - 10, size.height + offset);

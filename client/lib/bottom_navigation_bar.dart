@@ -1,15 +1,16 @@
-//bottom_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
-  final int tutorialStep; // Add this line
+  final int tutorialStep;
+  final String selectedLabel;
 
   const CustomBottomNavigationBar({
     super.key,
     required this.onItemTapped,
-    required this.tutorialStep, // Add this line
+    required this.tutorialStep,
+    required this.selectedLabel,
   });
 
   @override
@@ -18,8 +19,6 @@ class CustomBottomNavigationBar extends StatefulWidget {
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
-  String _selectedIcon = 'Market Place';
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,18 +70,16 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     String iconPath, {
     EdgeInsets? padding,
   }) {
-    final isSelected = _selectedIcon == label;
+    final isSelectedLabel = label == widget.selectedLabel;
     final isDescribed =
         widget.tutorialStep == _getDescriptionStepForLabel(label);
-    final color = isSelected || isDescribed
+    final color = isSelectedLabel
         ? const Color(0xFFFAD776)
-        : const Color(0xFF000000);
+        : (isDescribed ? const Color(0xFFFAD776) : const Color(0xFF000000));
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedIcon = label;
-        });
+        setState(() {});
         widget.onItemTapped(label);
       },
       child: Container(
@@ -164,19 +161,4 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: Scaffold(
-      body: Center(
-        child: CustomBottomNavigationBar(
-          onItemTapped: (String label) {
-            // Handle item tapped
-          },
-          tutorialStep: 0, // Pass an initial value for tutorialStep
-        ),
-      ),
-    ),
-  ));
 }
