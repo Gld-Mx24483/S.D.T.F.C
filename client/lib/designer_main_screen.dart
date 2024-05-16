@@ -1,4 +1,3 @@
-//designer_main_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'fash_dgn_dash.dart';
@@ -195,6 +194,28 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                           ),
                         ),
                       ),
+                      if (_tutorialStep == 5)
+                        Positioned(
+                          top: 85, // Adjust as needed
+                          left: 290, // Adjust as needed
+                          child: Image.asset(
+                            'pics/bell.png',
+                            color: const Color.fromARGB(174, 250, 215, 118),
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
+                      if (_tutorialStep == 6)
+                        Positioned(
+                          top: 85, // Adjust as needed
+                          left: 320, // Adjust as needed
+                          child: Image.asset(
+                            'pics/shopping-bag.png',
+                            color: const Color.fromARGB(174, 250, 215, 118),
+                            width: 20,
+                            height: 20,
+                          ),
+                        ),
                     ],
                   ),
                 ),
