@@ -1,6 +1,6 @@
-//fash_buy_pts.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'fash_pay_pts.dart';
 
 class BuyPointsPage extends StatelessWidget {
   const BuyPointsPage({super.key});
@@ -56,14 +56,14 @@ class BuyPointsPage extends StatelessWidget {
                 ),
               ),
             ),
-            ..._buildFundingOptions(),
+            ..._buildFundingOptions(context),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildFundingOptions() {
+  List<Widget> _buildFundingOptions(BuildContext context) {
     const options = [
       {'points': 200, 'nairaValue': 10},
       {'points': 400, 'nairaValue': 20},
@@ -75,9 +75,7 @@ class BuyPointsPage extends StatelessWidget {
       return Container(
         width: 325,
         height: 72,
-        margin: const EdgeInsets.only(
-          top: 10,
-        ),
+        margin: const EdgeInsets.only(top: 10),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(
@@ -121,22 +119,36 @@ class BuyPointsPage extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Container(
-              width: 57,
-              height: 20,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(5),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PayPointsPage(
+                      points: option['points'] ?? 0, // Default to 0 if null
+                      nairaValue:
+                          option['nairaValue'] ?? 0, // Default to 0 if null
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                width: 57,
+                height: 20,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5),
+                  ),
+                  color: Color(0xFFFBE5AA),
                 ),
-                color: Color(0xFFFBE5AA),
-              ),
-              child: Center(
-                child: Text(
-                  'Buy Now',
-                  style: GoogleFonts.nunito(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF621B2B),
+                child: Center(
+                  child: Text(
+                    'Buy Now',
+                    style: GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF621B2B),
+                    ),
                   ),
                 ),
               ),
