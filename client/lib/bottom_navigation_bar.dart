@@ -76,12 +76,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         widget.tutorialStep == _getDescriptionStepForLabel(label);
     Color color;
 
-    // Check if the user is a new designer or an existing designer
     if (widget.selectedLabel.isEmpty) {
-      // New designer, use the tutorial step for color
       color = isDescribed ? const Color(0xFFFAD776) : const Color(0xFF000000);
     } else {
-      // Existing designer, use the selected label for color
       color =
           isSelectedLabel ? const Color(0xFFFAD776) : const Color(0xFF000000);
     }
@@ -132,6 +129,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   }
 
   Widget _buildNewIconButton() {
+    final isDescribed = widget.tutorialStep == 2;
+    final color = isDescribed ? const Color(0xFFFAD776) : Colors.black;
+
     return Positioned(
       bottom: 30,
       left: 0,
@@ -144,19 +144,19 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
             height: 48,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.black.withOpacity(0),
+              color: color.withOpacity(0.2),
             ),
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: color,
                 borderRadius: BorderRadius.circular(50),
               ),
               child: Container(
                 width: 3,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0),
+                  color: Colors.transparent,
                   border: Border.all(
                     color: Colors.white,
                     width: 2,
