@@ -78,6 +78,24 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
     });
   }
 
+  final List<Color> _colors = [
+    const Color(0xFFFF6B6B), // Red
+    const Color(0xFFFFD93D), // Yellow
+    const Color(0xFF6BCB77), // Green
+    const Color(0xFF4D96FF), // Blue
+    const Color(0xFFB197FC), // Purple
+    const Color(0xFFFF9B71), // Orange
+  ];
+
+  final List<String> _colorCodes = [
+    '#FF6B6B',
+    '#FFD93D',
+    '#6BCB77',
+    '#4D96FF',
+    '#B197FC',
+    '#FF9B71',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -476,11 +494,11 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                                   ),
                                 ),
                                 Positioned(
-                                  top: 123,
+                                  top: 108,
                                   left: 67,
                                   child: Container(
                                     width: 81,
-                                    height: 32,
+                                    height: 45,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
                                       color: const Color.fromARGB(
@@ -501,6 +519,30 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                                               height: 1.5,
                                               color: const Color(0xFF061023),
                                             ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 12,
+                                                height: 9,
+                                                decoration: BoxDecoration(
+                                                  color: _colors[index],
+                                                  borderRadius:
+                                                      BorderRadius.circular(2),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 2),
+                                              Text(
+                                                _colorCodes[index],
+                                                style: GoogleFonts.nunito(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w600,
+                                                  height: 1.5,
+                                                  color:
+                                                      const Color(0xFF061023),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           Text(
                                             '\$49.99',
