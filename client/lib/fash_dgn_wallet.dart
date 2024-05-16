@@ -13,6 +13,7 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   bool _isNGNSelected = true;
+  bool _isPointsSelected = false;
   bool _isAmountVisible = true;
   final TextEditingController _amountController = TextEditingController();
 
@@ -40,7 +41,7 @@ class _WalletScreenState extends State<WalletScreen> {
               ),
             ),
 
-            // Currency Slider
+            // Points Slider
             Container(
               width: 334,
               height: 46,
@@ -57,12 +58,22 @@ class _WalletScreenState extends State<WalletScreen> {
                   _buildCurrencyButton(
                     label: 'NGN',
                     isSelected: _isNGNSelected,
-                    onTap: () => setState(() => _isNGNSelected = true),
+                    onTap: () {
+                      setState(() {
+                        _isNGNSelected = true;
+                        _isPointsSelected = false;
+                      });
+                    },
                   ),
                   _buildCurrencyButton(
-                    label: 'USD',
-                    isSelected: !_isNGNSelected,
-                    onTap: () => setState(() => _isNGNSelected = false),
+                    label: 'POINTS',
+                    isSelected: _isPointsSelected,
+                    onTap: () {
+                      setState(() {
+                        _isNGNSelected = false;
+                        _isPointsSelected = true;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -71,7 +82,7 @@ class _WalletScreenState extends State<WalletScreen> {
             // Wallet Card
             Container(
               width: 334,
-              height: 126,
+              height: 130,
               margin: const EdgeInsets.only(top: 20),
               padding: const EdgeInsets.fromLTRB(11, 32, 0, 0),
               decoration: BoxDecoration(
@@ -115,7 +126,9 @@ class _WalletScreenState extends State<WalletScreen> {
                                 Text(
                                   _isNGNSelected
                                       ? 'Naira Wallet'
-                                      : 'USD Wallet',
+                                      : _isPointsSelected
+                                          ? 'Points Wallet'
+                                          : 'USD Wallet',
                                   style: GoogleFonts.nunito(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -145,19 +158,25 @@ class _WalletScreenState extends State<WalletScreen> {
                                   width: 24,
                                   height: 34,
                                   padding: const EdgeInsets.all(3),
-                                  child: Text(
-                                    _isNGNSelected ? '₦' : '\$',
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF621B2B),
-                                    ),
-                                  ),
+                                  child: _isPointsSelected
+                                      ? Image.asset('pics/coin.png')
+                                      : Text(
+                                          _isNGNSelected ? '₦' : '\$',
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 26,
+                                            fontWeight: FontWeight.w600,
+                                            color: const Color(0xFF621B2B),
+                                          ),
+                                        ),
                                 ),
                                 const SizedBox(width: 4),
                                 _isAmountVisible
                                     ? Text(
-                                        _isNGNSelected ? '0.00' : '200,000',
+                                        _isNGNSelected
+                                            ? '0.00'
+                                            : _isPointsSelected
+                                                ? '200,000'
+                                                : '200,000',
                                         style: GoogleFonts.nunito(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w700,
@@ -182,63 +201,143 @@ class _WalletScreenState extends State<WalletScreen> {
                       ),
                     ],
                   ),
+                  if (_isPointsSelected)
+                    Transform.translate(
+                      offset: const Offset(180, -10),
+                      child: Container(
+                        width: 115,
+                        height: 31,
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(83, 255, 218, 116),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Transfer Points',
+                              style: GoogleFonts.nunito(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF621B2B),
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
 
             // Fund Wallet Button
-            GestureDetector(
-              onTap: () => showFundWalletModal(context),
-              child: Container(
-                width: 157,
-                height: 54,
-                margin: const EdgeInsets.only(top: 20),
-                padding: const EdgeInsets.fromLTRB(26, 14, 19, 14),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 236, 184),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(8),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () => showFundWalletModal(context),
+                  child: Container(
+                    width: 150,
+                    height: 54,
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.fromLTRB(26, 14, 19, 14),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 236, 184),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                      border: Border.all(
+                        color: const Color(0xFFE1E3EA),
+                        width: 0.5,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 160, 162, 160),
+                          offset: Offset(0, 0),
+                          blurRadius: 1,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Fund Wallet',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF01061C),
+                          ),
+                        ),
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF621B2B),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add,
+                            color: Color(0xFFFBE5AA),
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  border: Border.all(
-                    color: const Color(0xFFE1E3EA),
-                    width: 0.5,
+                ),
+                const SizedBox(width: 20),
+                GestureDetector(
+                  onTap: () {
+                    // Handle "Buy Points" button tap
+                  },
+                  child: Container(
+                    width: 150,
+                    height: 54,
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.fromLTRB(26, 14, 19, 14),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 236, 184),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(8),
+                      ),
+                      border: Border.all(
+                        color: const Color(0xFFE1E3EA),
+                        width: 0.5,
+                      ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(255, 160, 162, 160),
+                          offset: Offset(0, 0),
+                          blurRadius: 1,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Buy Points',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF01061C),
+                          ),
+                        ),
+                        Image.asset(
+                          'pics/coin.png',
+                          width: 26,
+                          height: 26,
+                        ),
+                      ],
+                    ),
                   ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color.fromARGB(255, 160, 162, 160),
-                      offset: Offset(0, 0),
-                      blurRadius: 1,
-                      spreadRadius: 0,
-                    ),
-                  ],
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Fund Wallet',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF01061C),
-                      ),
-                    ),
-                    Container(
-                      width: 26,
-                      height: 26,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF621B2B),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Color(0xFFFBE5AA),
-                        size: 20,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
 
             // Recent Transactions Header
@@ -534,19 +633,21 @@ Widget _buildCurrencyButton({
       child: Container(
         height: 38,
         margin: const EdgeInsets.only(left: 1),
-        padding: const EdgeInsets.symmetric(horizontal: 65, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: const BorderRadius.all(
             Radius.circular(10),
           ),
         ),
-        child: Text(
-          label,
-          style: GoogleFonts.nunito(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: textColor,
+        child: Center(
+          child: Text(
+            label,
+            style: GoogleFonts.nunito(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: textColor,
+            ),
           ),
         ),
       ),
