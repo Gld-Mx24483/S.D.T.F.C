@@ -24,7 +24,7 @@ class PayPointsPage extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(15, 26, 0, 5),
+              padding: const EdgeInsets.fromLTRB(20, 26, 0, 5),
               child: Row(
                 children: [
                   GestureDetector(
