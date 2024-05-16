@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'trans_hist.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'fash_buy_pts.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -292,7 +293,12 @@ class _WalletScreenState extends State<WalletScreen> {
                 const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    // Handle "Buy Points" button tap
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BuyPointsPage(),
+                      ),
+                    );
                   },
                   child: Container(
                     width: 150,
