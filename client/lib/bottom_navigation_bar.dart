@@ -1,3 +1,4 @@
+//bottom_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -73,9 +74,17 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     final isSelectedLabel = label == widget.selectedLabel;
     final isDescribed =
         widget.tutorialStep == _getDescriptionStepForLabel(label);
-    final color = isSelectedLabel
-        ? const Color(0xFFFAD776)
-        : (isDescribed ? const Color(0xFFFAD776) : const Color(0xFF000000));
+    Color color;
+
+    // Check if the user is a new designer or an existing designer
+    if (widget.selectedLabel.isEmpty) {
+      // New designer, use the tutorial step for color
+      color = isDescribed ? const Color(0xFFFAD776) : const Color(0xFF000000);
+    } else {
+      // Existing designer, use the selected label for color
+      color =
+          isSelectedLabel ? const Color(0xFFFAD776) : const Color(0xFF000000);
+    }
 
     return GestureDetector(
       onTap: () {
