@@ -1,3 +1,4 @@
+//fash_buy_pts.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'fash_pay_pts.dart';
@@ -66,9 +67,9 @@ class BuyPointsPage extends StatelessWidget {
   List<Widget> _buildFundingOptions(BuildContext context) {
     const options = [
       {'points': 200, 'nairaValue': 10},
-      {'points': 400, 'nairaValue': 20},
-      {'points': 600, 'nairaValue': 30},
-      {'points': 800, 'nairaValue': 40},
+      {'points': 400, 'nairaValue': 10},
+      {'points': 600, 'nairaValue': 10},
+      {'points': 800, 'nairaValue': 10},
     ];
 
     return options.map((option) {

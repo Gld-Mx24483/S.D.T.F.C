@@ -1,4 +1,4 @@
-//designer_main_screen.dart
+// designer_main_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'fash_dgn_dash.dart';
@@ -9,8 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DesignerMainScreen extends StatefulWidget {
   final bool isNewDesigner;
+  final String initialPage;
 
-  const DesignerMainScreen({super.key, this.isNewDesigner = false});
+  const DesignerMainScreen({
+    super.key,
+    this.isNewDesigner = false,
+    this.initialPage = 'Market Place',
+  });
 
   @override
   State<DesignerMainScreen> createState() => _DesignerMainScreenState();
@@ -30,9 +35,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   @override
   void initState() {
     super.initState();
-    _currentScreen = widget.isNewDesigner
-        ? const NoRecordScreen(key: ValueKey('NoRecordScreen'))
-        : const DesignerDashboard();
+    _selectedLabel = widget.initialPage;
+    _currentScreen = _getInitialScreen();
 
     _controller = AnimationController(
       vsync: this,
@@ -60,6 +64,18 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           _controller.forward();
         });
       });
+    }
+  }
+
+  Widget _getInitialScreen() {
+    switch (widget.initialPage) {
+      case 'Wallet':
+        return const WalletScreen();
+      case 'Market Place':
+      default:
+        return widget.isNewDesigner
+            ? const NoRecordScreen(key: ValueKey('NoRecordScreen'))
+            : const DesignerDashboard();
     }
   }
 

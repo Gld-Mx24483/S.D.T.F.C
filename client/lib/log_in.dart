@@ -34,14 +34,19 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email == 'designer@gmail.com' && password == '1234') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const DesignerMainScreen()),
+        MaterialPageRoute(
+            builder: (context) => const DesignerMainScreen(
+                  initialPage: '',
+                )),
       );
     } else if (email == 'newdesigner@gmail.com' && password == '1234') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                const DesignerMainScreen(isNewDesigner: true)),
+            builder: (context) => const DesignerMainScreen(
+                  isNewDesigner: true,
+                  initialPage: '',
+                )),
       );
     } else if (email == 'vendor@gmail.com' && password == '1234') {
       // Add vendor login logic here

@@ -1,8 +1,9 @@
-//fash_oay_pts.dart
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'fash_purch_pts.dart';
 
 class PayPointsPage extends StatelessWidget {
   final int points;
@@ -272,12 +273,27 @@ class PayPointsPage extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                   ),
                   child: Center(
-                    child: Text(
-                      'Proceed',
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF621B2B),
+                    child: TextButton(
+                      onPressed: () {
+                        // Show the loading modal
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return LoadingModal(
+                              showNextModal: () =>
+                                  _showPurchasePointsPage(context),
+                            );
+                          },
+                        );
+                      },
+                      child: Text(
+                        'Proceed',
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF621B2B),
+                        ),
                       ),
                     ),
                   ),
@@ -298,5 +314,80 @@ class PayPointsPage extends StatelessWidget {
       11,
       (_) => chars.codeUnitAt(random.nextInt(chars.length)),
     ));
+  }
+
+  void _showPurchasePointsPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PurchasePointsPage(),
+      ),
+    );
+  }
+}
+
+class LoadingModal extends StatefulWidget {
+  const LoadingModal({super.key, required this.showNextModal});
+  final Function showNextModal;
+
+  @override
+  LoadingModalState createState() => LoadingModalState();
+}
+
+class LoadingModalState extends State<LoadingModal> {
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    Timer(const Duration(seconds: 5), () {
+      Navigator.of(context).pop();
+      widget.showNextModal();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 260,
+          height: 72,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(4),
+              bottomRight: Radius.circular(4),
+              bottomLeft: Radius.circular(4),
+              topRight: Radius.circular(4),
+            ),
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
+              ),
+              SizedBox(width: 20),
+              Text(
+                'Please wait...',
+                style: TextStyle(
+                  fontFamily: 'SF Pro Display',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF212121),
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
