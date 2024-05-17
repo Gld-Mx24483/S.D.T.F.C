@@ -118,7 +118,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   Row(
                     children: [
                       Container(
-                        width: 146,
+                        width: 176,
                         height: 62,
                         padding: const EdgeInsets.only(left: 11),
                         child: Column(
@@ -143,7 +143,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                   onTap: () => setState(() =>
                                       _isAmountVisible = !_isAmountVisible),
                                   child: Padding(
-                                    padding: const EdgeInsets.only(right: 25.0),
+                                    padding: const EdgeInsets.only(right: 55),
                                     child: Icon(
                                       _isAmountVisible
                                           ? Icons.visibility_outlined
@@ -158,7 +158,7 @@ class _WalletScreenState extends State<WalletScreen> {
                             Row(
                               children: [
                                 Container(
-                                  width: 24,
+                                  width: 34,
                                   height: 34,
                                   padding: const EdgeInsets.all(3),
                                   child: _isPointsSelected
@@ -176,10 +176,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                 _isAmountVisible
                                     ? Text(
                                         _isNGNSelected
-                                            ? '0.00'
+                                            ? '10000.00'
                                             : _isPointsSelected
-                                                ? '200,000'
-                                                : '200,000',
+                                                ? '2000'
+                                                : '2000',
                                         style: GoogleFonts.nunito(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w700,
