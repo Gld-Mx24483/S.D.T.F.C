@@ -1,5 +1,7 @@
+//bottom_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'fash_cnt.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
@@ -153,6 +155,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
                 }
               });
               widget.onItemTapped('New');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const FashCnt()),
+              );
             },
             child: Container(
               width: 48,
