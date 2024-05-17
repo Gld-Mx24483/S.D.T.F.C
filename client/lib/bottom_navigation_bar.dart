@@ -1,17 +1,15 @@
-//bottom_navigation_bar.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
   final int tutorialStep;
-  final String selectedLabel;
 
   const CustomBottomNavigationBar({
     super.key,
     required this.onItemTapped,
     required this.tutorialStep,
-    required this.selectedLabel,
+    required String selectedLabel,
   });
 
   @override
@@ -20,6 +18,8 @@ class CustomBottomNavigationBar extends StatefulWidget {
 }
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
+  String selectedLabel = '';
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,12 +71,12 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     String iconPath, {
     EdgeInsets? padding,
   }) {
-    final isSelectedLabel = label == widget.selectedLabel;
+    final isSelectedLabel = label == selectedLabel;
     final isDescribed =
         widget.tutorialStep == _getDescriptionStepForLabel(label);
     Color color;
 
-    if (widget.selectedLabel.isEmpty) {
+    if (selectedLabel.isEmpty) {
       color = isDescribed ? const Color(0xFFFAD776) : const Color(0xFF000000);
     } else {
       color =
@@ -85,7 +85,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
     return GestureDetector(
       onTap: () {
-        setState(() {});
+        setState(() {
+          selectedLabel = label;
+        });
         widget.onItemTapped(label);
       },
       child: Container(
@@ -130,7 +132,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   Widget _buildNewIconButton() {
     final isDescribed = widget.tutorialStep == 2;
-    final color = isDescribed ? const Color(0xFFFAD776) : Colors.black;
+    final isSelected = selectedLabel == 'New';
+    final color =
+        isDescribed || isSelected ? const Color(0xFFFAD776) : Colors.black;
 
     return Positioned(
       bottom: 30,
@@ -139,29 +143,41 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
       child: Center(
         child: Transform.translate(
           offset: const Offset(-6, -24),
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color.withOpacity(0.2),
-            ),
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (selectedLabel == 'New') {
+                  selectedLabel = '';
+                } else {
+                  selectedLabel = 'New';
+                }
+              });
+              widget.onItemTapped('New');
+            },
             child: Container(
-              padding: const EdgeInsets.all(14),
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(50),
+                shape: BoxShape.circle,
+                color: color.withOpacity(0.2),
               ),
               child: Container(
-                width: 3,
-                height: 3,
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
+                  color: color,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Container(
+                  width: 3,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),
