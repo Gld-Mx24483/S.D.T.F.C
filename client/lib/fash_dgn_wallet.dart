@@ -1,9 +1,11 @@
 //fash_dgn_wallet.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'fash_snd_pts.dart';
 import 'trans_hist.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'fash_buy_pts.dart';
+import 'loading_modal.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -205,28 +207,31 @@ class _WalletScreenState extends State<WalletScreen> {
                   if (_isPointsSelected)
                     Transform.translate(
                       offset: const Offset(180, -10),
-                      child: Container(
-                        width: 115,
-                        height: 31,
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(83, 255, 218, 116),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Transfer Points',
-                              style: GoogleFonts.nunito(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF621B2B),
-                              ),
+                      child: GestureDetector(
+                        onTap: () => showTransferPointsModal(context),
+                        child: Container(
+                          width: 115,
+                          height: 31,
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(83, 255, 218, 116),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5),
                             ),
-                            const SizedBox(width: 5),
-                          ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Transfer Points',
+                                style: GoogleFonts.nunito(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF621B2B),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -486,7 +491,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           prefixIcon: Padding(
                             padding: const EdgeInsets.only(top: 12, left: 16.0),
                             child: Text(
-                              _isNGNSelected ? '₦' : '\$',
+                              '₦', // Always display ₦ symbol
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -536,6 +541,385 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                         child: Text(
                           'Continue',
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF621B2B),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void showTransferPointsModal(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                width: 400,
+                height: 280,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Text
+                    Center(
+                      child: Container(
+                        width: 350,
+                        height: 29,
+                        margin: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          'How much points do you want to transfer?',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF232323),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                    // Amount Label
+                    Container(
+                      width: 48,
+                      height: 16,
+                      margin: const EdgeInsets.only(top: 31),
+                      child: Text(
+                        'Amount',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+
+                    // Amount Input Field
+                    Container(
+                      width: 263,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(
+                          color: const Color(0xFFFBE5AA),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _amountController,
+                        decoration: InputDecoration(
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Transform.translate(
+                              offset: const Offset(0, 0),
+                              child: Image.asset(
+                                'pics/coin.png',
+                                width: 16,
+                                height: 16,
+                              ),
+                            ),
+                          ),
+                          hintText: '0',
+                          hintStyle: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFF49454F),
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 10.0,
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+
+                    // Continue Button
+                    Container(
+                      width: 265,
+                      height: 44,
+                      margin: const EdgeInsets.only(top: 38),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBE5AA),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showTransferDetailsModal(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFBE5AA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF621B2B),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void showTransferDetailsModal(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        final receiverEmailController = TextEditingController();
+        final receiverPhoneNumberController = TextEditingController();
+        final senderAccountPasswordController = TextEditingController();
+        bool isPasswordVisible = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                width: 334,
+                height: 445,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Points Transfer Heading
+                    Container(
+                      width: 334,
+                      height: 19,
+                      margin: const EdgeInsets.only(top: 15),
+                      child: Center(
+                        child: Text(
+                          'Points Transfer',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF232323),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+
+                    // Receiver Email
+                    Container(
+                      width: 86,
+                      height: 16,
+                      margin: const EdgeInsets.only(top: 22, left: 0),
+                      child: Text(
+                        'Receiver Email',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 263,
+                      height: 46,
+                      margin: const EdgeInsets.only(top: 10, left: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(
+                          color: const Color(0xFFFBE5AA),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: receiverEmailController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter email',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 10.0,
+                          ),
+                        ),
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+
+                    // Receiver Phone Number
+                    Container(
+                      width: 144,
+                      height: 16,
+                      margin: const EdgeInsets.only(top: 20, left: 0),
+                      child: Text(
+                        'Receiver Phone Number',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 263,
+                      height: 46,
+                      margin: const EdgeInsets.only(top: 10, left: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(
+                          color: const Color(0xFFFBE5AA),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: receiverPhoneNumberController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter phone number',
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 10.0,
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+
+                    // Sender Account Password
+                    Container(
+                      width: 154,
+                      height: 16,
+                      margin: const EdgeInsets.only(top: 20),
+                      child: Text(
+                        'Sender Account Password',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 263,
+                      height: 46,
+                      margin: const EdgeInsets.only(top: 10, left: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(
+                          color: const Color(0xFFFBE5AA),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: senderAccountPasswordController,
+                        obscureText: !isPasswordVisible,
+                        decoration: InputDecoration(
+                          hintText: 'Enter password',
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 10.0,
+                          ),
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            child: Icon(
+                              isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: const Color.fromARGB(255, 120, 119, 122),
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+                    // Send Button
+                    Container(
+                      width: 265,
+                      height: 44,
+                      margin: const EdgeInsets.only(top: 38),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBE5AA),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final pointsTransferred =
+                              int.parse(_amountController.text);
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => LoadingModal(
+                              showNextModal: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SendPointsSuccessPage(
+                                      pointsTransferred: pointsTransferred,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFBE5AA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Send',
                           style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
