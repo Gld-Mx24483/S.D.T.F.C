@@ -39,7 +39,7 @@ class FashCntState extends State<FashCnt> with SingleTickerProviderStateMixin {
       future: _delayedFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return FashMapCnt();
+          return const FashMapCnt();
         } else {
           return Scaffold(
             body: Center(
