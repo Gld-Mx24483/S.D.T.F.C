@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'fash_map_cnt.dart';
 
 class FashCnt extends StatefulWidget {
   const FashCnt({super.key});
@@ -10,6 +12,7 @@ class FashCnt extends StatefulWidget {
 class FashCntState extends State<FashCnt> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _dotAnimation;
+  late Future<void> _delayedFuture;
 
   @override
   void initState() {
@@ -20,6 +23,8 @@ class FashCntState extends State<FashCnt> with SingleTickerProviderStateMixin {
     )..repeat();
 
     _dotAnimation = IntTween(begin: 0, end: 5).animate(_controller);
+
+    _delayedFuture = Future.delayed(const Duration(seconds: 5));
   }
 
   @override
@@ -30,62 +35,71 @@ class FashCntState extends State<FashCnt> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Opacity(
-              opacity: 1.0,
-              child: Container(
-                width: 281,
-                height: 157,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('pics/Logo.png'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Transform.translate(
-              offset: const Offset(45, -75),
-              child: Opacity(
-                opacity: 1.0,
-                child: AnimatedBuilder(
-                  animation: _dotAnimation,
-                  builder: (context, child) {
-                    String dots = '.' * _dotAnimation.value;
-                    return Text.rich(
-                      TextSpan(
-                        text: 'Connect',
-                        style: const TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF621B2B),
+    return FutureBuilder<void>(
+      future: _delayedFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return FashMapCnt();
+        } else {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Opacity(
+                    opacity: 1.0,
+                    child: Container(
+                      width: 281,
+                      height: 157,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('pics/Logo.png'),
+                          fit: BoxFit.contain,
                         ),
-                        children: [
-                          TextSpan(
-                            text: dots,
-                            style: const TextStyle(
-                              fontFamily: 'Nunito',
-                              fontSize: 24,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF621B2B),
-                            ),
-                          ),
-                        ],
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Transform.translate(
+                    offset: const Offset(45, -75),
+                    child: Opacity(
+                      opacity: 1.0,
+                      child: AnimatedBuilder(
+                        animation: _dotAnimation,
+                        builder: (context, child) {
+                          String dots = '.' * _dotAnimation.value;
+                          return Text.rich(
+                            TextSpan(
+                              text: 'Connect',
+                              style: const TextStyle(
+                                fontFamily: 'Nunito',
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF621B2B),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: dots,
+                                  style: const TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF621B2B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 }
