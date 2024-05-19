@@ -22,6 +22,9 @@ class FashMapCntState extends State<FashMapCnt> {
   int? selectedMap;
   LatLng? selectedLocation;
 
+  // New state variable to track map interface tap
+  bool isMapTapped = false;
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +77,16 @@ class FashMapCntState extends State<FashMapCnt> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
+                onTapDown: (_) {
+                  setState(() {
+                    isMapTapped = true;
+                  });
+                },
+                onTapUp: (_) {
+                  setState(() {
+                    isMapTapped = false;
+                  });
+                },
                 onTap: () {
                   setState(() {
                     selectedMap = 0;
@@ -139,7 +152,7 @@ class FashMapCntState extends State<FashMapCnt> {
                                 : Container(),
                           ),
                         ),
-                        if (selectedMap == 0)
+                        if (selectedMap == 0 || isMapTapped)
                           Container(
                             width: 130,
                             height: 130,
@@ -151,15 +164,25 @@ class FashMapCntState extends State<FashMapCnt> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      'Precise Location',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: selectedMap == 0
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: selectedMap == 0 || isMapTapped
                             ? const Color(0xFF621B2B)
-                            : Colors.black,
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Precise Location',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: selectedMap == 0 || isMapTapped
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                       ),
                     ),
                   ],
@@ -167,6 +190,16 @@ class FashMapCntState extends State<FashMapCnt> {
               ),
               const SizedBox(width: 60),
               GestureDetector(
+                onTapDown: (_) {
+                  setState(() {
+                    isMapTapped = true;
+                  });
+                },
+                onTapUp: (_) {
+                  setState(() {
+                    isMapTapped = false;
+                  });
+                },
                 onTap: () {
                   setState(() {
                     selectedMap = 1;
@@ -209,16 +242,7 @@ class FashMapCntState extends State<FashMapCnt> {
                             ),
                           ),
                         ),
-                        if (selectedMap == 1)
-                          Container(
-                            width: 130,
-                            height: 130,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: const Color(0xFFFBE5AA).withOpacity(0.8),
-                            ),
-                          ),
-                        if (selectedMap == 1)
+                        if (selectedMap == 1 || isMapTapped)
                           Container(
                             width: 130,
                             height: 130,
@@ -230,15 +254,25 @@ class FashMapCntState extends State<FashMapCnt> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      'Add Location',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: selectedMap == 1
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: selectedMap == 1 || isMapTapped
                             ? const Color(0xFF621B2B)
-                            : Colors.black,
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Add Location',
+                        style: TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: selectedMap == 1 || isMapTapped
+                              ? Colors.white
+                              : Colors.black,
+                        ),
                       ),
                     ),
                   ],
