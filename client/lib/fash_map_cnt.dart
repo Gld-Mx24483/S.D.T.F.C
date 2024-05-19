@@ -1,5 +1,5 @@
+// fash_map_cnt.dart
 // ignore_for_file: avoid_print, deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -20,6 +20,7 @@ class FashMapCntState extends State<FashMapCnt> {
   final Location _location = Location();
 
   int? selectedMap;
+  LatLng? selectedLocation;
 
   @override
   void initState() {
@@ -76,6 +77,12 @@ class FashMapCntState extends State<FashMapCnt> {
                 onTap: () {
                   setState(() {
                     selectedMap = 0;
+                    selectedLocation = _currentPosition != null
+                        ? LatLng(
+                            _currentPosition!.latitude!,
+                            _currentPosition!.longitude!,
+                          )
+                        : null;
                   });
                 },
                 child: Column(
@@ -163,6 +170,8 @@ class FashMapCntState extends State<FashMapCnt> {
                 onTap: () {
                   setState(() {
                     selectedMap = 1;
+                    // Setting default location to Lagos
+                    selectedLocation = const LatLng(6.5244, 3.3792);
                   });
                 },
                 child: Column(
@@ -178,9 +187,9 @@ class FashMapCntState extends State<FashMapCnt> {
                           ),
                           child: ClipOval(
                             child: FlutterMap(
-                              mapController: rightMapController,
-                              options: const MapOptions(
-                                center: LatLng(9.0578, 7.4951),
+                              options: MapOptions(
+                                center: selectedLocation ??
+                                    const LatLng(6.5244, 3.3792),
                                 zoom: 7.0,
                                 interactiveFlags: InteractiveFlag.pinchZoom |
                                     InteractiveFlag.drag |
@@ -196,21 +205,19 @@ class FashMapCntState extends State<FashMapCnt> {
                                     'id': 'mapbox.mapbox-streets-v8',
                                   },
                                 ),
-                                const MarkerLayer(
-                                  markers: [
-                                    Marker(
-                                      point: LatLng(9.0578, 7.4951),
-                                      child: Icon(
-                                        Icons.location_on,
-                                        color: Colors.red,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),
                         ),
+                        if (selectedMap == 1)
+                          Container(
+                            width: 130,
+                            height: 130,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFFBE5AA).withOpacity(0.8),
+                            ),
+                          ),
                         if (selectedMap == 1)
                           Container(
                             width: 130,
@@ -243,16 +250,13 @@ class FashMapCntState extends State<FashMapCnt> {
           Padding(
             padding: const EdgeInsets.only(bottom: 50),
             child: GestureDetector(
-              onTap: _currentPosition != null
+              onTap: selectedLocation != null && selectedMap == 0
                   ? () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => FullMap(
-                            initialPosition: LatLng(
-                              _currentPosition!.latitude!,
-                              _currentPosition!.longitude!,
-                            ),
+                            initialPosition: selectedLocation!,
                           ),
                         ),
                       );
