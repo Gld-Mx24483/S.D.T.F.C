@@ -1,12 +1,14 @@
-// full_map.dart
 // ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class FullMap extends StatelessWidget {
   final LatLng initialPosition;
+
   const FullMap({super.key, required this.initialPosition});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +29,17 @@ class FullMap extends StatelessWidget {
                   'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
               'id': 'mapbox.mapbox-streets-v8',
             },
+          ),
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: initialPosition,
+                child: const Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                ),
+              ),
+            ],
           ),
         ],
       ),

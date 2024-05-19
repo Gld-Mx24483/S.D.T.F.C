@@ -46,6 +46,8 @@ dependencies:
   # location: ^6.0.2 
   latlong2: ^0.9.1
   geolocator: ^7.0.3
+  location: ^6.0.2
+  syncfusion_flutter_maps: ^25.2.4
 
 dev_dependencies:
   flutter_test:

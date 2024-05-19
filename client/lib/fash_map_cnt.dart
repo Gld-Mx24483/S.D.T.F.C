@@ -1,12 +1,11 @@
-// fash_map_cnt.dart
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
-import 'full_map.dart'; // Import the FullMap component
+import 'full_map.dart';
 
 class FashMapCnt extends StatefulWidget {
   const FashMapCnt({super.key});
@@ -16,11 +15,11 @@ class FashMapCnt extends StatefulWidget {
 }
 
 class FashMapCntState extends State<FashMapCnt> {
-  final MapController leftMapController = MapController();
   final MapController rightMapController = MapController();
-  bool isLeftMapSelected = false;
-  bool isRightMapSelected = false;
-  Position? _currentPosition;
+  LocationData? _currentPosition;
+  final Location _location = Location();
+
+  int? selectedMap;
 
   @override
   void initState() {
@@ -29,39 +28,28 @@ class FashMapCntState extends State<FashMapCnt> {
   }
 
   Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Request the user to enable location services
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Request the user to grant location permissions
-        return Future.error('Location permissions are denied');
+    try {
+      bool serviceEnabled = await _location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await _location.requestService();
+        if (!serviceEnabled) {
+          return;
+        }
       }
+
+      PermissionStatus permissionStatus = await _location.hasPermission();
+      if (permissionStatus == PermissionStatus.denied) {
+        permissionStatus = await _location.requestPermission();
+        if (permissionStatus != PermissionStatus.granted) {
+          return;
+        }
+      }
+
+      _currentPosition = await _location.getLocation();
+      setState(() {});
+    } catch (e) {
+      print(e);
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Request the user to enable location permissions from the app settings
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    setState(() {
-      _currentPosition = position;
-      leftMapController.move(
-          LatLng(position.latitude, position.longitude), 16.0);
-    });
   }
 
   @override
@@ -85,11 +73,9 @@ class FashMapCntState extends State<FashMapCnt> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTapDown: (TapDownDetails details) {
+                onTap: () {
                   setState(() {
-                    isLeftMapSelected = details.globalPosition.dx <
-                        (details.globalPosition.dx + 130) / 2;
-                    isRightMapSelected = !isLeftMapSelected;
+                    selectedMap = 0;
                   });
                 },
                 child: Column(
@@ -104,32 +90,49 @@ class FashMapCntState extends State<FashMapCnt> {
                             color: Colors.grey,
                           ),
                           child: ClipOval(
-                            child: FlutterMap(
-                              mapController: leftMapController,
-                              options: MapOptions(
-                                center: _currentPosition == null
-                                    ? const LatLng(6.5244,
-                                        3.3792) // Default Lagos coordinates
-                                    : LatLng(_currentPosition!.latitude,
-                                        _currentPosition!.longitude),
-                                zoom: 16.0,
-                                interactiveFlags: InteractiveFlag.none,
-                              ),
-                              children: [
-                                TileLayer(
-                                  urlTemplate:
-                                      'https://api.mapbox.com/styles/v1/gld-mx24483/clwcfad7h00ct01qsh79s39hx/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                  additionalOptions: const {
-                                    'accessToken':
-                                        'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                    'id': 'mapbox.mapbox-streets-v8',
-                                  },
-                                ),
-                              ],
-                            ),
+                            child: _currentPosition != null
+                                ? FlutterMap(
+                                    options: MapOptions(
+                                      center: LatLng(
+                                        _currentPosition!.latitude!,
+                                        _currentPosition!.longitude!,
+                                      ),
+                                      zoom: 16.0,
+                                      interactiveFlags:
+                                          InteractiveFlag.pinchZoom |
+                                              InteractiveFlag.drag |
+                                              InteractiveFlag.doubleTapZoom,
+                                    ),
+                                    children: [
+                                      TileLayer(
+                                        urlTemplate:
+                                            'https://api.mapbox.com/styles/v1/gld-mx24483/clwcfad7h00ct01qsh79s39hx/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
+                                        additionalOptions: const {
+                                          'accessToken':
+                                              'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
+                                          'id': 'mapbox.mapbox-streets-v8',
+                                        },
+                                      ),
+                                      MarkerLayer(
+                                        markers: [
+                                          Marker(
+                                            point: LatLng(
+                                              _currentPosition!.latitude!,
+                                              _currentPosition!.longitude!,
+                                            ),
+                                            child: const Icon(
+                                              Icons.location_on,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  )
+                                : Container(),
                           ),
                         ),
-                        if (isLeftMapSelected)
+                        if (selectedMap == 0)
                           Container(
                             width: 130,
                             height: 130,
@@ -147,7 +150,7 @@ class FashMapCntState extends State<FashMapCnt> {
                         fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isLeftMapSelected
+                        color: selectedMap == 0
                             ? const Color(0xFF621B2B)
                             : Colors.black,
                       ),
@@ -157,11 +160,9 @@ class FashMapCntState extends State<FashMapCnt> {
               ),
               const SizedBox(width: 60),
               GestureDetector(
-                onTapDown: (TapDownDetails details) {
+                onTap: () {
                   setState(() {
-                    isRightMapSelected = details.globalPosition.dx >
-                        (details.globalPosition.dx + 130) / 2;
-                    isLeftMapSelected = !isRightMapSelected;
+                    selectedMap = 1;
                   });
                 },
                 child: Column(
@@ -179,11 +180,11 @@ class FashMapCntState extends State<FashMapCnt> {
                             child: FlutterMap(
                               mapController: rightMapController,
                               options: const MapOptions(
-                                center:
-                                    LatLng(9.0578, 7.4951), // Abuja coordinates
+                                center: LatLng(9.0578, 7.4951),
                                 zoom: 7.0,
-                                interactiveFlags: InteractiveFlag
-                                    .none, // Disable map interactions
+                                interactiveFlags: InteractiveFlag.pinchZoom |
+                                    InteractiveFlag.drag |
+                                    InteractiveFlag.doubleTapZoom,
                               ),
                               children: [
                                 TileLayer(
@@ -195,11 +196,22 @@ class FashMapCntState extends State<FashMapCnt> {
                                     'id': 'mapbox.mapbox-streets-v8',
                                   },
                                 ),
+                                const MarkerLayer(
+                                  markers: [
+                                    Marker(
+                                      point: LatLng(9.0578, 7.4951),
+                                      child: Icon(
+                                        Icons.location_on,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        if (isRightMapSelected)
+                        if (selectedMap == 1)
                           Container(
                             width: 130,
                             height: 130,
@@ -217,7 +229,7 @@ class FashMapCntState extends State<FashMapCnt> {
                         fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isRightMapSelected
+                        color: selectedMap == 1
                             ? const Color(0xFF621B2B)
                             : Colors.black,
                       ),
@@ -231,15 +243,15 @@ class FashMapCntState extends State<FashMapCnt> {
           Padding(
             padding: const EdgeInsets.only(bottom: 50),
             child: GestureDetector(
-              onTap: isLeftMapSelected && _currentPosition != null
+              onTap: _currentPosition != null
                   ? () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => FullMap(
                             initialPosition: LatLng(
-                              _currentPosition!.latitude,
-                              _currentPosition!.longitude,
+                              _currentPosition!.latitude!,
+                              _currentPosition!.longitude!,
                             ),
                           ),
                         ),
