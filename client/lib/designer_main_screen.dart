@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'bottom_navigation_bar.dart';
 import 'fash_dgn_dash.dart';
 import 'fash_dgn_wallet.dart';
+import 'fash_profile.dart';
 import 'fash_shop.dart';
 import 'no_record_screen.dart';
 
@@ -103,7 +104,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           _currentScreen = const FashShopScreen();
           break;
         case 'Profile':
-          // _currentScreen = const ProfileScreen();
+          _currentScreen = const FashProfileScreen();
           break;
       }
     });
