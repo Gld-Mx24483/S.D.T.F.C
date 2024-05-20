@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'bottom_navigation_bar.dart';
+
 class FashPasScreen extends StatefulWidget {
   const FashPasScreen({super.key});
 
@@ -159,6 +161,13 @@ class _FashPasScreenState extends State<FashPasScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        onItemTapped: (label) {
+          // Handle bottom navigation bar item taps
+        },
+        tutorialStep: 0,
+        selectedLabel: '',
       ),
     );
   }

@@ -1,51 +1,33 @@
-//fash_my_acct.dart
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 import 'bottom_navigation_bar.dart';
 
-class FashMyAcctScreen extends StatefulWidget {
-  const FashMyAcctScreen({super.key});
+class FashLocScreen extends StatefulWidget {
+  const FashLocScreen({super.key});
 
   @override
-  State<FashMyAcctScreen> createState() => _FashMyAcctScreenState();
+  State<FashLocScreen> createState() => _FashLocScreenState();
 }
 
-class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
-  final TextEditingController _firstNameController =
-      TextEditingController(text: 'Sell');
-  final TextEditingController _lastNameController =
-      TextEditingController(text: 'Dome');
-  final TextEditingController _emailController =
-      TextEditingController(text: 'selldome@gmail.com');
-  final TextEditingController _phoneNumberController =
-      TextEditingController(text: '8166767196');
-
-  PickedFile? _imageFile;
+class _FashLocScreenState extends State<FashLocScreen> {
+  final TextEditingController _storeNameController =
+      TextEditingController(text: 'Hemstofit_stores');
+  final TextEditingController _storeEmailController =
+      TextEditingController(text: 'hemstofit_stores@gmail.com');
+  final TextEditingController _storePhoneNumberController =
+      TextEditingController(text: '8106775111');
+  final TextEditingController _storeAddressController =
+      TextEditingController(text: '2 William drive silverbird');
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneNumberController.dispose();
+    _storeNameController.dispose();
+    _storeEmailController.dispose();
+    _storePhoneNumberController.dispose();
+    _storeAddressController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    // Show a dialog to allow the user to choose between camera and gallery
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _imageFile = PickedFile(image.path);
-      });
-    }
   }
 
   @override
@@ -82,7 +64,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                         ),
                       ),
                       Text(
-                        'My Account',
+                        'New Location',
                         style: GoogleFonts.nunito(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -95,60 +77,37 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                 ),
               ),
               const SizedBox(height: 33),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFDADADA),
-                  ),
-                  child: _imageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
-                          child: Image.file(
-                            File(_imageFile!.path),
-                            width: 90,
-                            height: 90,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     _buildTextField(
-                      label: 'First Name',
-                      controller: _firstNameController,
-                      hintText: 'Enter your first name',
+                      label: 'Store Name',
+                      controller: _storeNameController,
+                      hintText: 'Enter store name',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
-                      label: 'Last Name',
-                      controller: _lastNameController,
-                      hintText: 'Enter your last name',
+                      label: 'Store Email',
+                      controller: _storeEmailController,
+                      hintText: 'Enter store email',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildPhoneTextField(
+                      label: 'Store Phone Number',
+                      controller: _storePhoneNumberController,
+                      hintText: 'Enter store phone number',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
-                      label: 'Email Address',
-                      controller: _emailController,
-                      hintText: 'Enter your email address',
+                      label: 'Store Address',
+                      controller: _storeAddressController,
+                      hintText: 'Enter store address',
                     ),
-                    const SizedBox(height: 16),
-                    _buildPhoneTextField(),
                     const SizedBox(height: 32),
                     GestureDetector(
                       onTap: () {
-                        // Save changes logic
+                        // Add Location logic
                       },
                       child: Container(
                         width: double.infinity,
@@ -159,7 +118,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            'Save Changes',
+                            'Add Location',
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -238,12 +197,16 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     );
   }
 
-  Widget _buildPhoneTextField() {
+  Widget _buildPhoneTextField({
+    required String label,
+    required TextEditingController controller,
+    required String hintText,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Phone Number',
+          label,
           style: GoogleFonts.nunito(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -270,14 +233,14 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
             color: Colors.black,
           ),
           initialValue: PhoneNumber(isoCode: 'NG'),
-          textFieldController: _phoneNumberController,
+          textFieldController: controller,
           formatInput: false,
           keyboardType: const TextInputType.numberWithOptions(
               signed: true, decimal: true),
           inputDecoration: InputDecoration(
             fillColor: const Color.fromARGB(45, 215, 215, 215),
             filled: true,
-            hintText: 'Enter your phone number',
+            hintText: hintText,
             hintStyle: const TextStyle(
               color: Color(0xFFD9D9D9),
             ),

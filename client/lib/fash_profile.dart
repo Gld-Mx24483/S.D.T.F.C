@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'fash_buss.dart';
+import 'fash_loc.dart';
 import 'fash_my_acct.dart';
 import 'fash_pas.dart';
 
@@ -154,7 +155,7 @@ class FashProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
-                icon: Icons.verified_outlined,
+                icon: Icons.verified_user_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Verification',
                 onTap: () {
@@ -198,7 +199,11 @@ class FashProfileScreen extends StatelessWidget {
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Add New Location',
                 onTap: () {
-                  // Add navigation or other logic here if needed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashLocScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),
