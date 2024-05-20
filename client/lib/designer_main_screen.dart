@@ -1,11 +1,14 @@
 // designer_main_screen.dart
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'fash_dgn_dash.dart';
-import 'bottom_navigation_bar.dart';
-import 'fash_dgn_wallet.dart';
-import 'no_record_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'bottom_navigation_bar.dart';
+import 'fash_dgn_dash.dart';
+import 'fash_dgn_wallet.dart';
+import 'fash_shop.dart';
+import 'no_record_screen.dart';
 
 class DesignerMainScreen extends StatefulWidget {
   final bool isNewDesigner;
@@ -97,7 +100,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           _currentScreen = const WalletScreen();
           break;
         case 'Shop':
-          // _currentScreen = const ShopScreen();
+          _currentScreen = const FashShopScreen();
           break;
         case 'Profile':
           // _currentScreen = const ProfileScreen();
