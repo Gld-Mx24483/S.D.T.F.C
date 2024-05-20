@@ -1,6 +1,9 @@
 // designer_main_screen.dart
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
+import 'package:client/sign_out.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -124,126 +127,137 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: _currentScreen,
-          bottomNavigationBar: CustomBottomNavigationBar(
-            onItemTapped: _onBottomNavigationBarItemTapped,
-            tutorialStep: _tutorialStep,
-            selectedLabel: _selectedLabel,
+    return WillPopScope(
+      onWillPop: () async {
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const SignOutModal(); // Show the SignOutModal when back button is pressed
+          },
+        );
+        return false; // Prevent default back button behavior
+      },
+      child: Stack(
+        children: [
+          Scaffold(
+            body: _currentScreen,
+            bottomNavigationBar: CustomBottomNavigationBar(
+              onItemTapped: _onBottomNavigationBarItemTapped,
+              tutorialStep: _tutorialStep,
+              selectedLabel: _selectedLabel,
+            ),
           ),
-        ),
-        if (_showTutorial)
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Positioned.fill(
-                child: Container(
-                  color: const Color(0xFF000000).withOpacity(0.7),
-                  child: Stack(
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        transitionBuilder:
-                            (Widget child, Animation<double> animation) {
-                          Offset beginOffset;
-                          switch (_tutorialStep) {
-                            case 0:
-                              beginOffset = const Offset(0.0, 1.0);
-                              break;
-                            case 1:
-                              beginOffset = const Offset(-1.0, 0.0);
-                              break;
-                            case 2:
-                              beginOffset = const Offset(1.0, 0.0);
-                              break;
-                            case 3:
-                              beginOffset = const Offset(0.0, -1.0);
-                              break;
-                            case 4:
-                              beginOffset = const Offset(0.0, 1.0);
-                              break;
-                            case 5:
-                              beginOffset = const Offset(0.0, 1.0);
-                              break;
-                            case 6:
-                              beginOffset = const Offset(-1.0, 0.0);
-                              break;
-                            default:
-                              beginOffset = const Offset(0.0, 1.0);
-                          }
-                          return SlideTransition(
-                            position: Tween<Offset>(
-                              begin: beginOffset,
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: _buildCurrentTutorialBubble(),
-                      ),
-                      Positioned(
-                        top: 541,
-                        left: 278,
-                        child: GestureDetector(
-                          onTap: _nextTutorialStep,
-                          child: Container(
-                            width: 57,
-                            height: 16,
-                            decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('pics/NB.png'),
-                                fit: BoxFit.cover,
+          if (_showTutorial)
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: Positioned.fill(
+                  child: Container(
+                    color: const Color(0xFF000000).withOpacity(0.7),
+                    child: Stack(
+                      children: [
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                            Offset beginOffset;
+                            switch (_tutorialStep) {
+                              case 0:
+                                beginOffset = const Offset(0.0, 1.0);
+                                break;
+                              case 1:
+                                beginOffset = const Offset(-1.0, 0.0);
+                                break;
+                              case 2:
+                                beginOffset = const Offset(1.0, 0.0);
+                                break;
+                              case 3:
+                                beginOffset = const Offset(0.0, -1.0);
+                                break;
+                              case 4:
+                                beginOffset = const Offset(0.0, 1.0);
+                                break;
+                              case 5:
+                                beginOffset = const Offset(0.0, 1.0);
+                                break;
+                              case 6:
+                                beginOffset = const Offset(-1.0, 0.0);
+                                break;
+                              default:
+                                beginOffset = const Offset(0.0, 1.0);
+                            }
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: beginOffset,
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: FadeTransition(
+                                opacity: animation,
+                                child: child,
                               ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                _tutorialStep == 6 ? 'Begin' : 'Next',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                  decoration: TextDecoration.none,
+                            );
+                          },
+                          child: _buildCurrentTutorialBubble(),
+                        ),
+                        Positioned(
+                          top: 541,
+                          left: 278,
+                          child: GestureDetector(
+                            onTap: _nextTutorialStep,
+                            child: Container(
+                              width: 57,
+                              height: 16,
+                              decoration: const BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('pics/NB.png'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _tutorialStep == 6 ? 'Begin' : 'Next',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    decoration: TextDecoration.none,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      if (_tutorialStep == 5)
-                        Positioned(
-                          top: 85,
-                          left: 290,
-                          child: Image.asset(
-                            'pics/bell.png',
-                            color: const Color.fromARGB(174, 250, 215, 118),
-                            width: 20,
-                            height: 20,
+                        if (_tutorialStep == 5)
+                          Positioned(
+                            top: 85,
+                            left: 290,
+                            child: Image.asset(
+                              'pics/bell.png',
+                              color: const Color.fromARGB(174, 250, 215, 118),
+                              width: 20,
+                              height: 20,
+                            ),
                           ),
-                        ),
-                      if (_tutorialStep == 6)
-                        Positioned(
-                          top: 85,
-                          left: 320,
-                          child: Image.asset(
-                            'pics/shopping-bag.png',
-                            color: const Color.fromARGB(174, 250, 215, 118),
-                            width: 20,
-                            height: 20,
+                        if (_tutorialStep == 6)
+                          Positioned(
+                            top: 85,
+                            left: 320,
+                            child: Image.asset(
+                              'pics/shopping-bag.png',
+                              color: const Color.fromARGB(174, 250, 215, 118),
+                              width: 20,
+                              height: 20,
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 
