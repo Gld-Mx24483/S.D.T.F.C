@@ -1,3 +1,4 @@
+import 'package:client/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -57,8 +58,10 @@ class SignOutModal extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Add sign out logic here
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MyApp()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFBE5AA),
