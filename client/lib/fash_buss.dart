@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+import 'bottom_navigation_bar.dart';
+
 class FashBussScreen extends StatefulWidget {
   const FashBussScreen({super.key});
 
@@ -137,6 +139,13 @@ class _FashBussScreenState extends State<FashBussScreen> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        onItemTapped: (label) {
+          // Handle bottom navigation bar item taps
+        },
+        tutorialStep: 0,
+        selectedLabel: '',
       ),
     );
   }
