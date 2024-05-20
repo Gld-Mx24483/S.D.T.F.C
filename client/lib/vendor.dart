@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'ven_ver.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'ven_ver.dart';
 
 class VendorScreen extends StatefulWidget {
   const VendorScreen({super.key});
@@ -15,6 +16,7 @@ class VendorScreenState extends State<VendorScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController shopController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   @override
@@ -22,6 +24,7 @@ class VendorScreenState extends State<VendorScreen> {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
+    shopController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -293,6 +296,47 @@ class VendorScreenState extends State<VendorScreen> {
                         ),
                       ),
                       errorText: emailErrorVisible ? emailErrorMessage : null,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Shop Name',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                      letterSpacing: -0.019,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: shopController,
+                    decoration: InputDecoration(
+                      fillColor: const Color.fromARGB(45, 215, 215, 215),
+                      filled: true,
+                      hintText: 'Enter your shop name',
+                      hintStyle: const TextStyle(
+                        color: Color(0xFFD9D9D9),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFD8D7D7),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFD8D7D7),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF621B2B),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
