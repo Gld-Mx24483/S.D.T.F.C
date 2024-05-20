@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'fash_buss.dart';
 import 'fash_my_acct.dart'; // Import the My Account screen
 
 class FashProfileScreen extends StatelessWidget {
@@ -143,7 +144,11 @@ class FashProfileScreen extends StatelessWidget {
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Business Details',
                 onTap: () {
-                  // Add navigation or other logic here if needed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashBussScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),

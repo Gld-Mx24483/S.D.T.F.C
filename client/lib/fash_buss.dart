@@ -1,51 +1,34 @@
-//fash_my_acct.dart
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart'; // Add this line
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-import 'bottom_navigation_bar.dart';
-
-class FashMyAcctScreen extends StatefulWidget {
-  const FashMyAcctScreen({super.key});
+class FashBussScreen extends StatefulWidget {
+  const FashBussScreen({super.key});
 
   @override
-  State<FashMyAcctScreen> createState() => _FashMyAcctScreenState();
+  State<FashBussScreen> createState() => _FashBussScreenState();
 }
 
-class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
-  final TextEditingController _firstNameController =
-      TextEditingController(text: 'Sell');
-  final TextEditingController _lastNameController =
-      TextEditingController(text: 'Dome');
-  final TextEditingController _emailController =
-      TextEditingController(text: 'selldome@gmail.com');
-  final TextEditingController _phoneNumberController =
-      TextEditingController(text: '8166767196');
-
-  PickedFile? _imageFile; // Add this line to hold the picked image
+class _FashBussScreenState extends State<FashBussScreen> {
+  final TextEditingController _businessNameController =
+      TextEditingController(text: 'Hemstofit');
+  final TextEditingController _businessAddressController =
+      TextEditingController(text: '2 William drive');
+  final TextEditingController _businessEmailController =
+      TextEditingController(text: 'hemstofit@gmail.com');
+  final TextEditingController _businessDescriptionController =
+      TextEditingController(text: 'Fabrics');
+  final TextEditingController _businessPhoneNumberController =
+      TextEditingController(text: '8106775111');
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneNumberController.dispose();
+    _businessNameController.dispose();
+    _businessAddressController.dispose();
+    _businessEmailController.dispose();
+    _businessDescriptionController.dispose();
+    _businessPhoneNumberController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    // Show a dialog to allow the user to choose between camera and gallery
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _imageFile = PickedFile(image.path);
-      });
-    }
   }
 
   @override
@@ -82,7 +65,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                         ),
                       ),
                       Text(
-                        'My Account',
+                        'Business Details',
                         style: GoogleFonts.nunito(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -95,53 +78,32 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                 ),
               ),
               const SizedBox(height: 33),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFDADADA),
-                  ),
-                  child: _imageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
-                          child: Image.file(
-                            File(_imageFile!.path),
-                            width: 90,
-                            height: 90,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                ),
-              ),
-              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     _buildTextField(
-                      label: 'First Name',
-                      controller: _firstNameController,
-                      hintText: 'Enter your first name',
+                      label: 'Business Name',
+                      controller: _businessNameController,
+                      hintText: 'Enter your business name',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
-                      label: 'Last Name',
-                      controller: _lastNameController,
-                      hintText: 'Enter your last name',
+                      label: 'Business Address',
+                      controller: _businessAddressController,
+                      hintText: 'Enter your business address',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
-                      label: 'Email Address',
-                      controller: _emailController,
-                      hintText: 'Enter your email address',
+                      label: 'Business Email',
+                      controller: _businessEmailController,
+                      hintText: 'Enter your business email',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      label: 'Business Description',
+                      controller: _businessDescriptionController,
+                      hintText: 'Enter your business description',
                     ),
                     const SizedBox(height: 16),
                     _buildPhoneTextField(),
@@ -175,13 +137,6 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onItemTapped: (label) {
-          // Handle bottom navigation bar item taps
-        },
-        tutorialStep: 0,
-        selectedLabel: '',
       ),
     );
   }
@@ -243,7 +198,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Phone Number',
+          'Business Phone Number',
           style: GoogleFonts.nunito(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -270,14 +225,14 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
             color: Colors.black,
           ),
           initialValue: PhoneNumber(isoCode: 'NG'),
-          textFieldController: _phoneNumberController,
+          textFieldController: _businessPhoneNumberController,
           formatInput: false,
           keyboardType: const TextInputType.numberWithOptions(
               signed: true, decimal: true),
           inputDecoration: InputDecoration(
             fillColor: const Color.fromARGB(45, 215, 215, 215),
             filled: true,
-            hintText: 'Enter your phone number',
+            hintText: 'Enter your business phone number',
             hintStyle: const TextStyle(
               color: Color(0xFFD9D9D9),
             ),
