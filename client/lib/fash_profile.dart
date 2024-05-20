@@ -5,8 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'fash_buss.dart';
 import 'fash_loc.dart';
 import 'fash_my_acct.dart';
+import 'fash_nots.dart';
 import 'fash_pas.dart';
 import 'fash_verification.dart';
+import 'sign_out.dart';
 
 class FashProfileScreen extends StatelessWidget {
   const FashProfileScreen({super.key});
@@ -198,7 +200,11 @@ class FashProfileScreen extends StatelessWidget {
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Notifications',
                 onTap: () {
-                  // Add navigation or other logic here if needed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashNotsScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),
@@ -215,6 +221,21 @@ class FashProfileScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
+              _buildFrameButton(
+                icon: Icons.exit_to_app,
+                iconColor: const Color(0xFFE53935),
+                text: 'Sign Out',
+                textColor: const Color(0xFFE53935),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const SignOutModal();
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -226,6 +247,7 @@ class FashProfileScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required String text,
+    Color? textColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -260,7 +282,7 @@ class FashProfileScreen extends StatelessWidget {
                 style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF111827),
+                  color: textColor ?? const Color(0xFF111827),
                 ),
               ),
               const Spacer(),
@@ -270,9 +292,9 @@ class FashProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_forward_ios,
-                  color: Colors.black,
+                  color: textColor ?? const Color(0xFF111827),
                   size: 12,
                 ),
               ),

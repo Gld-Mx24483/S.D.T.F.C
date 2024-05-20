@@ -104,7 +104,7 @@ class _FashLocScreenState extends State<FashLocScreen> {
                       controller: _storeAddressController,
                       hintText: 'Enter store address',
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 62),
                     GestureDetector(
                       onTap: () {
                         // Add Location logic
