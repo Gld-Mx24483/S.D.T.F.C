@@ -6,6 +6,7 @@ import 'fash_buss.dart';
 import 'fash_loc.dart';
 import 'fash_my_acct.dart';
 import 'fash_pas.dart';
+import 'fash_verification.dart';
 
 class FashProfileScreen extends StatelessWidget {
   const FashProfileScreen({super.key});
@@ -159,7 +160,11 @@ class FashProfileScreen extends StatelessWidget {
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Verification',
                 onTap: () {
-                  // Add navigation or other logic here if needed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashVerificationScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),
