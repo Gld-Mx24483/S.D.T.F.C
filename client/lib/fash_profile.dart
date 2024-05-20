@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'fash_buss.dart';
-import 'fash_my_acct.dart'; // Import the My Account screen
+import 'fash_my_acct.dart';
+import 'fash_pas.dart';
 
 class FashProfileScreen extends StatelessWidget {
   const FashProfileScreen({super.key});
@@ -166,7 +167,11 @@ class FashProfileScreen extends StatelessWidget {
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Change Password',
                 onTap: () {
-                  // Add navigation or other logic here if needed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashPasScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),
