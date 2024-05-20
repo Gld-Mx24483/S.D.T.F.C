@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -40,13 +41,12 @@ class CartScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Cart',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF232323),
+                        color: const Color(0xFF232323),
                       ),
                     ),
                     const SizedBox(width: 44),
@@ -55,13 +55,12 @@ class CartScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 371),
-            const Text(
+            Text(
               'No Cart',
-              style: TextStyle(
-                fontFamily: 'Nunito',
+              style: GoogleFonts.nunito(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFFA6A6A6),
+                color: const Color(0xFFA6A6A6),
               ),
             ),
           ],

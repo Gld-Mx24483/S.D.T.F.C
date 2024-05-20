@@ -1,5 +1,6 @@
 //fash_shop.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FashShopScreen extends StatelessWidget {
   const FashShopScreen({super.key});
@@ -37,13 +38,12 @@ class FashShopScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Shop',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF232323),
+                        color: const Color(0xFF232323),
                       ),
                     ),
                     const SizedBox(width: 44),
@@ -72,8 +72,7 @@ class FashShopScreen extends StatelessWidget {
                 child: Center(
                   child: Text(
                     'Add Product',
-                    style: TextStyle(
-                      fontFamily: 'Nunito',
+                    style: GoogleFonts.nunito(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF000000).withOpacity(1),
