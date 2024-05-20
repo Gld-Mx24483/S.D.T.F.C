@@ -59,7 +59,7 @@ class FashProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 33),
               Container(
-                width: 326,
+                width: 345,
                 height: 88,
                 decoration: const BoxDecoration(
                   border: Border(
@@ -80,50 +80,53 @@ class FashProfileScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       color: const Color(0xFFEBEBEB).withOpacity(0.3),
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50.03,
-                          height: 56,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFFC4C4C4),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 50.03,
+                            height: 56,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFC4C4C4),
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              size: 30,
+                              color: Colors.white,
+                            ),
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            size: 30,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 14.43),
-                        Container(
-                          width: 109.67,
-                          height: 46,
-                          padding: const EdgeInsets.only(right: 4.67),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'SellDome Tech',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF111827),
+                          const SizedBox(width: 14.43),
+                          Container(
+                            width: 109.67,
+                            height: 46,
+                            padding: const EdgeInsets.only(right: 4.67),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'SellDome Tech',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF111827),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '0123-4567-890',
-                                style: GoogleFonts.nunito(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: const Color(0xFFA6A6A6),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '0123-4567-890',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: const Color(0xFFA6A6A6),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

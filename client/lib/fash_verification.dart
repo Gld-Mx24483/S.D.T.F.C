@@ -1,4 +1,3 @@
-// fash_verification.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -104,13 +103,33 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
                       controller: _officialEmailController,
                       hintText: 'Enter your official email address',
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 36),
                     _buildDropdownField(
                       label: 'Proof of Identification',
                       value: _selectedIdType,
-                      items: [
-                        'International Passport',
-                        'National Identification Number'
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'International Passport',
+                          child: Text(
+                            'International Passport',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'National Identification Number',
+                          child: Text(
+                            'National Identification Number',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                       ],
                       onChanged: (String? newValue) {
                         setState(() {
@@ -120,18 +139,17 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildUploadButton(
-                      label: 'Upload Proof of Identification',
                       onTap: _pickIdFile,
                       file: _idFile,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 36),
                     _buildUploadButton(
                       label: 'Upload Proof of Address',
                       onTap: _pickAddressFile,
                       file: _addressFile,
                     ),
                     const SizedBox(height: 32),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 50),
                     GestureDetector(
                       onTap: () {
                         // Add new location logic
@@ -143,13 +161,16 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
                           color: const Color(0xFFFBE5AA),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Center(
-                          child: Text(
-                            'Add Location',
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF621B2B),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Center(
+                            child: Text(
+                              'Save',
+                              style: GoogleFonts.nunito(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF621B2B),
+                              ),
                             ),
                           ),
                         ),
@@ -227,7 +248,7 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
   Widget _buildDropdownField({
     required String label,
     required String value,
-    required List<String> items,
+    required List<DropdownMenuItem<String>> items,
     required ValueChanged<String?> onChanged,
   }) {
     return Column(
@@ -251,18 +272,21 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: const Color(0xFFD8D7D7)),
           ),
-          child: DropdownButton<String>(
-            value: value,
-            isExpanded: true,
-            underline: const SizedBox(),
-            items: items.map<DropdownMenuItem<String>>((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
-            onChanged: onChanged,
-            icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF621B2B)),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              items: items,
+              onChanged: onChanged,
+              icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF621B2B)),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+              dropdownColor: Colors.white,
+              elevation: 2,
+            ),
           ),
         ),
       ],
@@ -270,24 +294,25 @@ class _FashVerificationScreenState extends State<FashVerificationScreen> {
   }
 
   Widget _buildUploadButton({
-    required String label,
+    String? label,
     required VoidCallback onTap,
     required PickedFile? file,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.nunito(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: -0.019,
-            color: Colors.black,
+        if (label != null)
+          Text(
+            label,
+            style: GoogleFonts.nunito(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              letterSpacing: -0.019,
+              color: Colors.black,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
+        if (label != null) const SizedBox(height: 10),
         GestureDetector(
           onTap: onTap,
           child: Container(

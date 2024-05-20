@@ -1,4 +1,3 @@
-//fash_pas.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -38,7 +37,8 @@ class _FashPasScreenState extends State<FashPasScreen> {
   }
 
   bool _passwordsMatch() {
-    return _newPasswordController.text == _confirmPasswordController.text;
+    return _newPasswordController.text.isNotEmpty &&
+        _newPasswordController.text == _confirmPasswordController.text;
   }
 
   @override
