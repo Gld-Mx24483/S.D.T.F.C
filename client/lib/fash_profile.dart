@@ -1,5 +1,8 @@
+// fash_profile.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'fash_my_acct.dart'; // Import the My Account screen
 
 class FashProfileScreen extends StatelessWidget {
   const FashProfileScreen({super.key});
@@ -126,42 +129,67 @@ class FashProfileScreen extends StatelessWidget {
                 icon: Icons.person,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'My Account',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FashMyAcctScreen()),
+                  );
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.business_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Business Details',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
-                icon: Icons.verified_user_outlined,
+                icon: Icons.verified_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Verification',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.lock,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Change Password',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.inventory_2_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Inventory',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.notifications_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Notifications',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.location_on_outlined,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Add New Location',
+                onTap: () {
+                  // Add navigation or other logic here if needed
+                },
               ),
               const SizedBox(height: 20),
             ],
@@ -175,54 +203,58 @@ class FashProfileScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required String text,
+    required VoidCallback onTap,
   }) {
-    return Container(
-      width: 326,
-      height: 72,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color(0xFFEBEBEB).withOpacity(0.3),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color(0xFFF0F5FF),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 326,
+        height: 72,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: const Color(0xFFEBEBEB).withOpacity(0.3),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFFF0F5FF),
+                ),
+                child: Icon(
+                  icon,
+                  color: iconColor,
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 20,
+              const SizedBox(width: 20.73),
+              Text(
+                text,
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF111827),
+                ),
               ),
-            ),
-            const SizedBox(width: 20.73),
-            Text(
-              text,
-              style: GoogleFonts.nunito(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF111827),
+              const Spacer(),
+              Container(
+                width: 21.5,
+                height: 24,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.black,
+                  size: 12,
+                ),
               ),
-            ),
-            const Spacer(),
-            Container(
-              width: 21.5,
-              height: 24,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.black,
-                size: 12,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
