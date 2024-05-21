@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'fash_buy_pts.dart';
-import 'fash_snd_pts.dart';
 import 'loading_modal.dart';
 import 'trans_hist.dart';
+import 'vendor_buy_pts.dart';
+import 'vendor_snd_pts.dart';
 
 class VendorWalletScreen extends StatefulWidget {
   const VendorWalletScreen({super.key});
@@ -302,7 +302,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const BuyPointsPage(),
+                        builder: (context) => const VendorBuyPointsPage(),
                       ),
                     );
                   },
@@ -904,7 +904,8 @@ class _WalletScreenState extends State<VendorWalletScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SendPointsSuccessPage(
+                                    builder: (context) =>
+                                        VendorSendPointsSuccessPage(
                                       pointsTransferred: pointsTransferred,
                                     ),
                                   ),
