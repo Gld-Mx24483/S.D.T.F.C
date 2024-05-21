@@ -1,5 +1,5 @@
-// designer_main_screen.dart
-// ignore_for_file: deprecated_member_use
+// vendor_main_screen.dart
+// ignore_for_file: deprecated_member_use, unused_element
 
 import 'dart:async';
 
@@ -7,28 +7,25 @@ import 'package:client/sign_out.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'bottom_navigation_bar.dart';
 import 'fash_dgn_dash.dart';
-import 'fash_dgn_wallet.dart';
-import 'fash_profile.dart';
-import 'fash_shop.dart';
-import 'no_record_screen.dart';
+import 'vendor_bottom_navigation_bar.dart';
+import 'vendor_no_record_screen.dart';
 
-class DesignerMainScreen extends StatefulWidget {
+class VendorMainScreen extends StatefulWidget {
   final bool isNewDesigner;
   final String initialPage;
 
-  const DesignerMainScreen({
+  const VendorMainScreen({
     super.key,
     this.isNewDesigner = false,
     this.initialPage = 'Market Place',
   });
 
   @override
-  State<DesignerMainScreen> createState() => _DesignerMainScreenState();
+  State<VendorMainScreen> createState() => _VendorMainScreenState();
 }
 
-class _DesignerMainScreenState extends State<DesignerMainScreen>
+class _VendorMainScreenState extends State<VendorMainScreen>
     with TickerProviderStateMixin {
   late Widget _currentScreen;
   bool _showTutorial = false;
@@ -77,11 +74,11 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   Widget _getInitialScreen() {
     switch (widget.initialPage) {
       case 'Wallet':
-        return const WalletScreen();
+      // return const WalletScreen();
       case 'Market Place':
       default:
         return widget.isNewDesigner
-            ? const NoRecordScreen(key: ValueKey('NoRecordScreen'))
+            ? const VendorNoRecordScreen(key: ValueKey('VendorNoRecordScreen'))
             : const DesignerDashboard();
     }
   }
@@ -93,21 +90,21 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
     super.dispose();
   }
 
-  void _onBottomNavigationBarItemTapped(String label) {
+  void _onVendorBottomNavigationBarItemTapped(String label) {
     setState(() {
       _selectedLabel = label;
       switch (label) {
         case 'Market Place':
-          _currentScreen = const DesignerDashboard();
+          // _currentScreen = const DesignerDashboard();
           break;
         case 'Wallet':
-          _currentScreen = const WalletScreen();
+          // _currentScreen = const WalletScreen();
           break;
         case 'Shop':
-          _currentScreen = const FashShopScreen();
+          // _currentScreen = const FashShopScreen();
           break;
         case 'Profile':
-          _currentScreen = const FashProfileScreen();
+          // _currentScreen = const FashProfileScreen();
           break;
       }
     });
@@ -116,7 +113,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
   void _nextTutorialStep() {
     setState(() {
       if (_tutorialStep == 6) {
-        _currentScreen = const DesignerDashboard();
+        // _currentScreen = const DesignerDashboard();
         _showTutorial = false;
       } else {
         _tutorialStep++;
@@ -141,8 +138,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
         children: [
           Scaffold(
             body: _currentScreen,
-            bottomNavigationBar: CustomBottomNavigationBar(
-              onItemTapped: _onBottomNavigationBarItemTapped,
+            bottomNavigationBar: VendorBottomNavigationBar(
+              onItemTapped: _onVendorBottomNavigationBarItemTapped,
               tutorialStep: _tutorialStep,
               selectedLabel: _selectedLabel,
             ),
@@ -281,16 +278,17 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
       case 2:
         return _buildTutorialBubble(
           key: const ValueKey('tutorialStep2'),
-          top: 653,
-          left: 130,
-          text: 'Connect with your vendor',
+          top: 633,
+          left: 105,
+          text: 'Connect with your Fashion Designer',
+          width: 150,
         );
       case 3:
         return _buildTutorialBubble(
           key: const ValueKey('tutorialStep3'),
           top: 673,
-          left: 198,
-          text: 'My Products Uploaded',
+          left: 203,
+          text: 'My added Products',
         );
       case 4:
         return _buildTutorialBubble(
@@ -330,6 +328,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
     required String text,
     double triangleOffset = 0,
     bool isAbove = false,
+    double width = 100, // Add width parameter
+    double height = 50, // Add height parameter
   }) {
     return Stack(
       key: key,
@@ -338,7 +338,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           top: isAbove ? top + 30 : top,
           left: left,
           child: Container(
-            width: 100,
+            width: width, // Use width parameter
+            height: height, // Use height parameter
             decoration: BoxDecoration(
               color: const Color(0xFF621B2B),
               borderRadius: BorderRadius.circular(8),
@@ -359,8 +360,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
           ),
         ),
         Positioned(
-          top: isAbove ? top : top + 35,
-          left: left + (100 / 2) - 10 + triangleOffset,
+          top: isAbove ? top : top + 45,
+          left: left + (width / 2) - 10 + triangleOffset, // Use width parameter
           child: CustomPaint(
             size: const Size(20, 15),
             painter: isAbove

@@ -1,9 +1,11 @@
 //log_in.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'designer_main_screen.dart';
 import 'fgt.dart';
 import 'role.dart';
-import 'designer_main_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'vendor_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -50,6 +52,24 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else if (email == 'vendor@gmail.com' && password == '1234') {
       // Add vendor login logic here
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const VendorMainScreen(
+                  initialPage: '',
+                )),
+      );
+    } else if (email == 'newvendor@gmail.com' && password == '1234') {
+      // Navigate to VendorMainScreen for new vendors
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const VendorMainScreen(
+                  isNewDesigner:
+                      true, // Depending on your logic, you might need to adjust this
+                  initialPage: '',
+                )),
+      );
     } else {
       // Login failed
       setState(() {
