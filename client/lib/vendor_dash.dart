@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart'; // Add this line
+import 'package:image_picker/image_picker.dart';
 
 import 'notification.dart';
 
@@ -15,7 +15,7 @@ class VendorDashboard extends StatefulWidget {
 
 class _VendorDashboardState extends State<VendorDashboard> {
   String _greeting = '';
-  XFile? _selectedImage; // Add this line
+  XFile? _selectedImage;
 
   @override
   void initState() {
@@ -43,6 +43,62 @@ class _VendorDashboardState extends State<VendorDashboard> {
         _selectedImage = pickedImage;
       });
     }
+  }
+
+  void _showLogoOptions(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Logo Options',
+          style: GoogleFonts.nunito(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'What would you like to do with the logo?',
+          style: GoogleFonts.nunito(
+            fontSize: 16,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _selectedImage = null;
+              });
+            },
+            child: Text(
+              'Delete Logo',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                color: Colors.red,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: _selectImage,
+            child: Text(
+              'Change Logo',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -121,39 +177,46 @@ class _VendorDashboardState extends State<VendorDashboard> {
                 ),
               ),
               const SizedBox(height: 10),
-              GestureDetector(
-                // Add this
-                onTap: _selectImage, // Add this
-                child: Container(
-                  // Modify this
-                  width: 335.01,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEBEBEB).withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Upload',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        height: 1.5,
-                        letterSpacing: -0.019,
-                        color: const Color(0xFF621B2B),
+              if (_selectedImage == null)
+                GestureDetector(
+                  onTap: _selectImage,
+                  child: Container(
+                    width: 335.01,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Upload',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          height: 1.5,
+                          letterSpacing: -0.019,
+                          color: const Color(0xFF621B2B),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              if (_selectedImage != null) // Add this
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.file(
-                    File(_selectedImage!.path),
-                    width: 200,
-                    height: 200,
-                    fit: BoxFit.cover,
+                )
+              else
+                GestureDetector(
+                  onTap: () => _showLogoOptions(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: FileImage(File(_selectedImage!.path)),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
                   ),
                 ),
               const SizedBox(height: 16),
