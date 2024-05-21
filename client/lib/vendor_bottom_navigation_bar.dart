@@ -44,24 +44,25 @@ class _VendorBottomNavigationBarState extends State<VendorBottomNavigationBar> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildIconContainer(
-              'Market Place',
+              'Shop',
               'pics/shop.png',
+              padding: const EdgeInsets.only(left: 17),
             ),
             _buildIconContainer(
               'Wallet',
               'pics/wallet.png',
-              padding: const EdgeInsets.only(right: 13),
+              padding: const EdgeInsets.only(right: 20, left: 10),
             ),
             _buildNewIconButton(),
             _buildIconContainer(
               'Products',
               'pics/insight.png',
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 8),
             ),
             _buildIconContainer(
               'Profile',
               'pics/profile.png',
-              padding: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.only(right: 8),
             ),
           ],
         ),
@@ -120,11 +121,11 @@ class _VendorBottomNavigationBarState extends State<VendorBottomNavigationBar> {
 
   int _getDescriptionStepForLabel(String label) {
     switch (label) {
-      case 'Market Place':
+      case 'Shop':
         return 0;
       case 'Wallet':
         return 1;
-      case 'Shop':
+      case 'Products':
         return 3;
       case 'Profile':
         return 4;

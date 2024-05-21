@@ -7,8 +7,8 @@ import 'package:client/sign_out.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'fash_dgn_dash.dart';
 import 'vendor_bottom_navigation_bar.dart';
+import 'vendor_dash.dart';
 import 'vendor_no_record_screen.dart';
 
 class VendorMainScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class VendorMainScreen extends StatefulWidget {
   const VendorMainScreen({
     super.key,
     this.isNewDesigner = false,
-    this.initialPage = 'Market Place',
+    this.initialPage = 'Shop',
   });
 
   @override
@@ -75,11 +75,11 @@ class _VendorMainScreenState extends State<VendorMainScreen>
     switch (widget.initialPage) {
       case 'Wallet':
       // return const WalletScreen();
-      case 'Market Place':
+      case 'Shop':
       default:
         return widget.isNewDesigner
             ? const VendorNoRecordScreen(key: ValueKey('VendorNoRecordScreen'))
-            : const DesignerDashboard();
+            : const VendorDashboard();
     }
   }
 
@@ -94,13 +94,13 @@ class _VendorMainScreenState extends State<VendorMainScreen>
     setState(() {
       _selectedLabel = label;
       switch (label) {
-        case 'Market Place':
-          // _currentScreen = const DesignerDashboard();
+        case 'Shop':
+          _currentScreen = const VendorDashboard();
           break;
         case 'Wallet':
           // _currentScreen = const WalletScreen();
           break;
-        case 'Shop':
+        case 'Products':
           // _currentScreen = const FashShopScreen();
           break;
         case 'Profile':
@@ -113,7 +113,7 @@ class _VendorMainScreenState extends State<VendorMainScreen>
   void _nextTutorialStep() {
     setState(() {
       if (_tutorialStep == 5) {
-        // _currentScreen = const DesignerDashboard();
+        _currentScreen = const VendorDashboard();
         _showTutorial = false;
       } else {
         _tutorialStep++;
@@ -251,14 +251,14 @@ class _VendorMainScreenState extends State<VendorMainScreen>
           key: const ValueKey('tutorialStep0'),
           top: 673,
           left: 5,
-          text: 'View Market Place',
+          text: 'View Shop Info',
           triangleOffset: -12,
         );
       case 1:
         return _buildTutorialBubble(
           key: const ValueKey('tutorialStep1'),
           top: 673,
-          left: 65,
+          left: 53,
           text: 'For funding and buying points',
         );
       case 2:
