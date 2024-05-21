@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'vendor_bottom_navigation_bar.dart';
 import 'vendor_dash.dart';
 import 'vendor_no_record_screen.dart';
+import 'vendor_wallet.dart';
 
 class VendorMainScreen extends StatefulWidget {
   final bool isNewDesigner;
@@ -98,7 +99,7 @@ class _VendorMainScreenState extends State<VendorMainScreen>
           _currentScreen = const VendorDashboard();
           break;
         case 'Wallet':
-          // _currentScreen = const WalletScreen();
+          _currentScreen = const VendorWalletScreen();
           break;
         case 'Products':
           // _currentScreen = const FashShopScreen();

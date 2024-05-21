@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'notification.dart';
+import 'vendor_notification.dart';
 
 class VendorDashboard extends StatefulWidget {
   const VendorDashboard({super.key});
@@ -147,7 +147,8 @@ class _VendorDashboardState extends State<VendorDashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const NotificationScreen(),
+                              builder: (context) =>
+                                  const VendorNotificationScreen(),
                             ),
                           );
                         },
