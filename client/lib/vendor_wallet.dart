@@ -832,7 +832,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
                       height: 16,
                       margin: const EdgeInsets.only(top: 20),
                       child: Text(
-                        'Sender Account Password',
+                        'Password',
                         style: GoogleFonts.nunito(
                           fontSize: 13,
                           fontWeight: FontWeight.w400,

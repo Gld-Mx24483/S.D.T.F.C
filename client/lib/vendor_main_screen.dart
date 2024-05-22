@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'vendor_bottom_navigation_bar.dart';
 import 'vendor_dash.dart';
 import 'vendor_no_record_screen.dart';
+import 'vendor_profile.dart';
 import 'vendor_wallet.dart';
 
 class VendorMainScreen extends StatefulWidget {
@@ -102,10 +103,10 @@ class _VendorMainScreenState extends State<VendorMainScreen>
           _currentScreen = const VendorWalletScreen();
           break;
         case 'Products':
-          // _currentScreen = const FashShopScreen();
+          // _currentScreen = const VendorhopScreen();
           break;
         case 'Profile':
-          // _currentScreen = const FashProfileScreen();
+          _currentScreen = const VendorProfileScreen();
           break;
       }
     });
