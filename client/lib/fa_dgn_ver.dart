@@ -694,14 +694,19 @@
 // }
 
 // fa_dgn_ver.dart
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+
 import 'log_in.dart';
 
 class FashVerScreen extends StatefulWidget {
   final String emailAddress;
+  final String otp;
 
-  const FashVerScreen({super.key, required this.emailAddress});
+  // const FashVerScreen({super.key, required this.emailAddress});
+  const FashVerScreen(
+      {super.key, required this.emailAddress, required this.otp});
 
   @override
   State<FashVerScreen> createState() => _FashVerScreenState();
@@ -744,14 +749,34 @@ class _FashVerScreenState extends State<FashVerScreen> {
     });
   }
 
+  // void _validateOTPAndProceed() {
+  //   String enteredOTP = '';
+  //   for (var controller in _otpControllers) {
+  //     enteredOTP += controller.text;
+  //   }
+
+  //   // Hardcoded OTP value for testing
+  //   const validOTP = '000000';
+
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => LoadingModal(
+  //       showNextModal: enteredOTP == validOTP
+  //           ? _showVerificationSuccessModal
+  //           : _showVerificationFailedModal,
+  //     ),
+  //   );
+  // }
+
+  // In the _validateOTPAndProceed method
   void _validateOTPAndProceed() {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
       enteredOTP += controller.text;
     }
 
-    // Hardcoded OTP value for testing
-    const validOTP = '000000';
+    String validOTP = widget.otp;
 
     showDialog(
       context: context,

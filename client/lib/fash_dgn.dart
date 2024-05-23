@@ -3,6 +3,7 @@
 //-------------------------API SERVICE------------------------------------//
 // //fash_dgn.dart
 // import 'package:flutter/material.dart';
+
 // import 'fa_dgn_ver.dart';
 
 // class FashionDesignerScreen extends StatefulWidget {
@@ -582,10 +583,16 @@
 //------------------------------------------------------------------------//
 //------------------------------------------------------------------------//
 
+// ignore_for_file: avoid_print, unused_local_variable
+
 //fash_dgn.dart
+import 'dart:math';
+
+import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
-import 'fa_dgn_ver.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'fa_dgn_ver.dart';
 
 class FashionDesignerScreen extends StatefulWidget {
   const FashionDesignerScreen({super.key});
@@ -650,6 +657,12 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
       return false;
     }
 
+    // Generate OTP
+    String otp = _generateOTP();
+
+    // Send email with OTP
+    _sendEmailWithOTP(otp);
+
     return true;
   }
 
@@ -686,6 +699,36 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
       return 'Email should have a valid domain .extension';
     }
     return '';
+  }
+
+  String _generateOTP() {
+    // Generate a random 6-digit OTP
+    return (Random().nextInt(900000) + 100000).toString();
+  }
+
+  void _sendEmailWithOTP(String otp) async {
+    Map<String, dynamic> templateParams = {
+      'firstname': firstNameController.text,
+      'lastname': lastNameController.text,
+      'email': emailController.text, // Add this line
+      'message':
+          'Hello ${firstNameController.text} ${lastNameController.text}, welcome, here is your OTP: $otp',
+    };
+
+    try {
+      await EmailJS.send(
+        'service_rgvnw3a',
+        'template_8nihdqb',
+        templateParams,
+        const Options(
+          publicKey: 'Y3vM6rPSqkT_78sNU',
+          privateKey: 'FqqqBbPwWL0NYv09OdSuE',
+        ),
+      );
+      print('Email sent successfully');
+    } catch (e) {
+      print('Error sending email: $e');
+    }
   }
 
   @override
@@ -1075,11 +1118,13 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
               child: GestureDetector(
                 onTap: () {
                   if (_isFormValid()) {
+                    String otp = _generateOTP(); // Generate OTP here
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => FashVerScreen(
                           emailAddress: emailController.text,
+                          otp: otp,
                         ),
                       ),
                     );

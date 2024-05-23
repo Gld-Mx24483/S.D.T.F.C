@@ -53,6 +53,9 @@ dependencies:
   path_provider: ^2.1.3
   pdf: ^3.10.8
   open_file: ^3.3.2
+  printing: ^5.12.0
+  emailjs: ^1.3.0
+  pin_code_fields: ^8.0.1
 
 dev_dependencies:
   flutter_test:
@@ -100,6 +103,7 @@ flutter:
     - pics/speechbubble.png
     - pics/NB.png
     - pics/coin.png
+    - pics/check.png
     - pics/yellow-bell.png
     - pics/yellow-shopping-bag.png
 

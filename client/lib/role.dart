@@ -1,8 +1,9 @@
 //role.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'fash_dgn.dart';
 import 'vendor.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class RoleScreen extends StatefulWidget {
   const RoleScreen({super.key});

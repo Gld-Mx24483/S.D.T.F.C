@@ -1,4 +1,6 @@
 //fash_dgn_wallet.dart
+// ignore_for_file: use_build_context_synchronously, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'loading_modal.dart';
 import 'trans_hist.dart';
 import 'vendor_buy_pts.dart';
+import 'vendor_payment_receipt.dart';
 import 'vendor_snd_pts.dart';
 
 class VendorWalletScreen extends StatefulWidget {
@@ -941,7 +944,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
   }
 
   void initiatePaystackPayment(BuildContext context) async {
-    const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
+    const secretKey = 'sk_test_17b7c77bf4e8f219d2dd44cc4f9a5c3f0b87db7a';
     final amount = double.parse(_amountController.text) * 100;
     final currency =
         _isNGNSelected ? PaystackCurrency.ngn : PaystackCurrency.usd;
@@ -949,7 +952,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
-      email: 'selldometech@gmail.com',
+      email: 'israeltoki7@gmail.com',
       amount: amount,
       currency: currency,
       channel: [
@@ -966,20 +969,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
     final initializedTransaction =
         await PaymentService.initializeTransaction(request);
 
-    if (!mounted) return;
-
-    if (!initializedTransaction.status) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Colors.red,
-        content: Text(initializedTransaction.message),
-      ));
-
-      return;
-    }
-
     await PaymentService.showPaymentModal(
-      // ignore: use_build_context_synchronously
       context,
       transaction: initializedTransaction,
     );
@@ -989,18 +979,21 @@ class _WalletScreenState extends State<VendorWalletScreen> {
       initializedTransaction.data?.reference ?? request.reference,
     );
 
-    if (response.status) {
-      // Payment successful, handle the response
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('Payment successful!'),
+    if (response.status == true) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VendorPaymentReceiptPage(
+            referenceNumber: response.data.reference,
+            amount: amount / 100, // Convert to Naira from Kobo
+            customerEmail: request.email,
+            paidOn: DateTime.now(),
+            accountNumber:
+                '3042388293', // Replace with the actual account number
+          ),
         ),
       );
     } else {
-      // Payment failed, handle the error
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
