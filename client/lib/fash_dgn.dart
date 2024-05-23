@@ -710,7 +710,7 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
     Map<String, dynamic> templateParams = {
       'firstname': firstNameController.text,
       'lastname': lastNameController.text,
-      'email': emailController.text, // Add this line
+      'email': emailController.text,
       'message':
           'Hello ${firstNameController.text} ${lastNameController.text}, welcome, here is your OTP: $otp',
     };
