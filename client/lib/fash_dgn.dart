@@ -1084,6 +1084,8 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                       MaterialPageRoute(
                         builder: (context) => FashVerScreen(
                           emailAddress: emailController.text,
+                          firstNameController: firstNameController,
+                          lastNameController: lastNameController,
                           otp: '',
                         ),
                       ),

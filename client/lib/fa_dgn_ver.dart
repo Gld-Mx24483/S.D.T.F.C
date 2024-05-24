@@ -707,11 +707,15 @@ import 'log_in.dart';
 class FashVerScreen extends StatefulWidget {
   final String emailAddress;
   final String otp;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
 
   const FashVerScreen({
     super.key,
     required this.emailAddress,
     required this.otp,
+    required this.firstNameController,
+    required this.lastNameController,
   });
 
   @override
@@ -721,6 +725,8 @@ class FashVerScreen extends StatefulWidget {
 class _FashVerScreenState extends State<FashVerScreen> {
   late final String _emailAddress;
   late final String _otp;
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
   final List<TextEditingController> _otpControllers =
       List.generate(6, (_) => TextEditingController());
   late Timer _timer;
@@ -733,6 +739,8 @@ class _FashVerScreenState extends State<FashVerScreen> {
     super.initState();
     _emailAddress = widget.emailAddress;
     _otp = widget.otp;
+    _firstNameController = widget.firstNameController;
+    _lastNameController = widget.lastNameController;
     String generatedOTP = _generateOTP();
     _sendEmailWithOTP(generatedOTP);
     _startCountdown();
@@ -770,7 +778,8 @@ class _FashVerScreenState extends State<FashVerScreen> {
     Map<String, dynamic> templateParams = {
       'email': _emailAddress,
       'otp': otp,
-      'message': 'Your OTP is: $otp',
+      'message':
+          'Hi ${_firstNameController.text} ${_lastNameController.text}, \n\nTo finish logging in to your Selldome account, enter this verification code:\n\n',
     };
 
     try {
