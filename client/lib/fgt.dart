@@ -1,3 +1,4 @@
+//fgt.dart
 import 'package:flutter/material.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -19,10 +20,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _sendCodeAndNavigate(BuildContext context) {
     final String emailAddress = _emailController.text.trim();
-    const String hardcodedEmail = 'selldometech@gmail.com'; // Hardcoded email
+    const String hardcodedEmail = 'israeltoki7@gmail.com';
 
     if (emailAddress == hardcodedEmail) {
-      // Email matches the hardcoded email
       _showError = false;
       Navigator.pushNamed(
         context,
@@ -30,7 +30,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         arguments: emailAddress,
       );
     } else {
-      // Email does not match the hardcoded email
       setState(() {
         _showError = true;
       });

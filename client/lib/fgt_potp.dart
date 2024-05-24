@@ -1,6 +1,12 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: unnecessary_const, avoid_print
+
 import 'dart:async';
-import 'rst_pw.dart'; // Import the rst_pw.dart file
+import 'dart:math';
+
+import 'package:emailjs/emailjs.dart';
+import 'package:flutter/material.dart';
+
+import 'rst_pw.dart';
 
 class ForgotPasswordOTPScreen extends StatefulWidget {
   final String emailAddress;
@@ -19,11 +25,13 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
   late Timer _timer;
   int _countdown = 59;
   bool _isCountdownFinished = false;
+  String _generatedOTP = '';
 
   @override
   void initState() {
     super.initState();
     _emailAddress = widget.emailAddress;
+    _generatedOTP = _generateAndSendOTP();
     _startCountdown();
   }
 
@@ -51,20 +59,50 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     });
   }
 
+  String _generateAndSendOTP() {
+    String generatedOTP = _generateOTP();
+    _sendEmailWithOTP(generatedOTP);
+    return generatedOTP;
+  }
+
+  String _generateOTP() {
+    String generatedOTP = (Random().nextInt(900000) + 100000).toString();
+    return generatedOTP;
+  }
+
+  void _sendEmailWithOTP(String otp) async {
+    Map<String, dynamic> templateParams = {
+      'email': _emailAddress,
+      'otp': otp,
+    };
+
+    try {
+      await EmailJS.send(
+        'service_rgvnw3a',
+        'template_puliazp',
+        templateParams,
+        const Options(
+          publicKey: 'Y3vM6rPSqkT_78sNU',
+          privateKey: 'FqqqBbPwWL0NYv09OdSuE',
+        ),
+      );
+      print('Email sent successfully');
+    } catch (e) {
+      print('Error sending email: $e');
+    }
+  }
+
   void _validateOTPAndProceed() {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
       enteredOTP += controller.text;
     }
 
-    // Hardcoded OTP value for testing
-    const validOTP = '000000';
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => LoadingModal(
-        showNextModal: enteredOTP == validOTP
+        showNextModal: enteredOTP == _generatedOTP
             ? _showVerificationSuccessModal
             : _showVerificationFailedModal,
       ),
@@ -164,16 +202,30 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             ),
             const SizedBox(height: 40),
             Center(
-              child: Container(
-                width: 338,
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    for (int i = 0; i < 6; i++) _buildOTPBox(i),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 338,
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (int i = 0; i < 6; i++) _buildOTPBox(i),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Text(
+                  //   'Generated OTP: $_generatedOTP',
+                  //   style: const TextStyle(
+                  //     fontFamily: 'SF Pro Display',
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: Colors.black,
+                  //   ),
+                  // ),
+                ],
               ),
             ),
             const SizedBox(height: 40),
@@ -182,8 +234,8 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                   ? GestureDetector(
                       onTap: _handleResendCode,
                       child: RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
+                        text: TextSpan(
+                          style: const TextStyle(
                             fontFamily: 'SF Pro Display',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
@@ -192,9 +244,15 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                             color: Colors.black,
                           ),
                           children: [
-                            TextSpan(text: "Didn't get the code? "),
+                            const TextSpan(text: 'Resend OTP in '),
                             TextSpan(
-                              text: 'Resend code',
+                              text: _countdown.toString(),
+                              style: const TextStyle(
+                                color: Color(0xFF621B2B),
+                              ),
+                            ),
+                            const TextSpan(
+                              text: 's',
                               style: TextStyle(
                                 color: Color(0xFF621B2B),
                               ),
@@ -203,55 +261,26 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                         ),
                       ),
                     )
-                  : RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontFamily: 'SF Pro Display',
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          height: 1.2,
-                          letterSpacing: -0.019,
-                          color: Colors.black,
-                        ),
-                        children: [
-                          const TextSpan(text: 'Resend OTP in '),
-                          TextSpan(
-                            text: _countdown.toString(),
-                            style: const TextStyle(
-                              color: Color(0xFF621B2B),
-                            ),
-                          ),
-                          const TextSpan(
-                            text: 's',
-                            style: TextStyle(
-                              color: Color(0xFF621B2B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  : const SizedBox.shrink(),
             ),
-            const SizedBox(height: 40),
-            Center(
-              child: GestureDetector(
-                onTap: _validateOTPAndProceed,
-                child: Container(
-                  width: 337,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFBE5AA),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        height: 1.5,
-                        color: Color(0xFF621B2B),
-                      ),
+            GestureDetector(
+              onTap: _validateOTPAndProceed,
+              child: Container(
+                width: 337,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFBE5AA),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontFamily: 'SF Pro Display',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      height: 1.5,
+                      color: Color(0xFF621B2B),
                     ),
                   ),
                 ),
@@ -309,6 +338,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
   }
 
   void _handleResendCode() {
+    _generatedOTP = _generateAndSendOTP();
     _startCountdown();
   }
 }
