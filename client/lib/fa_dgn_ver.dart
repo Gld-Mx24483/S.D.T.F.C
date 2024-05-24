@@ -778,8 +778,7 @@ class _FashVerScreenState extends State<FashVerScreen> {
     Map<String, dynamic> templateParams = {
       'email': _emailAddress,
       'otp': otp,
-      'message':
-          'Hi ${_firstNameController.text} ${_lastNameController.text}, \n\nTo finish logging in to your Selldome account, enter this verification code:\n\n',
+      'message': 'Hi ${_firstNameController.text} ${_lastNameController.text},',
     };
 
     try {
