@@ -586,9 +586,6 @@
 // ignore_for_file: avoid_print, unused_local_variable
 
 //fash_dgn.dart
-import 'dart:math';
-
-import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -621,7 +618,6 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
   bool isObscure = true;
   bool emailErrorVisible = false;
   String emailErrorMessage = '';
-  String? generatedOTP;
 
   bool _isFormValid() {
     if (firstNameController.text.isEmpty ||
@@ -657,10 +653,6 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
     if (!_isChecked) {
       return false;
     }
-
-    // Generate OTP and send email
-    String generatedOTP = _generateOTP();
-    _sendEmailWithOTP(generatedOTP);
 
     return true;
   }
@@ -698,37 +690,6 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
       return 'Email should have a valid domain .extension';
     }
     return '';
-  }
-
-  String _generateOTP() {
-    return (Random().nextInt(900000) + 100000).toString();
-  }
-
-  void _sendEmailWithOTP(String otp) async {
-    print('Generated OTP: $otp');
-    Map<String, dynamic> templateParams = {
-      'firstname': firstNameController.text,
-      'lastname': lastNameController.text,
-      'email': emailController.text,
-      'otp': otp,
-      'message':
-          'Hello ${firstNameController.text} ${lastNameController.text}, welcome, here is your OTP: $otp',
-    };
-
-    try {
-      await EmailJS.send(
-        'service_rgvnw3a',
-        'template_8nihdqb',
-        templateParams,
-        const Options(
-          publicKey: 'Y3vM6rPSqkT_78sNU',
-          privateKey: 'FqqqBbPwWL0NYv09OdSuE',
-        ),
-      );
-      print('Email sent successfully');
-    } catch (e) {
-      print('Error sending email: $e');
-    }
   }
 
   @override
@@ -1118,13 +1079,12 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
               child: GestureDetector(
                 onTap: () {
                   if (_isFormValid()) {
-                    String generatedOTP = _generateOTP();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => FashVerScreen(
                           emailAddress: emailController.text,
-                          otp: generatedOTP,
+                          otp: '',
                         ),
                       ),
                     );

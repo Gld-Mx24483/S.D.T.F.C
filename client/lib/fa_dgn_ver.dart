@@ -693,9 +693,13 @@
 //   }
 // }
 
+// ignore_for_file: avoid_print
+
 // fa_dgn_ver.dart
 import 'dart:async';
+import 'dart:math';
 
+import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
 
 import 'log_in.dart';
@@ -716,16 +720,21 @@ class FashVerScreen extends StatefulWidget {
 
 class _FashVerScreenState extends State<FashVerScreen> {
   late final String _emailAddress;
+  late final String _otp;
   final List<TextEditingController> _otpControllers =
       List.generate(6, (_) => TextEditingController());
   late Timer _timer;
   int _countdown = 59;
   bool _isCountdownFinished = false;
+  String _generatedOTP = '';
 
   @override
   void initState() {
     super.initState();
     _emailAddress = widget.emailAddress;
+    _otp = widget.otp;
+    String generatedOTP = _generateOTP();
+    _sendEmailWithOTP(generatedOTP);
     _startCountdown();
   }
 
@@ -751,20 +760,46 @@ class _FashVerScreenState extends State<FashVerScreen> {
     });
   }
 
-  // In the _validateOTPAndProceed method
+  String _generateOTP() {
+    _generatedOTP = (Random().nextInt(900000) + 100000).toString();
+    return _generatedOTP;
+  }
+
+  void _sendEmailWithOTP(String otp) async {
+    print('Generated OTP: $otp');
+    Map<String, dynamic> templateParams = {
+      'email': _emailAddress,
+      'otp': otp,
+      'message': 'Your OTP is: $otp',
+    };
+
+    try {
+      await EmailJS.send(
+        'service_rgvnw3a',
+        'template_8nihdqb',
+        templateParams,
+        const Options(
+          publicKey: 'Y3vM6rPSqkT_78sNU',
+          privateKey: 'FqqqBbPwWL0NYv09OdSuE',
+        ),
+      );
+      print('Email sent successfully');
+    } catch (e) {
+      print('Error sending email: $e');
+    }
+  }
+
   void _validateOTPAndProceed() {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
       enteredOTP += controller.text;
     }
 
-    String validOTP = widget.otp;
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => LoadingModal(
-        showNextModal: enteredOTP == validOTP
+        showNextModal: enteredOTP == _generatedOTP
             ? _showVerificationSuccessModal
             : _showVerificationFailedModal,
       ),
@@ -775,7 +810,7 @@ class _FashVerScreenState extends State<FashVerScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const VerificationSuccessModal(),
+      builder: (context) => VerificationSuccessModal(otp: _otp),
     ).then((value) {
       if (value != null && value) {
         Navigator.pushReplacement(
@@ -790,7 +825,9 @@ class _FashVerScreenState extends State<FashVerScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const VerificationFailedModal(),
+      builder: (context) => const VerificationFailedModal(
+        otp: '',
+      ),
     );
   }
 
@@ -861,16 +898,30 @@ class _FashVerScreenState extends State<FashVerScreen> {
             ),
             const SizedBox(height: 40),
             Center(
-              child: Container(
-                width: 338,
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    for (int i = 0; i < 6; i++) _buildOTPBox(i),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Container(
+                    width: 338,
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        for (int i = 0; i < 6; i++) _buildOTPBox(i),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Generated OTP:  $_generatedOTP',
+                    style: const TextStyle(
+                      fontFamily: 'SF Pro Display',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(0, 158, 158, 158),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 40),
@@ -1072,7 +1123,8 @@ class LoadingModalState extends State<LoadingModal> {
 }
 
 class VerificationSuccessModal extends StatelessWidget {
-  const VerificationSuccessModal({super.key});
+  final String otp;
+  const VerificationSuccessModal({super.key, required this.otp});
 
   @override
   Widget build(BuildContext context) {
@@ -1175,7 +1227,8 @@ class VerificationSuccessModal extends StatelessWidget {
 }
 
 class VerificationFailedModal extends StatelessWidget {
-  const VerificationFailedModal({super.key});
+  final String otp;
+  const VerificationFailedModal({super.key, required this.otp});
 
   @override
   Widget build(BuildContext context) {
