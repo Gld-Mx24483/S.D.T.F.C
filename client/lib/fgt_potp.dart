@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'rst_pw.dart';
 
@@ -159,17 +160,16 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Forgot Password',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
@@ -177,8 +177,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
               padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.5,
@@ -232,20 +231,17 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             Center(
               child: _isCountdownFinished
                   ? GestureDetector(
-                      onTap: () {
-                        // Add your logic to resend the OTP code here
-                      },
+                      onTap: _handleResendCode,
                       child: RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                        text: TextSpan(
+                          style: GoogleFonts.nunito(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             height: 1.2,
                             letterSpacing: -0.019,
                             color: Colors.black,
                           ),
-                          children: [
+                          children: const [
                             TextSpan(text: "Didn't get the code? "),
                             TextSpan(
                               text: 'Resend code',
@@ -259,8 +255,7 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                     )
                   : RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          fontFamily: 'SF Pro Display',
+                        style: GoogleFonts.nunito(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           height: 1.2,
@@ -285,24 +280,26 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                       ),
                     ),
             ),
-            GestureDetector(
-              onTap: _validateOTPAndProceed,
-              child: Container(
-                width: 337,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFBE5AA),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontFamily: 'SF Pro Display',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      height: 1.5,
-                      color: Color(0xFF621B2B),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0, top: 30.0),
+              child: GestureDetector(
+                onTap: _validateOTPAndProceed,
+                child: Container(
+                  width: 337,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBE5AA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Continue',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        height: 1.5,
+                        color: const Color(0xFF621B2B),
+                      ),
                     ),
                   ),
                 ),
@@ -359,9 +356,23 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     );
   }
 
+  // void _handleResendCode() {
+  //   _generatedOTP = _generateAndSendOTP();
+  //   _startCountdown();
+  // }
+
   void _handleResendCode() {
     _generatedOTP = _generateAndSendOTP();
     _startCountdown();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => LoadingModal(
+        showNextModal: () {
+          // No need to do anything here
+        },
+      ),
+    );
   }
 }
 
@@ -406,20 +417,19 @@ class LoadingModalState extends State<LoadingModal> {
               topRight: Radius.circular(4),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Text(
                 'Please wait...',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF212121),
+                  color: const Color(0xFF212121),
                   decoration: TextDecoration.none,
                 ),
               ),
@@ -475,10 +485,9 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Verification Successful',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
@@ -486,13 +495,12 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       "Press continue to proceed",
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF263238),
+                        color: const Color(0xFF263238),
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
@@ -510,14 +518,13 @@ class VerificationSuccessModal extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                         decoration: TextDecoration.none,
                       ),
                     ),
