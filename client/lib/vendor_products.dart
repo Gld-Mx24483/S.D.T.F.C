@@ -40,12 +40,12 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        padding: const EdgeInsets.fromLTRB(20, 70, 20, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Positioned(
-              top: 18,
+              top: 20,
               left: 154,
               child: Text(
                 'Products',
