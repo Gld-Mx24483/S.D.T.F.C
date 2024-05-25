@@ -635,7 +635,6 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
       return false;
     }
 
-    // Check password constraints
     bool hasLetter = false;
     bool hasNumber = false;
     bool isLengthValid = passwordController.text.length >= 8;
@@ -828,7 +827,7 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), // Fixed line
+                  const SizedBox(height: 16),
                   Text(
                     'Email Address',
                     style: GoogleFonts.nunito(
@@ -880,7 +879,7 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                       errorText: emailErrorVisible ? emailErrorMessage : null,
                     ),
                   ),
-                  const SizedBox(height: 16), // Fixed line
+                  const SizedBox(height: 16),
                   Text(
                     'Password',
                     style: GoogleFonts.nunito(

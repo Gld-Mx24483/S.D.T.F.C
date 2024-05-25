@@ -327,7 +327,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
         controller: _otpControllers[index],
         maxLength: 1,
         textAlign: TextAlign.center,
-        obscureText: true, // Hide the digit
+        obscureText: true,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 20,
@@ -366,9 +366,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => LoadingModal(
-        showNextModal: () {
-          // No need to do anything here
-        },
+        showNextModal: () {},
       ),
     );
   }
@@ -512,7 +510,6 @@ class VerificationSuccessModal extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  // Add your logic to continue here
                   Navigator.of(context).pop();
                 },
                 child: Container(
@@ -614,7 +611,6 @@ class VerificationFailedModal extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  // Add your logic to try again here
                   Navigator.of(context).pop();
                 },
                 child: Container(

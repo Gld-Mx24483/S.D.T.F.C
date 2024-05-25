@@ -43,17 +43,14 @@ class VendorScreenState extends State<VendorScreen> {
       return false;
     }
 
-    // Check if the email is valid
     if (!_isEmailValid(emailController.text)) {
       return false;
     }
 
-    // Check if the email contains '@'
     if (!emailController.text.contains('@')) {
       return false;
     }
 
-    // Check password constraints
     bool hasLetter = false;
     bool hasNumber = false;
     bool isLengthValid = passwordController.text.length >= 8;
@@ -68,7 +65,6 @@ class VendorScreenState extends State<VendorScreen> {
       return false;
     }
 
-    // Check if the Terms and Conditions checkbox is checked
     if (!_isChecked) {
       return false;
     }

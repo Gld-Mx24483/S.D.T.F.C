@@ -214,16 +214,6 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  // Text(
-                  //   'Generated OTP: $_generatedOTP',
-                  //   style: const TextStyle(
-                  //     fontFamily: 'SF Pro Display',
-                  //     fontSize: 16,
-                  //     fontWeight: FontWeight.bold,
-                  //     color: Colors.black,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
