@@ -510,7 +510,7 @@ class VerificationSuccessModal extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
                 },
                 child: Container(
                   width: 265,
