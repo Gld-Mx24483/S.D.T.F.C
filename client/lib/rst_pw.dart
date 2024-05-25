@@ -1,5 +1,7 @@
 //rst_pw.dart
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'log_in.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -77,26 +79,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
                         child: Text(
                           'Reset Password',
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                          style: GoogleFonts.nunito(
                             fontSize: 26,
                             fontWeight: FontWeight.w800,
                             height: 1.5,
                             letterSpacing: -0.019,
-                            color: Color(0xFF621B2B),
+                            color: const Color(0xFF621B2B),
                           ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 0, 0),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
                         child: Text(
                           'Create a new password that is safe and easy to remember',
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                             height: 1.5,
@@ -110,10 +110,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'New Password',
-                              style: TextStyle(
-                                fontFamily: 'SF Pro Display',
+                              style: GoogleFonts.nunito(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 height: 1.5,
@@ -169,10 +168,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               'Confirm Password',
-                              style: TextStyle(
-                                fontFamily: 'SF Pro Display',
+                              style: GoogleFonts.nunito(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 height: 1.5,
@@ -232,11 +230,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               ),
                             ),
                             if (_passwordsDoNotMatch)
-                              const Padding(
-                                padding: EdgeInsets.only(top: 8.0),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
                                   'Passwords do not match',
-                                  style: TextStyle(
+                                  style: GoogleFonts.nunito(
                                     color: Colors.red,
                                     fontSize: 14,
                                   ),
@@ -285,8 +283,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           child: Center(
                             child: Text(
                               'Confirm New Password',
-                              style: TextStyle(
-                                fontFamily: 'SF Pro Display',
+                              style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 height: 1.5,
@@ -320,21 +317,20 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       color: const Color(0xFFFAF6EB),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(
+                        const CircularProgressIndicator(
                           valueColor:
                               AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Text(
                           'Please wait...',
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF212121),
+                            color: const Color(0xFF212121),
                             decoration: TextDecoration.none,
                           ),
                         ),
@@ -368,10 +364,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           size: 80,
                         ),
                         const SizedBox(height: 24),
-                        const Text(
+                        Text(
                           'Password Changed',
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                          style: GoogleFonts.nunito(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                             color: Colors.black,
@@ -379,16 +374,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.0), // Adjust the value as needed
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
                             'Password changed successfully, you can login again with your new password.',
-                            style: TextStyle(
-                              fontFamily: 'SF Pro Display',
+                            style: GoogleFonts.nunito(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF263238),
+                              color: const Color(0xFF263238),
                               decoration: TextDecoration.none,
                             ),
                             textAlign: TextAlign.center,
@@ -412,10 +405,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 100, vertical: 16),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Login',
-                            style: TextStyle(
-                              fontFamily: 'SF Pro Display',
+                            style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
