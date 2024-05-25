@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_const, avoid_print
+// ignore_for_file: unnecessary_const, avoid_print, unused_element
 
 import 'dart:async';
 import 'dart:math';
@@ -232,10 +232,12 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
             Center(
               child: _isCountdownFinished
                   ? GestureDetector(
-                      onTap: _handleResendCode,
+                      onTap: () {
+                        // Add your logic to resend the OTP code here
+                      },
                       child: RichText(
-                        text: TextSpan(
-                          style: const TextStyle(
+                        text: const TextSpan(
+                          style: TextStyle(
                             fontFamily: 'SF Pro Display',
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
@@ -244,15 +246,9 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                             color: Colors.black,
                           ),
                           children: [
-                            const TextSpan(text: 'Resend OTP in '),
+                            TextSpan(text: "Didn't get the code? "),
                             TextSpan(
-                              text: _countdown.toString(),
-                              style: const TextStyle(
-                                color: Color(0xFF621B2B),
-                              ),
-                            ),
-                            const TextSpan(
-                              text: 's',
+                              text: 'Resend code',
                               style: TextStyle(
                                 color: Color(0xFF621B2B),
                               ),
@@ -261,7 +257,33 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
                         ),
                       ),
                     )
-                  : const SizedBox.shrink(),
+                  : RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontFamily: 'SF Pro Display',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                          letterSpacing: -0.019,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          const TextSpan(text: 'Resend OTP in '),
+                          TextSpan(
+                            text: _countdown.toString(),
+                            style: const TextStyle(
+                              color: Color(0xFF621B2B),
+                            ),
+                          ),
+                          const TextSpan(
+                            text: 's',
+                            style: TextStyle(
+                              color: Color(0xFF621B2B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
             ),
             GestureDetector(
               onTap: _validateOTPAndProceed,
