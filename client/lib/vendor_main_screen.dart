@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'vendor_bottom_navigation_bar.dart';
 import 'vendor_dash.dart';
 import 'vendor_no_record_screen.dart';
+import 'vendor_products.dart';
 import 'vendor_profile.dart';
 import 'vendor_wallet.dart';
 
@@ -103,7 +104,7 @@ class _VendorMainScreenState extends State<VendorMainScreen>
           _currentScreen = const VendorWalletScreen();
           break;
         case 'Products':
-          // _currentScreen = const VendorhopScreen();
+          _currentScreen = const VendorProductsScreen();
           break;
         case 'Profile':
           _currentScreen = const VendorProfileScreen();
