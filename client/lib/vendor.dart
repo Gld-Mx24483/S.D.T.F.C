@@ -1,3 +1,4 @@
+//vendor.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -34,10 +35,10 @@ class VendorScreenState extends State<VendorScreen> {
   String emailErrorMessage = '';
 
   bool _isFormValid() {
-    // Check if all input fields are not empty
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
         emailController.text.isEmpty ||
+        shopController.text.isEmpty ||
         passwordController.text.isEmpty) {
       return false;
     }
@@ -543,6 +544,10 @@ class VendorScreenState extends State<VendorScreen> {
                       MaterialPageRoute(
                         builder: (context) => VenVerScreen(
                           emailAddress: emailController.text,
+                          firstNameController: firstNameController,
+                          lastNameController: lastNameController,
+                          shopController: shopController,
+                          otp: '',
                         ),
                       ),
                     );

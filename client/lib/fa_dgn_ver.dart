@@ -701,6 +701,7 @@ import 'dart:math';
 
 import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'log_in.dart';
 
@@ -766,6 +767,12 @@ class _FashVerScreenState extends State<FashVerScreen> {
         }
       });
     });
+  }
+
+  String _generateAndSendOTP() {
+    String generatedOTP = _generateOTP();
+    _sendEmailWithOTP(generatedOTP);
+    return generatedOTP;
   }
 
   String _generateOTP() {
@@ -863,17 +870,16 @@ class _FashVerScreenState extends State<FashVerScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Verify Email',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
@@ -881,8 +887,7 @@ class _FashVerScreenState extends State<FashVerScreen> {
               padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.5,
@@ -922,11 +927,10 @@ class _FashVerScreenState extends State<FashVerScreen> {
                   const SizedBox(height: 16),
                   Text(
                     'Generated OTP:  $_generatedOTP',
-                    style: const TextStyle(
-                      fontFamily: 'SF Pro Display',
+                    style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(0, 158, 158, 158),
+                      color: const Color.fromARGB(0, 158, 158, 158),
                     ),
                   ),
                 ],
@@ -936,20 +940,17 @@ class _FashVerScreenState extends State<FashVerScreen> {
             Center(
               child: _isCountdownFinished
                   ? GestureDetector(
-                      onTap: () {
-                        // Add your logic to resend the OTP code here
-                      },
+                      onTap: _handleResendCode,
                       child: RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                        text: TextSpan(
+                          style: GoogleFonts.nunito(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             height: 1.2,
                             letterSpacing: -0.019,
                             color: Colors.black,
                           ),
-                          children: [
+                          children: const [
                             TextSpan(text: "Didn't get the code? "),
                             TextSpan(
                               text: 'Resend code',
@@ -963,8 +964,7 @@ class _FashVerScreenState extends State<FashVerScreen> {
                     )
                   : RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          fontFamily: 'SF Pro Display',
+                        style: GoogleFonts.nunito(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           height: 1.2,
@@ -1000,15 +1000,14 @@ class _FashVerScreenState extends State<FashVerScreen> {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                       ),
                     ),
                   ),
@@ -1060,6 +1059,20 @@ class _FashVerScreenState extends State<FashVerScreen> {
       ),
     );
   }
+
+  void _handleResendCode() {
+    _generatedOTP = _generateAndSendOTP();
+    _startCountdown();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => LoadingModal(
+        showNextModal: () {
+          // No need to do anything here
+        },
+      ),
+    );
+  }
 }
 
 class LoadingModal extends StatefulWidget {
@@ -1105,20 +1118,19 @@ class LoadingModalState extends State<LoadingModal> {
               topRight: Radius.circular(4),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Text(
                 'Please wait...',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF212121),
+                  color: const Color(0xFF212121),
                   decoration: TextDecoration.none,
                 ),
               ),
@@ -1175,10 +1187,9 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Verification Successful',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
@@ -1186,13 +1197,12 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       "Continue to login",
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF263238),
+                        color: const Color(0xFF263238),
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
@@ -1212,14 +1222,13 @@ class VerificationSuccessModal extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                         decoration: TextDecoration.none,
                       ),
                     ),
@@ -1279,10 +1288,9 @@ class VerificationFailedModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Verification Failed',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
@@ -1290,13 +1298,12 @@ class VerificationFailedModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Please try again',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF263238),
+                        color: const Color(0xFF263238),
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
@@ -1317,14 +1324,13 @@ class VerificationFailedModal extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Try Again',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                         decoration: TextDecoration.none,
                       ),
                     ),

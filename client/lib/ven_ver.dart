@@ -1,12 +1,30 @@
 // ven_ver.dart
-import 'dart:async';
+// ignore_for_file: avoid_print
 
+import 'dart:async';
+import 'dart:math';
+
+import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'log_in.dart';
 
 class VenVerScreen extends StatefulWidget {
   final String emailAddress;
+  final String otp;
+  final TextEditingController firstNameController;
+  final TextEditingController lastNameController;
+  final TextEditingController shopController;
 
-  const VenVerScreen({super.key, required this.emailAddress});
+  const VenVerScreen({
+    super.key,
+    required this.otp,
+    required this.emailAddress,
+    required this.firstNameController,
+    required this.lastNameController,
+    required this.shopController,
+  });
 
   @override
   State<VenVerScreen> createState() => _VenVerScreenState();
@@ -14,16 +32,27 @@ class VenVerScreen extends StatefulWidget {
 
 class _VenVerScreenState extends State<VenVerScreen> {
   late final String _emailAddress;
+  late final String _otp;
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
+  late final TextEditingController _shopController;
   final List<TextEditingController> _otpControllers =
       List.generate(6, (_) => TextEditingController());
   late Timer _timer;
   int _countdown = 59;
   bool _isCountdownFinished = false;
+  String _generatedOTP = '';
 
   @override
   void initState() {
     super.initState();
     _emailAddress = widget.emailAddress;
+    _otp = widget.otp;
+    _firstNameController = widget.firstNameController;
+    _lastNameController = widget.lastNameController;
+    _shopController = widget.shopController;
+    String generatedOTP = _generateOTP();
+    _sendEmailWithOTP(generatedOTP);
     _startCountdown();
   }
 
@@ -37,6 +66,8 @@ class _VenVerScreenState extends State<VenVerScreen> {
   }
 
   void _startCountdown() {
+    _countdown = 59;
+    _isCountdownFinished = false;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdown > 0) {
@@ -49,20 +80,53 @@ class _VenVerScreenState extends State<VenVerScreen> {
     });
   }
 
+  String _generateAndSendOTP() {
+    String generatedOTP = _generateOTP();
+    _sendEmailWithOTP(generatedOTP);
+    return generatedOTP;
+  }
+
+  String _generateOTP() {
+    _generatedOTP = (Random().nextInt(900000) + 100000).toString();
+    return _generatedOTP;
+  }
+
+  void _sendEmailWithOTP(String otp) async {
+    print('Generated OTP: $otp');
+    Map<String, dynamic> templateParams = {
+      'email': _emailAddress,
+      'otp': otp,
+      'message': 'Hi ${_firstNameController.text} ${_lastNameController.text},',
+      'shopName': _shopController.text,
+    };
+
+    try {
+      await EmailJS.send(
+        'service_rgvnw3a',
+        'template_8nihdqb',
+        templateParams,
+        const Options(
+          publicKey: 'Y3vM6rPSqkT_78sNU',
+          privateKey: 'FqqqBbPwWL0NYv09OdSuE',
+        ),
+      );
+      print('Email sent successfully');
+    } catch (e) {
+      print('Error sending email: $e');
+    }
+  }
+
   void _validateOTPAndProceed() {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
       enteredOTP += controller.text;
     }
 
-    // Hardcoded OTP value for testing
-    const validOTP = '000000';
-
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => LoadingModal(
-        showNextModal: enteredOTP == validOTP
+        showNextModal: enteredOTP == _generatedOTP
             ? _showVerificationSuccessModal
             : _showVerificationFailedModal,
       ),
@@ -73,15 +137,24 @@ class _VenVerScreenState extends State<VenVerScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const VerificationSuccessModal(),
-    );
+      builder: (context) => VerificationSuccessModal(otp: _otp),
+    ).then((value) {
+      if (value != null && value) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    });
   }
 
   void _showVerificationFailedModal() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const VerificationFailedModal(),
+      builder: (context) => const VerificationFailedModal(
+        otp: '',
+      ),
     );
   }
 
@@ -109,17 +182,16 @@ class _VenVerScreenState extends State<VenVerScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 0, 0),
               child: Text(
                 'Verify Email',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.5,
                   letterSpacing: -0.019,
-                  color: Color(0xFF621B2B),
+                  color: const Color(0xFF621B2B),
                 ),
               ),
             ),
@@ -127,8 +199,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
               padding: const EdgeInsets.fromLTRB(20, 10, 0, 0),
               child: RichText(
                 text: TextSpan(
-                  style: const TextStyle(
-                    fontFamily: 'SF Pro Display',
+                  style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     height: 1.5,
@@ -168,20 +239,17 @@ class _VenVerScreenState extends State<VenVerScreen> {
             Center(
               child: _isCountdownFinished
                   ? GestureDetector(
-                      onTap: () {
-                        // Add your logic to resend the OTP code here
-                      },
+                      onTap: _handleResendCode,
                       child: RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
-                            fontFamily: 'SF Pro Display',
+                        text: TextSpan(
+                          style: GoogleFonts.nunito(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             height: 1.2,
                             letterSpacing: -0.019,
                             color: Colors.black,
                           ),
-                          children: [
+                          children: const [
                             TextSpan(text: "Didn't get the code? "),
                             TextSpan(
                               text: 'Resend code',
@@ -195,8 +263,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
                     )
                   : RichText(
                       text: TextSpan(
-                        style: const TextStyle(
-                          fontFamily: 'SF Pro Display',
+                        style: GoogleFonts.nunito(
                           fontSize: 15,
                           fontWeight: FontWeight.w500,
                           height: 1.2,
@@ -232,15 +299,14 @@ class _VenVerScreenState extends State<VenVerScreen> {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         height: 1.5,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                       ),
                     ),
                   ),
@@ -292,6 +358,20 @@ class _VenVerScreenState extends State<VenVerScreen> {
       ),
     );
   }
+
+  void _handleResendCode() {
+    _generatedOTP = _generateAndSendOTP();
+    _startCountdown();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => LoadingModal(
+        showNextModal: () {
+          // No need to do anything here
+        },
+      ),
+    );
+  }
 }
 
 class LoadingModal extends StatefulWidget {
@@ -307,15 +387,13 @@ class LoadingModalState extends State<LoadingModal> {
   @override
   void initState() {
     super.initState();
-    // Start the timer to show the "Please wait..." modal
     _startTimer();
   }
 
   void _startTimer() {
     Timer(const Duration(seconds: 5), () {
-      // Close the "Please wait..." modal after 10 seconds
       Navigator.of(context).pop();
-      // Show the next modal after closing the "Please wait..." modal
+
       widget.showNextModal();
     });
   }
@@ -340,20 +418,19 @@ class LoadingModalState extends State<LoadingModal> {
               topRight: Radius.circular(4),
             ),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
+              const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFBE5AA)),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Text(
                 'Please wait...',
-                style: TextStyle(
-                  fontFamily: 'SF Pro Display',
+                style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF212121),
+                  color: const Color(0xFF212121),
                   decoration: TextDecoration.none,
                 ),
               ),
@@ -366,7 +443,7 @@ class LoadingModalState extends State<LoadingModal> {
 }
 
 class VerificationSuccessModal extends StatelessWidget {
-  const VerificationSuccessModal({super.key});
+  const VerificationSuccessModal({super.key, required otp});
 
   @override
   Widget build(BuildContext context) {
@@ -409,10 +486,9 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Verification Successful',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
@@ -420,13 +496,12 @@ class VerificationSuccessModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       "Let's continue setting up your account",
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF263238),
+                        color: const Color(0xFF263238),
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
@@ -447,14 +522,13 @@ class VerificationSuccessModal extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Continue',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                         decoration: TextDecoration.none,
                       ),
                     ),
@@ -470,7 +544,8 @@ class VerificationSuccessModal extends StatelessWidget {
 }
 
 class VerificationFailedModal extends StatelessWidget {
-  const VerificationFailedModal({super.key});
+  final String otp;
+  const VerificationFailedModal({super.key, required this.otp});
 
   @override
   Widget build(BuildContext context) {
@@ -513,10 +588,9 @@ class VerificationFailedModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Verification Failed',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
@@ -524,13 +598,12 @@ class VerificationFailedModal extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Please try again',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF263238),
+                        color: const Color(0xFF263238),
                         decoration: TextDecoration.none,
                       ),
                       textAlign: TextAlign.center,
@@ -551,14 +624,13 @@ class VerificationFailedModal extends StatelessWidget {
                     color: const Color(0xFFFBE5AA),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Try Again',
-                      style: TextStyle(
-                        fontFamily: 'SF Pro Display',
+                      style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF621B2B),
+                        color: const Color(0xFF621B2B),
                         decoration: TextDecoration.none,
                       ),
                     ),

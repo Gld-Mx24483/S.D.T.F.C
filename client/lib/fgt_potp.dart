@@ -356,11 +356,6 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     );
   }
 
-  // void _handleResendCode() {
-  //   _generatedOTP = _generateAndSendOTP();
-  //   _startCountdown();
-  // }
-
   void _handleResendCode() {
     _generatedOTP = _generateAndSendOTP();
     _startCountdown();
