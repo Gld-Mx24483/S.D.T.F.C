@@ -231,7 +231,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 30), // Margin top for "My Products" text
+            const SizedBox(height: 40),
             Text(
               'My Products',
               style: GoogleFonts.nunito(
@@ -240,7 +240,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                 color: const Color(0xFF621B2B),
               ),
             ),
-            const SizedBox(height: 184),
+            const SizedBox(height: 145),
             Center(
               child: Container(
                 width: 139,
