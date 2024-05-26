@@ -44,28 +44,39 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Positioned(
-              top: 20,
-              left: 154,
-              child: Text(
-                'Products',
-                style: GoogleFonts.nunito(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF232323),
+            Stack(
+              children: [
+                Center(
+                  child: Text(
+                    'Products',
+                    style: GoogleFonts.nunito(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF232323),
+                    ),
+                  ),
                 ),
-              ),
+                if (_selectedIndex != null)
+                  Positioned(
+                    right: 0,
+                    child: Text(
+                      'Add',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF232323),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            Positioned(
-              top: 124,
-              left: 20,
-              child: Text(
-                'Suggestions',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF621B2B),
-                ),
+            const SizedBox(height: 30),
+            Text(
+              'Suggestions',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF621B2B),
               ),
             ),
             SizedBox(
@@ -120,18 +131,6 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                                     offset: Offset(0, 6),
                                   ),
                                 ],
-                              ),
-                              child: Positioned(
-                                top: 18,
-                                right: 0,
-                                child: Text(
-                                  'Add',
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF232323),
-                                  ),
-                                ),
                               ),
                             ),
                           ),
@@ -232,16 +231,13 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                 },
               ),
             ),
-            Positioned(
-              top: 324,
-              left: 20,
-              child: Text(
-                'My Products',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF621B2B),
-                ),
+            const SizedBox(height: 30), // Margin top for "My Products" text
+            Text(
+              'My Products',
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF621B2B),
               ),
             ),
             const SizedBox(height: 184),
