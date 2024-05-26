@@ -22,7 +22,6 @@ class FashMapCntState extends State<FashMapCnt> {
   int? selectedMap;
   LatLng? selectedLocation;
 
-  // New state variable to track map interface tap
   bool isMapTapped = false;
 
   @override
