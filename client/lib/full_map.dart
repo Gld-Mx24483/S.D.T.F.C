@@ -1,10 +1,12 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, avoid_print, unused_element
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
+
+import 'fash_search_nav_me.dart'; // Import the new component
 
 class FullMap extends StatefulWidget {
   final LatLng initialPosition;
@@ -22,12 +24,12 @@ class _FullMapState extends State<FullMap> {
   final bool _isSearchBarEnabled = true;
   List<MapBoxPlacePrediction> _predictions = [];
 
-  void toggleBottomSheet(DragUpdateDetails details) {
-    if (details.delta.dy > 0) {
+  void toggleBottomSheet(DragUpdateDetails? details) {
+    if (details != null && details.delta.dy > 0) {
       setState(() {
         bottomSheetHeight = 70;
       });
-    } else if (details.delta.dy < 0) {
+    } else if (_searchController.text.isNotEmpty || _isSearchBarEnabled) {
       setState(() {
         bottomSheetHeight = maxBottomSheetHeight;
       });
@@ -35,12 +37,17 @@ class _FullMapState extends State<FullMap> {
   }
 
   void _searchLocation(String searchText) async {
+    print('Search Text: $searchText');
+
     if (searchText.isNotEmpty) {
+      String accessToken =
+          'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ';
       String apiUrl =
-          'https://api.mapbox.com/geocoding/v5/mapbox.places/$searchText.json?sk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3b3AxaDd6MDRocDJ3cDFwZ2Jrcmp6OCJ9.e86ewf7CHgmO4RH4DQsvPQ&country=ng';
+          'https://api.mapbox.com/geocoding/v5/mapbox.places/$searchText.json?access_token=$accessToken&country=ng';
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
+        print('API Response: ${response.body}');
         final data = json.decode(response.body);
         final predictions = data['features']
             .map<MapBoxPlacePrediction>(
@@ -51,7 +58,7 @@ class _FullMapState extends State<FullMap> {
           _predictions = predictions;
         });
       } else {
-        // Handle error
+        print('API Error: ${response.statusCode}');
       }
     } else {
       setState(() {
@@ -104,7 +111,8 @@ class _FullMapState extends State<FullMap> {
             left: 0,
             right: 0,
             child: GestureDetector(
-              onVerticalDragUpdate: toggleBottomSheet,
+              onVerticalDragUpdate: (details) => toggleBottomSheet(details),
+              onTap: () => toggleBottomSheet(null),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
@@ -136,6 +144,15 @@ class _FullMapState extends State<FullMap> {
                             bottomSheetHeight = 70;
                           } else {
                             bottomSheetHeight = maxBottomSheetHeight;
+                            // Navigate to the new component when the search bar is tapped
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FashSearchNavMe(
+                                  initialPosition: widget.initialPosition,
+                                ),
+                              ),
+                            );
                           }
                         });
                       },
@@ -152,31 +169,104 @@ class _FullMapState extends State<FullMap> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 20),
-                        child: TextField(
-                          controller: _searchController,
-                          onChanged: _searchLocation,
-                          enabled: _isSearchBarEnabled,
-                          decoration: InputDecoration(
-                            hintText: 'Search Location',
-                            prefixIcon: const Icon(Icons.search),
-                            border: OutlineInputBorder(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FashSearchNavMe(
+                                  initialPosition: widget.initialPosition,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 16),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.search,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Search Location',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    if (_predictions.isNotEmpty)
+                    if (_predictions.isNotEmpty &&
+                        bottomSheetHeight == maxBottomSheetHeight)
                       Expanded(
                         child: ListView.builder(
                           itemCount: _predictions.length,
                           itemBuilder: (context, index) {
                             final prediction = _predictions[index];
-                            return ListTile(
-                              title: Text(prediction.placeName),
+                            return GestureDetector(
                               onTap: () {
                                 // Navigate to the selected location
                                 // You'll need to handle this part
                               },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 8),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      spreadRadius: 1,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: Colors.red,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            prediction.placeName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '${prediction.latitude}, ${prediction.longitude}',
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           },
                         ),
@@ -346,12 +436,24 @@ class MapBoxPlacePrediction {
     required this.longitude,
   });
   factory MapBoxPlacePrediction.fromJson(Map<String, dynamic> json) {
-    final geometry = json['geometry'];
-    final coordinates = geometry['coordinates'];
-    return MapBoxPlacePrediction(
-      placeName: json['place_name'],
-      latitude: coordinates[1],
-      longitude: coordinates[0],
-    );
+    final placeName = json['place_name'] as String? ?? '';
+    final center = json['center'] as List<double>?;
+
+    print('Place Name: $placeName');
+    print('Center: $center');
+
+    if (center != null && center.length == 2) {
+      return MapBoxPlacePrediction(
+        placeName: placeName,
+        latitude: center[1],
+        longitude: center[0],
+      );
+    } else {
+      return MapBoxPlacePrediction(
+        placeName: placeName,
+        latitude: 0.0,
+        longitude: 0.0,
+      );
+    }
   }
 }

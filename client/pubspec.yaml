@@ -60,6 +60,9 @@ dependencies:
   email_otp: ^2.1.2
   email_auth: ^2.0.0
   flutter_email_sender: ^6.0.3
+  mapbox_place_search: ^1.0.2
+  mapbox_search: ^4.2.2
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
