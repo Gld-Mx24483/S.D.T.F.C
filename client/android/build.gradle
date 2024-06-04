@@ -1,25 +1,7 @@
-// allprojects {
-//     repositories {
-//         google()
-//         mavenCentral()
-//     }
-// }
-
-// rootProject.buildDir = '../build'
-// subprojects {
-//     project.buildDir = "${rootProject.buildDir}/${project.name}"
-// }
-// subprojects {
-//     project.evaluationDependsOn(':app')
-// }
-
-// tasks.register("clean", Delete) {
-//     delete rootProject.buildDir
-// }
-
-
+// //android/build.gradle
 // buildscript {
 //     ext.kotlin_version = '1.5.31'
+
 //     repositories {
 //         google()
 //         jcenter()
@@ -28,7 +10,7 @@
 
 //     dependencies {
 //         classpath 'com.android.tools.build:gradle:3.2.1'
-//         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" 
+//         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 //     }
 // }
 
@@ -40,10 +22,9 @@
 // }
 
 // rootProject.buildDir = '../build'
+
 // subprojects {
 //     project.buildDir = "${rootProject.buildDir}/${project.name}"
-// }
-// subprojects {
 //     project.evaluationDependsOn(':app')
 // }
 
@@ -53,14 +34,24 @@
 
 
 buildscript {
-    ext.kotlin_version = '1.5.31'
-
+    // ext.kotlin_version = '1.5.31'
+    ext.kotlin_version = '1.6.20'
     repositories {
         google()
         jcenter()
         mavenCentral()
+        // Add the Mapbox Maven repository
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = "mapbox"
+                password = MAPBOX_DOWNLOADS_TOKEN ?: ""
+            }
+        }
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -71,11 +62,21 @@ allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = 'mapbox'
+                password = MAPBOX_DOWNLOADS_TOKEN ?: ""
+            }
+        }
     }
 }
 
 rootProject.buildDir = '../build'
-
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')

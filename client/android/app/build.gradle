@@ -1,7 +1,9 @@
+//build.gradle app level
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    // id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 def localProperties = new Properties()
@@ -49,7 +51,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        minSdkVersion 21    
+        minSdkVersion 21
     }
 
     buildTypes {
@@ -65,4 +67,12 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    // implementation('com.mapbox.mapboxsdk:mapbox-android-core:5.0.0') {
+    //     exclude group: 'com.mapbox.common', module: 'common'
+    // }
+    // implementation('com.mapbox.common:common:23.8.0') {
+    //     exclude group: 'com.mapbox.mapboxsdk', module: 'mapbox-android-core'
+    // }
+}
+

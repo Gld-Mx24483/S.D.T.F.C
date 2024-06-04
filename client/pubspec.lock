@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: ecf4273855368121b1caed0d10d4513c7241dfc813f7d3c8933b36622ae9b265
+      sha256: "6bd38d335f0954f5fad9c79e614604fbf03a0e5b975923dd001b6ea965ef5b4b"
       url: "https://pub.dev"
     source: hosted
-    version: "3.5.1"
+    version: "3.6.0"
   async:
     dependency: transitive
     description:
@@ -25,22 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  barcode:
-    dependency: transitive
-    description:
-      name: barcode
-      sha256: ab180ce22c6555d77d45f0178a523669db67f95856e3378259ef2ffeb43e6003
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.8"
-  bidi:
-    dependency: transitive
-    description:
-      name: bidi
-      sha256: "1a7d0c696324b2089f72e7671fd1f1f64fef44c980f3cebc84e803967c597b63"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.10"
   boolean_selector:
     dependency: transitive
     description:
@@ -73,14 +57,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
-  color:
-    dependency: transitive
-    description:
-      name: color
-      sha256: ddcdf1b3badd7008233f5acffaf20ca9f5dc2cd0172b75f68f24526a5f5725cb
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   cross_file:
     dependency: transitive
     description:
@@ -316,10 +292,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: "4c68bfd5ae83e700b5204c1e74451e7bf3cf750e6843c6e158289cf56bda018e"
+      sha256: "8e9d133755c3e84c73288363e6343157c383a0c6c56fc51afcc5d4d7180306d6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.7"
+    version: "3.3.0"
   image_picker:
     dependency: "direct main"
     description:
@@ -408,14 +384,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
-  json_annotation:
-    dependency: transitive
-    description:
-      name: json_annotation
-      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.9.0"
   latlong2:
     dependency: "direct main"
     description:
@@ -520,22 +488,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  mapbox_place_search:
+  mapbox_gl:
     dependency: "direct main"
     description:
-      name: mapbox_place_search
-      sha256: "36e213d66e38c3494321177a80b65f6b420068e54eaf9978cb312da97e4af250"
+      name: mapbox_gl
+      sha256: d78907338ff232e3cf6c1d6dba45e6a8814069496fd352e49bb1967d498f09af
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
-  mapbox_search:
-    dependency: "direct main"
+    version: "0.16.0"
+  mapbox_gl_dart:
+    dependency: transitive
     description:
-      name: mapbox_search
-      sha256: "6606ab1af8f34a22b5b096d6037d95117e4b51d48c63161d817130c91c736e7e"
+      name: mapbox_gl_dart
+      sha256: de6d03718e5eb05c9eb1ddaae7f0383b28acb5afa16405e1deed7ff04dd34f3d
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.2"
+    version: "0.2.1"
+  mapbox_gl_platform_interface:
+    dependency: transitive
+    description:
+      name: mapbox_gl_platform_interface
+      sha256: b7c1490b022e650afd20412bdf8ae45a1897118b7ce6049ef6c42df09193d4b2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.0"
+  mapbox_gl_web:
+    dependency: transitive
+    description:
+      name: mapbox_gl_web
+      sha256: e77113bf95a4f321ff44938232517e0f2725aae991f0b283af1afaa7e7a58aca
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.16.0"
   matcher:
     dependency: transitive
     description:
@@ -600,14 +584,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
-  path_parsing:
-    dependency: transitive
-    description:
-      name: path_parsing
-      sha256: e3e67b1629e6f7e8100b367d3db6ba6af4b1f0bb80f64db18ef1fbabd2fa9ccf
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   path_provider:
     dependency: "direct main"
     description:
@@ -664,22 +640,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
-  pdf:
-    dependency: "direct main"
-    description:
-      name: pdf
-      sha256: "243f05342fc0bdf140eba5b069398985cdbdd3dbb1d776cf43d5ea29cc570ba6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.10.8"
-  pdf_widget_wrapper:
-    dependency: transitive
-    description:
-      name: pdf_widget_wrapper
-      sha256: "9c3ca36e5000c9682d52bbdc486867ba7c5ee4403d1a5d6d03ed72157753377b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   petitparser:
     dependency: transitive
     description:
@@ -720,14 +680,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  printing:
-    dependency: "direct main"
-    description:
-      name: printing
-      sha256: "1c99cab90ebcc1fff65831d264627d5b529359d563e53f33ab9b8117f2d280bc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.12.0"
   proj4dart:
     dependency: transitive
     description:
@@ -736,14 +688,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  qr:
-    dependency: transitive
-    description:
-      name: qr
-      sha256: "64957a3930367bf97cc211a5af99551d630f2f4625e38af10edd6b19131b64b3"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   sky_engine:
     dependency: transitive
     description: flutter

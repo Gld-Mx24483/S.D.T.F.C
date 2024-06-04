@@ -1,11 +1,11 @@
 //vendor_payment_receipt.dart
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unnecessary_import, unused_element
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pdf/pdf.dart';
-import 'package:printing/printing.dart';
+// import 'package:pdf/pdf.dart';
+// import 'package:printing/printing.dart';
 
 class VendorPaymentReceiptPage extends StatelessWidget {
   final String referenceNumber;
@@ -212,25 +212,25 @@ class VendorPaymentReceiptPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         color: const Color(0xFFFBE5AA),
                       ),
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {
-                            // Handle 'Print' button press
-                            Printing.layoutPdf(
-                              onLayout: (PdfPageFormat format) async =>
-                                  await _printReceipt(format),
-                            );
-                          },
-                          child: Text(
-                            'Print',
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF621B2B),
-                            ),
-                          ),
-                        ),
-                      ),
+                      // child: Center(
+                      //   child: TextButton(
+                      //     onPressed: () {
+                      //       // Handle 'Print' button press
+                      //       Printing.layoutPdf(
+                      //         onLayout: (PdfPageFormat format) async =>
+                      //             await _printReceipt(format),
+                      //       );
+                      //     },
+                      //     child: Text(
+                      //       'Print',
+                      //       style: GoogleFonts.nunito(
+                      //         fontSize: 16,
+                      //         fontWeight: FontWeight.w700,
+                      //         color: const Color(0xFF621B2B),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ),
                   ],
                 ),
@@ -242,16 +242,16 @@ class VendorPaymentReceiptPage extends StatelessWidget {
     );
   }
 
-  Future<Uint8List> _printReceipt(PdfPageFormat format) async {
-    // Create a PDF document
-    final doc = await Printing.convertHtml(
-      format: format,
-      html: _generateReceiptHtml(),
-    );
+  // Future<Uint8List> _printReceipt(PdfPageFormat format) async {
+  //   // Create a PDF document
+  //   final doc = await Printing.convertHtml(
+  //     format: format,
+  //     html: _generateReceiptHtml(),
+  //   );
 
-    // Return the PDF document as bytes
-    return doc;
-  }
+  //   // Return the PDF document as bytes
+  //   return doc;
+  // }
 
   String _generateReceiptHtml() {
     return '''
