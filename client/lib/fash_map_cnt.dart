@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-// import 'full_map.dart';
+import 'full_map.dart';
 
 class FashMapCnt extends StatefulWidget {
   const FashMapCnt({super.key});
@@ -249,14 +249,14 @@ class FashMapCntState extends State<FashMapCnt> {
             child: GestureDetector(
               onTap: selectedLocation != null && selectedMap == 0
                   ? () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => FullMap(
-                      //       initialPosition: selectedLocation!,
-                      //     ),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullMap(
+                            initialPosition: selectedLocation!,
+                          ),
+                        ),
+                      );
                     }
                   : null,
               child: Container(
