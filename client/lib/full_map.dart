@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'fash_search_nav_me.dart';
+
 class FullMap extends StatefulWidget {
   final LatLng initialPosition;
 
@@ -83,14 +85,14 @@ class _FullMapState extends State<FullMap> {
                           } else {
                             bottomSheetHeight = maxBottomSheetHeight;
                             // Navigate to the new component when the search bar is tapped
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => FashSearchNavMe(
-                            //       initialPosition: widget.initialPosition,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FashSearchNavMe(
+                                  initialPosition: widget.initialPosition,
+                                ),
+                              ),
+                            );
                           }
                         });
                       },
@@ -109,14 +111,14 @@ class _FullMapState extends State<FullMap> {
                             horizontal: 20, vertical: 20),
                         child: GestureDetector(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => FashSearchNavMe(
-                            //       initialPosition: widget.initialPosition,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FashSearchNavMe(
+                                  initialPosition: widget.initialPosition,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
