@@ -1,11 +1,12 @@
 //fash_dgn_wallet.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'fash_snd_pts.dart';
-import 'trans_hist.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'fash_buy_pts.dart';
+import 'fash_snd_pts.dart';
 import 'loading_modal.dart';
+import 'trans_hist.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -979,7 +980,7 @@ class _WalletScreenState extends State<WalletScreen> {
     await PaymentService.showPaymentModal(
       // ignore: use_build_context_synchronously
       context,
-      transaction: initializedTransaction,
+      transaction: initializedTransaction, callbackUrl: '',
     );
 
     final response = await PaymentService.verifyTransaction(

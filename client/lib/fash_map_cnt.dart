@@ -1,11 +1,10 @@
 // fash_map_cnt.dart
 // ignore_for_file: avoid_print, deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-import 'full_map.dart';
+// import 'full_map.dart';
 
 class FashMapCnt extends StatefulWidget {
   const FashMapCnt({super.key});
@@ -15,7 +14,6 @@ class FashMapCnt extends StatefulWidget {
 }
 
 class FashMapCntState extends State<FashMapCnt> {
-  final MapController rightMapController = MapController();
   LocationData? _currentPosition;
   final Location _location = Location();
 
@@ -110,43 +108,23 @@ class FashMapCntState extends State<FashMapCnt> {
                           ),
                           child: ClipOval(
                             child: _currentPosition != null
-                                ? FlutterMap(
-                                    options: MapOptions(
-                                      center: LatLng(
+                                ? GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: LatLng(
                                         _currentPosition!.latitude!,
                                         _currentPosition!.longitude!,
                                       ),
                                       zoom: 16.0,
-                                      interactiveFlags:
-                                          InteractiveFlag.pinchZoom |
-                                              InteractiveFlag.drag |
-                                              InteractiveFlag.doubleTapZoom,
                                     ),
-                                    children: [
-                                      TileLayer(
-                                        urlTemplate:
-                                            'https://api.mapbox.com/styles/v1/gld-mx24483/clwcfad7h00ct01qsh79s39hx/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                        additionalOptions: const {
-                                          'accessToken':
-                                              'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                          'id': 'mapbox.mapbox-streets-v8',
-                                        },
+                                    markers: {
+                                      Marker(
+                                        markerId: const MarkerId('current'),
+                                        position: LatLng(
+                                          _currentPosition!.latitude!,
+                                          _currentPosition!.longitude!,
+                                        ),
                                       ),
-                                      MarkerLayer(
-                                        markers: [
-                                          Marker(
-                                            point: LatLng(
-                                              _currentPosition!.latitude!,
-                                              _currentPosition!.longitude!,
-                                            ),
-                                            child: const Icon(
-                                              Icons.location_on,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    },
                                   )
                                 : Container(),
                           ),
@@ -218,26 +196,12 @@ class FashMapCntState extends State<FashMapCnt> {
                             color: Colors.grey,
                           ),
                           child: ClipOval(
-                            child: FlutterMap(
-                              options: MapOptions(
-                                center: selectedLocation ??
+                            child: GoogleMap(
+                              initialCameraPosition: CameraPosition(
+                                target: selectedLocation ??
                                     const LatLng(6.5244, 3.3792),
                                 zoom: 7.0,
-                                interactiveFlags: InteractiveFlag.pinchZoom |
-                                    InteractiveFlag.drag |
-                                    InteractiveFlag.doubleTapZoom,
                               ),
-                              children: [
-                                TileLayer(
-                                  urlTemplate:
-                                      'https://api.mapbox.com/styles/v1/gld-mx24483/clwcfad7h00ct01qsh79s39hx/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                  additionalOptions: const {
-                                    'accessToken':
-                                        'pk.eyJ1IjoiZ2xkLW14MjQ0ODMiLCJhIjoiY2x3YTNkYjM3MDl4dTJxbThkMzczYTViOCJ9.BbgPbwHYVpsRewARW-UdJQ',
-                                    'id': 'mapbox.mapbox-streets-v8',
-                                  },
-                                ),
-                              ],
                             ),
                           ),
                         ),
@@ -285,14 +249,14 @@ class FashMapCntState extends State<FashMapCnt> {
             child: GestureDetector(
               onTap: selectedLocation != null && selectedMap == 0
                   ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FullMap(
-                            initialPosition: selectedLocation!,
-                          ),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => FullMap(
+                      //       initialPosition: selectedLocation!,
+                      //     ),
+                      //   ),
+                      // );
                     }
                   : null,
               child: Container(

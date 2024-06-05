@@ -972,6 +972,7 @@ class _WalletScreenState extends State<VendorWalletScreen> {
     await PaymentService.showPaymentModal(
       context,
       transaction: initializedTransaction,
+      callbackUrl: '',
     );
 
     final response = await PaymentService.verifyTransaction(

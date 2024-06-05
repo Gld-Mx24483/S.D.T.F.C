@@ -53,5 +53,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Add the Google Maps API key -->
+	<key>GMSServices</key>
+	<dict>
+		<key>APIKey</key>
+		<string>AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE</string>
+	</dict>
+	
+	<!-- Add the necessary permissions for Google Maps -->
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open and in the background.</string>
 </dict>
 </plist>
