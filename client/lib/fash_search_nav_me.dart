@@ -1,10 +1,13 @@
-// ignore_for_file: avoid_print
+// fash_search_nav_me.dart
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:google_places_flutter/model/prediction.dart';
+import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
+import 'package:google_places_autocomplete_text_field/model/prediction.dart';
+
+import 'map_view_screen.dart';
 
 class FashSearchNavMe extends StatefulWidget {
   final LatLng initialPosition;
@@ -17,11 +20,25 @@ class FashSearchNavMe extends StatefulWidget {
 
 class _FashSearchNavMeState extends State<FashSearchNavMe> {
   final TextEditingController _searchController = TextEditingController();
+  LatLng? _selectedLocation;
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _navigateToMapView() {
+    if (_selectedLocation != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MapViewScreen(
+            selectedLocation: _selectedLocation!,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -110,10 +127,10 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                       width: 2,
                     ),
                   ),
-                  child: GooglePlaceAutoCompleteTextField(
+                  child: GooglePlacesAutoCompleteTextFormField(
                     textEditingController: _searchController,
                     googleAPIKey: 'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
-                    inputDecoration: InputDecoration(
+                    decoration: InputDecoration(
                       hintText: 'Find Shop',
                       hintStyle: GoogleFonts.nunito(
                         fontSize: 14,
@@ -128,53 +145,32 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                     countries: const ["ng"],
                     isLatLngRequired: true,
                     getPlaceDetailWithLatLng: (Prediction prediction) {
-                      print("placeDetails ${prediction.lat}");
+                      setState(() {
+                        _selectedLocation = LatLng(
+                            double.parse(prediction.lat!),
+                            double.parse(prediction.lng!));
+                      });
+                      print("Destination Latitude ${prediction.lat}");
+                      print("Destination Longitude ${prediction.lng}");
+                      print("Description ${prediction.description}");
+                      _navigateToMapView();
                     },
-                    itemClick: (Prediction prediction) {
+                    itmClick: (Prediction prediction) {
                       _searchController.text = prediction.description ?? "";
                       _searchController.selection = TextSelection.fromPosition(
                         TextPosition(
-                            offset: prediction.description?.length ?? 0),
+                          offset: prediction.description?.length ?? 0,
+                        ),
                       );
+                      print(
+                          "Current Position Latitude: ${widget.initialPosition.latitude}, Longitude: ${widget.initialPosition.longitude}");
+                      print("Description ${prediction.description}");
+
+                      _navigateToMapView();
                     },
                   ),
                 ),
               ],
-            ),
-          ),
-          Expanded(
-            child: GooglePlaceAutoCompleteTextField(
-              textEditingController: _searchController,
-              googleAPIKey: 'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
-              inputDecoration: const InputDecoration(
-                hintText: "Search your location",
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-              ),
-              debounceTime: 400,
-              countries: const ["ng"],
-              isLatLngRequired: true,
-              getPlaceDetailWithLatLng: (Prediction prediction) {
-                print("placeDetails ${prediction.lat}");
-              },
-              itemClick: (Prediction prediction) {
-                _searchController.text = prediction.description ?? "";
-                _searchController.selection = TextSelection.fromPosition(
-                  TextPosition(offset: prediction.description?.length ?? 0),
-                );
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => FashNavigation(
-                //       initialPosition: widget.initialPosition,
-                //       destination: LatLng(
-                //         double.parse(prediction.lat ?? '0'),
-                //         double.parse(prediction.lng ?? '0'),
-                //       ),
-                //     ),
-                //   ),
-                // );
-              },
             ),
           ),
         ],

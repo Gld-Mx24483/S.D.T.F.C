@@ -84,7 +84,6 @@ class _FullMapState extends State<FullMap> {
                             bottomSheetHeight = 70;
                           } else {
                             bottomSheetHeight = maxBottomSheetHeight;
-                            // Navigate to the new component when the search bar is tapped
                             Navigator.push(
                               context,
                               MaterialPageRoute(
