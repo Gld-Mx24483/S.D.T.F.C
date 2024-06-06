@@ -35,6 +35,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
         MaterialPageRoute(
           builder: (context) => MapViewScreen(
             selectedLocation: _selectedLocation!,
+            initialPosition: widget.initialPosition,
           ),
         ),
       );
