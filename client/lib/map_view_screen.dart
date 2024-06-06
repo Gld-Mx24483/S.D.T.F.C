@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const MapViewScreen(
-        initialPosition: LatLng(37.7749, -122.4194), // San Francisco
-        selectedLocation: LatLng(37.8199, -122.4783), // Golden Gate Bridge
+        initialPosition: LatLng(37.7749, -122.4194),
+        selectedLocation: LatLng(37.8199, -122.4783),
       ),
     );
   }
