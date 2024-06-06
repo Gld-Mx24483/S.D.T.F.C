@@ -1,5 +1,4 @@
-// fash_search_nav_me.dart
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -78,7 +77,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
               children: [
                 Container(
                   width: 336,
-                  height: 37,
+                  height: 40, // Increased height
                   decoration: const BoxDecoration(
                     color: Color(0xFFF1F1F1),
                     borderRadius: BorderRadius.only(
@@ -116,7 +115,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                 ),
                 Container(
                   width: 336,
-                  height: 37,
+                  height: 50, // Increased height for better text visibility
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: const BorderRadius.only(
@@ -134,13 +133,16 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                     decoration: InputDecoration(
                       hintText: 'Find Shop',
                       hintStyle: GoogleFonts.nunito(
-                        fontSize: 14,
+                        fontSize: 16, // Adjusted font size
                       ),
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.search,
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical:
+                              10), // Added padding to ensure text is not clipped
                     ),
                     debounceTime: 500,
                     countries: const ["ng"],

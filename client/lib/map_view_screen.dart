@@ -1,4 +1,3 @@
-//map_view_screen.dart
 // ignore_for_file: deprecated_member_use, avoid_print
 
 import 'package:flutter/material.dart';
@@ -52,6 +51,9 @@ class _MapViewScreenState extends State<MapViewScreen> {
   void initState() {
     super.initState();
     _setPolyline();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setCameraToBounds();
+    });
   }
 
   void _setPolyline() async {
@@ -73,12 +75,29 @@ class _MapViewScreenState extends State<MapViewScreen> {
         polylines.clear();
         polylines[const PolylineId('polyline')] = Polyline(
           polylineId: const PolylineId('polyline'),
-          color: Colors.blue,
+          color: Colors.black,
           points: polylineCoordinates,
           width: 5,
         );
       });
     }
+  }
+
+  void _setCameraToBounds() {
+    LatLngBounds bounds;
+    if (widget.initialPosition.latitude > widget.selectedLocation.latitude &&
+        widget.initialPosition.longitude > widget.selectedLocation.longitude) {
+      bounds = LatLngBounds(
+        southwest: widget.selectedLocation,
+        northeast: widget.initialPosition,
+      );
+    } else {
+      bounds = LatLngBounds(
+        southwest: widget.initialPosition,
+        northeast: widget.selectedLocation,
+      );
+    }
+    _mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
   }
 
   void _toggleDrivingView() async {
@@ -98,7 +117,6 @@ class _MapViewScreenState extends State<MapViewScreen> {
         ),
       );
 
-      // Launch the Google Maps app with navigation mode
       final initialLatLng =
           '${widget.initialPosition.latitude},${widget.initialPosition.longitude}';
       final destinationLatLng =
@@ -109,7 +127,6 @@ class _MapViewScreenState extends State<MapViewScreen> {
       if (await canLaunch(googleMapsUrl)) {
         await launch(googleMapsUrl);
       } else {
-        // Handle the case when Google Maps is not available
         print('Unable to launch Google Maps');
       }
     } else {
@@ -124,6 +141,17 @@ class _MapViewScreenState extends State<MapViewScreen> {
         ),
       );
     }
+  }
+
+  void _focusOnLocation(LatLng location) {
+    _mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: location,
+          zoom: 16.0,
+        ),
+      ),
+    );
   }
 
   @override
@@ -142,6 +170,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
             mapType: MapType.normal,
             onMapCreated: (GoogleMapController controller) {
               _mapController = controller;
+              _setCameraToBounds();
             },
             markers: {
               Marker(
@@ -154,40 +183,48 @@ class _MapViewScreenState extends State<MapViewScreen> {
                 markerId: const MarkerId('selected_location'),
                 position: widget.selectedLocation,
                 icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueBlue),
+                    BitmapDescriptor.hueRed),
               ),
             },
             polylines: Set<Polyline>.of(polylines.values),
           ),
           Positioned(
-            bottom: 20,
-            right: 20,
+            bottom: 50,
+            left: 20,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ElevatedButton(
                   onPressed: _toggleDrivingView,
                   child: Icon(
                     _drivingViewEnabled
-                        ? Icons.directions_car
+                        ? Icons.navigation
                         : Icons.directions_car_outlined,
                   ),
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () {
-                    _mapController.animateCamera(
-                      CameraUpdate.newCameraPosition(
-                        CameraPosition(
-                          target: widget.selectedLocation,
-                          zoom: 16.0,
-                        ),
-                      ),
-                    );
+                    _focusOnLocation(widget.selectedLocation);
                   },
-                  child: const Text('Focus on Location'),
+                  child: const Text('Destination'),
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    _focusOnLocation(widget.initialPosition);
+                  },
+                  child: const Text('My Location'),
                 ),
               ],
+            ),
+          ),
+          Positioned(
+            bottom: 115,
+            right: 10,
+            child: ElevatedButton(
+              onPressed: _setCameraToBounds,
+              child: const Icon(Icons.zoom_out_map),
             ),
           ),
         ],
