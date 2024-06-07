@@ -1,8 +1,8 @@
-//product_info.dart
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart'; // Import intl package for number formatting
 
 import 'fash_cnt.dart';
 
@@ -21,6 +21,11 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   String _hexColor = '#000000';
   late String _imagePath;
   List<Color> _colors = [];
+  double _weight = 0.0;
+  double _width = 0.0;
+  double _thickness = 0.0;
+
+  final _formatter = NumberFormat('#,###');
 
   @override
   void initState() {
@@ -37,6 +42,9 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       _price = random.nextInt(10001);
       _hexColor =
           '#${random.nextInt(0xFFFFFF + 1).toRadixString(16).padLeft(6, '0')}';
+      _weight = random.nextDouble() * 10;
+      _width = random.nextDouble() * 100;
+      _thickness = random.nextDouble() * 10;
     });
   }
 
@@ -223,6 +231,24 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                 value: 'In Stock',
               ),
               const SizedBox(height: 16),
+              _buildMeasurementField(
+                label: 'Weight',
+                value: _weight,
+                unit: 'kg',
+              ),
+              const SizedBox(height: 16),
+              _buildMeasurementField(
+                label: 'Width',
+                value: _width,
+                unit: 'cm',
+              ),
+              const SizedBox(height: 16),
+              _buildMeasurementField(
+                label: 'Thickness',
+                value: _thickness,
+                unit: 'cm',
+              ),
+              const SizedBox(height: 16),
               _buildTextField(
                 label: 'Quantity',
                 value: _quantity.toString(),
@@ -230,12 +256,12 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Price of the smallest unit',
-                value: '₦$_price',
+                value: '₦ ${_formatter.format(_price)}',
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Total Price',
-                value: '₦${_price * _quantity}',
+                value: '₦ ${_formatter.format(_price * _quantity)}',
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -282,8 +308,95 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
               style: GoogleFonts.nunito(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Colors.grey,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMeasurementField({
+    required String label,
+    required double value,
+    required String unit,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.nunito(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              letterSpacing: -0.019,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(45, 215, 215, 215),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFFD8D7D7),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 135,
+                  height: 34,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBEBEB),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFFD8D7D7),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      value.toStringAsFixed(2),
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 135,
+                  height: 34,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBEBEB),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: const Color(0xFFD8D7D7),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      unit,
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
