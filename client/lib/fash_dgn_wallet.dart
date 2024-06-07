@@ -1,5 +1,5 @@
 // fash_dgn_wallet.dart
-// ignore_for_file: unused_import, unused_field
+// ignore_for_file: unused_import, unused_field, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
@@ -43,8 +43,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
-
-            // Points Slider
             Container(
               width: 334,
               height: 46,
@@ -78,8 +76,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
               ),
             ),
-
-            // Wallet Card
             Container(
               width: 334,
               height: 130,
@@ -210,8 +206,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ],
               ),
             ),
-
-            // Fund Wallet Button
             Container(
               width: 157,
               height: 54,
@@ -257,8 +251,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
               ),
             ),
-
-            // Recent Transactions Header
             Container(
               width: 335,
               height: 19,
@@ -295,8 +287,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ],
               ),
             ),
-
-            // No Transactions
             Center(
               child: Container(
                 width: 231,
@@ -348,7 +338,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top Text
                     Center(
                       child: Container(
                         width: 350,
@@ -365,8 +354,6 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                       ),
                     ),
-
-                    // Amount Label
                     Container(
                       width: 48,
                       height: 16,
@@ -380,8 +367,6 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                       ),
                     ),
-
-                    // Amount Input Field
                     Container(
                       width: 263,
                       height: 46,
@@ -398,7 +383,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           prefixIcon: Padding(
                             padding: const EdgeInsets.only(top: 12, left: 16.0),
                             child: Text(
-                              '₦', // Always display ₦ symbol
+                              '₦',
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -426,8 +411,139 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                       ),
                     ),
+                    Container(
+                      width: 265,
+                      height: 44,
+                      margin: const EdgeInsets.only(top: 38),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBE5AA),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showPointsConversionModal(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFBE5AA),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF621B2B),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
-                    // Continue Button
+  void showPointsConversionModal(BuildContext context) {
+    final nairaAmount = double.parse(_amountController.text);
+    final pointsAmount = (nairaAmount / 100) * 20;
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                width: 400,
+                height: 280,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 350,
+                        height: 29,
+                        margin: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          'Points to be received:',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF232323),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 48,
+                      height: 16,
+                      margin: const EdgeInsets.only(top: 31),
+                      child: Text(
+                        'Points',
+                        style: GoogleFonts.nunito(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 263,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(
+                          color: const Color(0xFFFBE5AA),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Image.asset(
+                              'pics/coin.png',
+                              width: 20,
+                              height: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            pointsAmount.toInt().toString(),
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF49454F),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 263,
+                      height: 20,
+                      margin: const EdgeInsets.only(top: 5, left: 2),
+                      child: Text(
+                        '100 Naira = 20 Points',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF49454F),
+                        ),
+                      ),
+                    ),
                     Container(
                       width: 265,
                       height: 44,
@@ -470,7 +586,6 @@ class _WalletScreenState extends State<WalletScreen> {
     const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
     final amount = double.parse(_amountController.text) * 100;
     const currency = PaystackCurrency.ngn;
-
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
@@ -487,13 +602,13 @@ class _WalletScreenState extends State<WalletScreen> {
         PaystackPaymentChannel.eft,
       ],
     );
+
     final initializedTransaction =
         await PaymentService.initializeTransaction(request);
 
     if (!mounted) return;
 
     if (!initializedTransaction.status) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Colors.red,
         content: Text(initializedTransaction.message),
@@ -503,9 +618,9 @@ class _WalletScreenState extends State<WalletScreen> {
     }
 
     await PaymentService.showPaymentModal(
-      // ignore: use_build_context_synchronously
       context,
-      transaction: initializedTransaction, callbackUrl: '',
+      transaction: initializedTransaction,
+      callbackUrl: '',
     );
 
     final response = await PaymentService.verifyTransaction(
@@ -514,8 +629,6 @@ class _WalletScreenState extends State<WalletScreen> {
     );
 
     if (response.status) {
-      // Payment successful, handle the response
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.green,
@@ -523,8 +636,6 @@ class _WalletScreenState extends State<WalletScreen> {
         ),
       );
     } else {
-      // Payment failed, handle the error
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
