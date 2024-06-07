@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'cart.dart';
 import 'notification.dart';
+import 'product_info.dart';
 
 class DesignerDashboard extends StatefulWidget {
   const DesignerDashboard({super.key});
@@ -423,6 +424,13 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                               _selectedIndex =
                                   (_selectedIndex == index) ? null : index;
                             });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductInfoScreen(
+                                    imagePath: 'pics/${index + 1}.png'),
+                              ),
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
