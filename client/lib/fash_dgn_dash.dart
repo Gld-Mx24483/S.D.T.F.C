@@ -427,8 +427,8 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProductInfoScreen(
-                                    imagePath: 'pics/${index + 1}.png'),
+                                builder: (context) =>
+                                    ProductInfoScreen(selectedIndex: index),
                               ),
                             );
                           },
@@ -439,9 +439,14 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             ),
                             child: Stack(
                               children: [
-                                Image.asset(
-                                  'pics/${index + 1}.png',
-                                  fit: BoxFit.cover,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    'pics/${index + 1}.png',
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
                                 ),
                                 if (_selectedIndex == index)
                                   Positioned.fill(

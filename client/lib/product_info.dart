@@ -1,3 +1,4 @@
+//product_info.dart
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,7 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'fash_cnt.dart';
 
 class ProductInfoScreen extends StatefulWidget {
-  const ProductInfoScreen({super.key, required String imagePath});
+  final int selectedIndex;
+
+  const ProductInfoScreen({super.key, required this.selectedIndex});
 
   @override
   State<ProductInfoScreen> createState() => _ProductInfoScreenState();
@@ -16,16 +19,15 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
   int _quantity = 0;
   int _price = 0;
   String _hexColor = '#000000';
-  final List<Color> _colors = [
-    const Color.fromARGB(255, 98, 27, 43),
-    Colors.green,
-    const Color.fromARGB(255, 4, 2, 105),
-  ];
+  late String _imagePath;
+  List<Color> _colors = [];
 
   @override
   void initState() {
     super.initState();
     _generateRandomValues();
+    _generateRandomColors();
+    _imagePath = 'pics/${widget.selectedIndex + 1}.png';
   }
 
   void _generateRandomValues() {
@@ -35,7 +37,21 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
       _price = random.nextInt(10001);
       _hexColor =
           '#${random.nextInt(0xFFFFFF + 1).toRadixString(16).padLeft(6, '0')}';
-      _colors.shuffle();
+    });
+  }
+
+  void _generateRandomColors() {
+    final random = Random();
+    setState(() {
+      _colors = List.generate(
+        3,
+        (index) => Color.fromARGB(
+          255,
+          random.nextInt(256),
+          random.nextInt(256),
+          random.nextInt(256),
+        ),
+      );
     });
   }
 
@@ -129,8 +145,8 @@ class _ProductInfoScreenState extends State<ProductInfoScreen> {
                       height: 246,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        image: const DecorationImage(
-                          image: AssetImage('pics/1.png'),
+                        image: DecorationImage(
+                          image: AssetImage(_imagePath),
                           fit: BoxFit.cover,
                         ),
                       ),
