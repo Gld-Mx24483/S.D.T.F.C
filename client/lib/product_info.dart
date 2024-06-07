@@ -1,8 +1,9 @@
+//product_info.dart
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart'; // Import intl package for number formatting
+import 'package:intl/intl.dart';
 
 import 'fash_cnt.dart';
 
