@@ -1,31 +1,18 @@
-//map_view_screen.dart
 // ignore_for_file: deprecated_member_use, avoid_print
+
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Map View',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MapViewScreen(
-        initialPosition: LatLng(37.7749, -122.4194),
-        selectedLocation: LatLng(37.8199, -122.4783),
-      ),
-    );
-  }
+Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
+  final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
+    const ImageConfiguration(),
+    assetPath,
+  );
+  return customIcon;
 }
 
 class MapViewScreen extends StatefulWidget {
@@ -47,14 +34,60 @@ class _MapViewScreenState extends State<MapViewScreen> {
   Map<PolylineId, Polyline> polylines = {};
   PolylinePoints polylinePoints = PolylinePoints();
   bool _drivingViewEnabled = false;
+  late BitmapDescriptor _customNavigationIcon;
+  late BitmapDescriptor _customStoreIcon;
+
+  List<Map<String, dynamic>> nearbyLocations = [];
+  List<String> storeNames = [
+    'Gucci Shop',
+    'Zara Clothing Store',
+    'Nike Store',
+    'H&M',
+    'Adidas Store',
+    'Louis Vuitton',
+    'Prada',
+    'Chanel',
+    'Burberry',
+    'Versace',
+    'Fendi',
+    'Hermès',
+    'Dior',
+    'Dolce & Gabbana',
+    'Saint Laurent'
+  ];
 
   @override
   void initState() {
     super.initState();
+    _setCustomMapIcons();
+    _generateNearbyLocations();
     _setPolyline();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setCameraToBounds();
     });
+  }
+
+  void _setCustomMapIcons() async {
+    _customNavigationIcon = await getCustomIcon('pics/navigation.png');
+    _customStoreIcon = await getCustomIcon('pics/store.png');
+    setState(() {});
+  }
+
+  void _generateNearbyLocations() {
+    final random = Random();
+    final numberOfLocations = random.nextInt(5) + 3; // 3 to 7 locations
+    storeNames.shuffle();
+
+    for (var i = 0; i < numberOfLocations; i++) {
+      final lat = widget.selectedLocation.latitude +
+          random.nextDouble() * 0.01 * (i % 2 == 0 ? 1 : -1);
+      final lng = widget.selectedLocation.longitude +
+          random.nextDouble() * 0.01 * (i % 2 == 0 ? -1 : 1);
+      nearbyLocations.add({
+        'name': storeNames[i],
+        'position': LatLng(lat, lng),
+      });
+    }
   }
 
   void _setPolyline() async {
@@ -158,9 +191,6 @@ class _MapViewScreenState extends State<MapViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Map View'),
-      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -177,8 +207,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
               Marker(
                 markerId: const MarkerId('initial_location'),
                 position: widget.initialPosition,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen),
+                icon: _customNavigationIcon,
               ),
               Marker(
                 markerId: const MarkerId('selected_location'),
@@ -186,8 +215,35 @@ class _MapViewScreenState extends State<MapViewScreen> {
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueRed),
               ),
+              ...nearbyLocations.map(
+                (location) => Marker(
+                  markerId: MarkerId(location['name']),
+                  position: location['position'],
+                  infoWindow: InfoWindow(title: location['name']),
+                  icon: _customStoreIcon,
+                ),
+              ),
             },
             polylines: Set<Polyline>.of(polylines.values),
+          ),
+          Positioned(
+            top: 40,
+            left: 20,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
           ),
           Positioned(
             bottom: 50,

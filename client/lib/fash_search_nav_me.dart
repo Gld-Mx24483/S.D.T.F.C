@@ -1,3 +1,4 @@
+//fash_search_nav_me.dart
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
@@ -115,7 +116,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                 ),
                 Container(
                   width: 336,
-                  height: 50, // Increased height for better text visibility
+                  height: 50,
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: const BorderRadius.only(
@@ -131,18 +132,16 @@ class _FashSearchNavMeState extends State<FashSearchNavMe> {
                     textEditingController: _searchController,
                     googleAPIKey: 'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
                     decoration: InputDecoration(
-                      hintText: 'Find Shop',
+                      hintText: 'Find Market Location',
                       hintStyle: GoogleFonts.nunito(
-                        fontSize: 16, // Adjusted font size
+                        fontSize: 14,
                       ),
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.search,
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical:
-                              10), // Added padding to ensure text is not clipped
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                     debounceTime: 500,
                     countries: const ["ng"],
