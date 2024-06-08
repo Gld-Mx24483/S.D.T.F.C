@@ -1,8 +1,20 @@
+//full_map.dart
 // ignore_for_file: deprecated_member_use, avoid_print, unused_element, use_full_hex_values_for_flutter_colors
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fash_search_nav_me.dart';
+
+Future<BitmapDescriptor> getCustomIcon() async {
+  final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
+    const ImageConfiguration(),
+    'pics/navigation.png',
+  );
+  return customIcon;
+}
 
 class FullMap extends StatefulWidget {
   final LatLng initialPosition;
@@ -16,11 +28,104 @@ class FullMap extends StatefulWidget {
 class _FullMapState extends State<FullMap> {
   double bottomSheetHeight = 70;
   double maxBottomSheetHeight = 300;
+  BitmapDescriptor? _customIcon;
+  Map<PolylineId, Polyline> polylines = {};
+  PolylinePoints polylinePoints = PolylinePoints();
+  late GoogleMapController _mapController;
+
+  List<Map<String, dynamic>> nearbyLocations = [
+    {
+      'name': 'Gucci Shop',
+      'position': null,
+    },
+    {
+      'name': 'Zara Clothing Store',
+      'position': null,
+    },
+    {
+      'name': 'Nike Store',
+      'position': null,
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _setCustomMapIcon();
+    _generateNearbyLocations();
+  }
+
+  void _setCustomMapIcon() async {
+    _customIcon = await getCustomIcon();
+    setState(() {});
+  }
+
+  void _generateNearbyLocations() {
+    final random = Random();
+    for (var i = 0; i < nearbyLocations.length; i++) {
+      final lat = widget.initialPosition.latitude +
+          random.nextDouble() * 0.01 * (i % 2 == 0 ? 1 : -1);
+      final lng = widget.initialPosition.longitude +
+          random.nextDouble() * 0.01 * (i % 2 == 0 ? -1 : 1);
+      nearbyLocations[i]['position'] = LatLng(lat, lng);
+    }
+  }
+
+  void _setPolyline(LatLng destination) async {
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
+      PointLatLng(
+          widget.initialPosition.latitude, widget.initialPosition.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
+    );
+
+    if (result.points.isNotEmpty) {
+      setState(() {
+        polylines.clear();
+        polylines[const PolylineId('polyline')] = Polyline(
+          polylineId: const PolylineId('polyline'),
+          color: Colors.black,
+          points: result.points
+              .map((e) => LatLng(e.latitude, e.longitude))
+              .toList(),
+          width: 5,
+        );
+      });
+
+      _animateToPolyline(result.points);
+    }
+  }
+
+  void _animateToPolyline(List<PointLatLng> points) {
+    if (points.isEmpty) return;
+
+    double minLat = points[0].latitude;
+    double maxLat = points[0].latitude;
+    double minLng = points[0].longitude;
+    double maxLng = points[0].longitude;
+
+    for (var point in points) {
+      minLat = min(minLat, point.latitude);
+      maxLat = max(maxLat, point.latitude);
+      minLng = min(minLng, point.longitude);
+      maxLng = max(maxLng, point.longitude);
+    }
+
+    final bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+
+    _mapController.animateCamera(
+      CameraUpdate.newLatLngBounds(bounds, 50),
+    );
+  }
 
   void toggleBottomSheet(DragUpdateDetails? details) {
     if (details != null && details.delta.dy > 0) {
       setState(() {
         bottomSheetHeight = 70;
+        polylines.clear(); // Clear polylines when bottom sheet is collapsed
       });
     } else {
       setState(() {
@@ -43,7 +148,22 @@ class _FullMapState extends State<FullMap> {
               Marker(
                 markerId: const MarkerId('current'),
                 position: widget.initialPosition,
+                icon: _customIcon ?? BitmapDescriptor.defaultMarker,
               ),
+              ...nearbyLocations.map(
+                (location) => Marker(
+                  markerId: MarkerId(location['name']),
+                  position: location['position'],
+                  infoWindow: InfoWindow(title: location['name']),
+                  onTap: () {
+                    _setPolyline(location['position']);
+                  },
+                ),
+              ),
+            },
+            polylines: Set<Polyline>.of(polylines.values),
+            onMapCreated: (GoogleMapController controller) {
+              _mapController = controller;
             },
           ),
           Positioned(
@@ -82,6 +202,8 @@ class _FullMapState extends State<FullMap> {
                         setState(() {
                           if (bottomSheetHeight == maxBottomSheetHeight) {
                             bottomSheetHeight = 70;
+                            polylines
+                                .clear(); // Clear polylines when bottom sheet is collapsed
                           } else {
                             bottomSheetHeight = maxBottomSheetHeight;
                             Navigator.push(
@@ -104,7 +226,7 @@ class _FullMapState extends State<FullMap> {
                         ),
                       ),
                     ),
-                    if (bottomSheetHeight == maxBottomSheetHeight)
+                    if (bottomSheetHeight == maxBottomSheetHeight) ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 20),
@@ -134,7 +256,7 @@ class _FullMapState extends State<FullMap> {
                                 ),
                                 SizedBox(width: 8),
                                 Text(
-                                  'Search Location',
+                                  'Search Market Location',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.bold,
@@ -145,151 +267,57 @@ class _FullMapState extends State<FullMap> {
                           ),
                         ),
                       ),
-                    if (bottomSheetHeight == maxBottomSheetHeight)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 21,
-                              height: 21,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFA6A6A6).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Icon(
-                                Icons.access_time,
-                                color: Color(0xFFA6A6A6),
-                                size: 16,
-                              ),
-                            ),
-                            const SizedBox(width: 23),
-                            const Column(
+                      ...nearbyLocations.map(
+                        (location) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          child: GestureDetector(
+                            onTap: () {
+                              _setPolyline(location['position']);
+                            },
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Gucci Shop',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                const SizedBox(
+                                  width: 21,
+                                  height: 21,
+                                  child: Icon(
+                                    Icons.location_on_outlined,
+                                    color: Color(0xFFA6A6A6),
+                                    size: 16,
                                   ),
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Ikoyi, Lagos, Nigeria',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFFA6A6A6),
-                                  ),
+                                const SizedBox(width: 23),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      location['name'],
+                                      style: const TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${location['position'].latitude.toStringAsFixed(4)}, ${location['position'].longitude.toStringAsFixed(4)}',
+                                      style: const TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFFA6A6A6),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    if (bottomSheetHeight == maxBottomSheetHeight)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 21,
-                              height: 21,
-                              decoration: BoxDecoration(
-                                color:
-                                    const Color(0xffa6aa6a6).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Icon(
-                                Icons.location_on_outlined,
-                                color: Color(0xFFA6A6A6),
-                                size: 16,
-                              ),
-                            ),
-                            const SizedBox(width: 23),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Zara Clothing Store',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Lekki Phase 1, Lagos, Nigeria',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFFA6A6A6),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (bottomSheetHeight == maxBottomSheetHeight)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 21,
-                              height: 21,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFA6A6A6).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Icon(
-                                Icons.location_on_outlined,
-                                color: Color(0xFFA6A6A6),
-                                size: 16,
-                              ),
-                            ),
-                            const SizedBox(width: 23),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Nike Store',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Victoria Island, Lagos, Nigeria',
-                                  style: TextStyle(
-                                    fontFamily: 'Nunito',
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xFFA6A6A6),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                    ],
                   ],
                 ),
               ),
