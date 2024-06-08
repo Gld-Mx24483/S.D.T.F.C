@@ -36,6 +36,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
   bool _drivingViewEnabled = false;
   late BitmapDescriptor _customNavigationIcon;
   late BitmapDescriptor _customStoreIcon;
+  late LatLng _currentDestination;
 
   List<Map<String, dynamic>> nearbyLocations = [];
   List<String> storeNames = [
@@ -59,11 +60,12 @@ class _MapViewScreenState extends State<MapViewScreen> {
   @override
   void initState() {
     super.initState();
+    _currentDestination = widget.selectedLocation;
     _setCustomMapIcons();
     _generateNearbyLocations();
-    _setPolyline();
+    _setPolyline(_currentDestination);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setCameraToBounds();
+      _setCameraToBounds(_currentDestination);
     });
   }
 
@@ -75,7 +77,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
 
   void _generateNearbyLocations() {
     final random = Random();
-    final numberOfLocations = random.nextInt(5) + 3; // 3 to 7 locations
+    final numberOfLocations = random.nextInt(5) + 3;
     storeNames.shuffle();
 
     for (var i = 0; i < numberOfLocations; i++) {
@@ -90,13 +92,12 @@ class _MapViewScreenState extends State<MapViewScreen> {
     }
   }
 
-  void _setPolyline() async {
+  void _setPolyline(LatLng destination) async {
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
       PointLatLng(
           widget.initialPosition.latitude, widget.initialPosition.longitude),
-      PointLatLng(
-          widget.selectedLocation.latitude, widget.selectedLocation.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
     );
 
     if (result.points.isNotEmpty) {
@@ -117,18 +118,18 @@ class _MapViewScreenState extends State<MapViewScreen> {
     }
   }
 
-  void _setCameraToBounds() {
+  void _setCameraToBounds(LatLng destination) {
     LatLngBounds bounds;
-    if (widget.initialPosition.latitude > widget.selectedLocation.latitude &&
-        widget.initialPosition.longitude > widget.selectedLocation.longitude) {
+    if (widget.initialPosition.latitude > destination.latitude &&
+        widget.initialPosition.longitude > destination.longitude) {
       bounds = LatLngBounds(
-        southwest: widget.selectedLocation,
+        southwest: destination,
         northeast: widget.initialPosition,
       );
     } else {
       bounds = LatLngBounds(
         southwest: widget.initialPosition,
-        northeast: widget.selectedLocation,
+        northeast: destination,
       );
     }
     _mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
@@ -143,7 +144,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
       _mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: widget.selectedLocation,
+            target: _currentDestination,
             zoom: 25.0,
             tilt: 65.0,
             bearing: 40.0,
@@ -154,7 +155,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
       final initialLatLng =
           '${widget.initialPosition.latitude},${widget.initialPosition.longitude}';
       final destinationLatLng =
-          '${widget.selectedLocation.latitude},${widget.selectedLocation.longitude}';
+          '${_currentDestination.latitude},${_currentDestination.longitude}';
       final googleMapsUrl =
           'https://www.google.com/maps/dir/?api=1&origin=$initialLatLng&destination=$destinationLatLng&travelmode=driving';
 
@@ -167,7 +168,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
       _mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: widget.selectedLocation,
+            target: _currentDestination,
             zoom: 14.0,
             tilt: 0.0,
             bearing: 0.0,
@@ -201,7 +202,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
             mapType: MapType.normal,
             onMapCreated: (GoogleMapController controller) {
               _mapController = controller;
-              _setCameraToBounds();
+              _setCameraToBounds(widget.selectedLocation);
             },
             markers: {
               Marker(
@@ -221,26 +222,34 @@ class _MapViewScreenState extends State<MapViewScreen> {
                   position: location['position'],
                   infoWindow: InfoWindow(title: location['name']),
                   icon: _customStoreIcon,
+                  onTap: () {
+                    _setPolyline(location['position']);
+                    _setCameraToBounds(location['position']);
+                    setState(() {
+                      _currentDestination = location['position'];
+                    });
+                  },
                 ),
               ),
             },
             polylines: Set<Polyline>.of(polylines.values),
           ),
           Positioned(
-            top: 40,
-            left: 20,
+            top: 50,
+            left: 30,
             child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.transparent,
+                  color: const Color.fromARGB(0, 255, 255, 255),
+                  border: Border.all(color: Colors.black, width: 2),
                 ),
                 child: const Icon(
                   Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 24,
+                  color: Colors.black,
+                  size: 18,
                 ),
               ),
             ),
@@ -280,7 +289,7 @@ class _MapViewScreenState extends State<MapViewScreen> {
             bottom: 115,
             right: 10,
             child: ElevatedButton(
-              onPressed: _setCameraToBounds,
+              onPressed: () => _setCameraToBounds(_currentDestination),
               child: const Icon(Icons.zoom_out_map),
             ),
           ),
