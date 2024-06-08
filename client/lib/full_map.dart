@@ -1,4 +1,3 @@
-//full_map.dart
 // ignore_for_file: deprecated_member_use, avoid_print, unused_element, use_full_hex_values_for_flutter_colors
 import 'dart:math';
 
@@ -8,10 +7,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'fash_search_nav_me.dart';
 
-Future<BitmapDescriptor> getCustomIcon() async {
+Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
   final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
     const ImageConfiguration(),
-    'pics/navigation.png',
+    assetPath,
   );
   return customIcon;
 }
@@ -28,7 +27,8 @@ class FullMap extends StatefulWidget {
 class _FullMapState extends State<FullMap> {
   double bottomSheetHeight = 70;
   double maxBottomSheetHeight = 300;
-  BitmapDescriptor? _customIcon;
+  late BitmapDescriptor _customNavigationIcon;
+  late BitmapDescriptor _customStoreIcon;
   Map<PolylineId, Polyline> polylines = {};
   PolylinePoints polylinePoints = PolylinePoints();
   late GoogleMapController _mapController;
@@ -51,12 +51,13 @@ class _FullMapState extends State<FullMap> {
   @override
   void initState() {
     super.initState();
-    _setCustomMapIcon();
+    _setCustomMapIcons();
     _generateNearbyLocations();
   }
 
-  void _setCustomMapIcon() async {
-    _customIcon = await getCustomIcon();
+  void _setCustomMapIcons() async {
+    _customNavigationIcon = await getCustomIcon('pics/navigation.png');
+    _customStoreIcon = await getCustomIcon('pics/store.png');
     setState(() {});
   }
 
@@ -125,7 +126,6 @@ class _FullMapState extends State<FullMap> {
     if (details != null && details.delta.dy > 0) {
       setState(() {
         bottomSheetHeight = 70;
-        polylines.clear(); // Clear polylines when bottom sheet is collapsed
       });
     } else {
       setState(() {
@@ -148,13 +148,14 @@ class _FullMapState extends State<FullMap> {
               Marker(
                 markerId: const MarkerId('current'),
                 position: widget.initialPosition,
-                icon: _customIcon ?? BitmapDescriptor.defaultMarker,
+                icon: _customNavigationIcon,
               ),
               ...nearbyLocations.map(
                 (location) => Marker(
                   markerId: MarkerId(location['name']),
                   position: location['position'],
                   infoWindow: InfoWindow(title: location['name']),
+                  icon: _customStoreIcon,
                   onTap: () {
                     _setPolyline(location['position']);
                   },
@@ -202,8 +203,7 @@ class _FullMapState extends State<FullMap> {
                         setState(() {
                           if (bottomSheetHeight == maxBottomSheetHeight) {
                             bottomSheetHeight = 70;
-                            polylines
-                                .clear(); // Clear polylines when bottom sheet is collapsed
+                            polylines.clear();
                           } else {
                             bottomSheetHeight = maxBottomSheetHeight;
                             Navigator.push(
