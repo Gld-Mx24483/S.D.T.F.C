@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
 import 'package:google_places_autocomplete_text_field/model/prediction.dart';
 
-import 'map_view_screen.dart';
+import 'shop_details_screen.dart';
 
 class FashSearchNavMe extends StatefulWidget {
   final LatLng initialPosition;
@@ -86,19 +86,20 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
     }
   }
 
-  void _navigateToMapView() {
+  void _navigateToShopDetails() {
     if (selectedNearbyLocation != null) {
       Navigator.push(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              FadeTransition(
-            opacity: animation,
-            child: MapViewScreen(
-              selectedLocation: selectedNearbyLocation!['position'],
-              initialPosition: widget.initialPosition,
-            ),
-          ),
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return FadeTransition(
+              opacity: animation,
+              child: ShopDetailsScreen(
+                shopDetails: selectedNearbyLocation!,
+                initialPosition: widget.initialPosition,
+              ),
+            );
+          },
           transitionDuration: const Duration(milliseconds: 500),
         ),
       );
@@ -325,7 +326,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
               bottom: 20,
               child: Center(
                 child: ElevatedButton(
-                  onPressed: _navigateToMapView,
+                  onPressed: _navigateToShopDetails,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFBE5AA),
                     padding: const EdgeInsets.symmetric(
