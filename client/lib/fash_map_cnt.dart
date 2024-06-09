@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-import 'full_map.dart';
+import 'fash_search_nav_me.dart';
 
 class FashMapCnt extends StatefulWidget {
   const FashMapCnt({super.key});
@@ -252,7 +252,7 @@ class FashMapCntState extends State<FashMapCnt> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FullMap(
+                          builder: (context) => FashSearchNavMe(
                             initialPosition: selectedLocation!,
                           ),
                         ),
