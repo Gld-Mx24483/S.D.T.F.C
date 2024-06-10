@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'fash_cnt.dart';
 import 'fashven_chat.dart';
+import 'ven_call.dart';
 import 'ven_proof_dets.dart';
 
 Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
@@ -253,7 +254,16 @@ class _MapViewScreenState extends State<MapViewScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B),
+            _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const VendorCall(
+                    vendorPhoneNumber: '+234 810 677 5111',
+                  ),
+                ),
+              );
+            }),
             _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
               Navigator.push(
                 context,

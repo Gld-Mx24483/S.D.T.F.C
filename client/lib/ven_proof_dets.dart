@@ -1,11 +1,12 @@
 // ven_prof_dets.dart
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'fashven_chat.dart';
+import 'ven_call.dart';
+import 'ven_proof_dets_bottom_navigation_bar.dart';
 
-class VendorProfileDetails extends StatelessWidget {
+class VendorProfileDetails extends StatefulWidget {
   final String selectedLocationName;
   final String address;
 
@@ -14,6 +15,13 @@ class VendorProfileDetails extends StatelessWidget {
     required this.selectedLocationName,
     required this.address,
   });
+
+  @override
+  State<VendorProfileDetails> createState() => _VendorProfileDetailsState();
+}
+
+class _VendorProfileDetailsState extends State<VendorProfileDetails> {
+  String _selectedLabel = 'Profile';
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +73,7 @@ class VendorProfileDetails extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    selectedLocationName,
+                    widget.selectedLocationName,
                     style: GoogleFonts.nunito(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -77,14 +85,23 @@ class VendorProfileDetails extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _buildIconWithText(
-                          Icons.call_outlined, 'Call', 0xFF621B2B),
+                          Icons.call_outlined, 'Call', 0xFF621B2B, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const VendorCall(
+                              vendorPhoneNumber: '+234 810 677 5111',
+                            ),
+                          ),
+                        );
+                      }),
                       _buildIconWithText(
                           Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => FashvenChat(
-                              selectedLocationName: selectedLocationName,
+                              selectedLocationName: widget.selectedLocationName,
                             ),
                           ),
                         );
@@ -96,7 +113,7 @@ class VendorProfileDetails extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              address,
+              widget.address,
               style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -155,7 +172,19 @@ class VendorProfileDetails extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        onItemTapped: _onBottomNavigationBarItemTapped,
+        tutorialStep: 0,
+        selectedLabel: _selectedLabel,
+      ),
     );
+  }
+
+  void _onBottomNavigationBarItemTapped(String label) {
+    setState(() {
+      _selectedLabel = label;
+      // Perform any additional actions based on the selected label
+    });
   }
 
   Widget _buildIconWithText(IconData icon, String text, int color,
