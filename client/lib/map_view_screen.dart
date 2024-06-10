@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'fash_cnt.dart';
+import 'fashven_chat.dart';
 
 Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
   final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
@@ -237,7 +238,16 @@ class _MapViewScreenState extends State<MapViewScreen>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B),
-            _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B),
+            _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FashvenChat(
+                    selectedLocationName: widget.shopDetails['name'],
+                  ),
+                ),
+              );
+            }),
             _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
           ],
         ),
@@ -279,25 +289,29 @@ class _MapViewScreenState extends State<MapViewScreen>
     );
   }
 
-  Widget _buildIconWithText(IconData icon, String text, int color) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          size: 24,
-          color: Color(color),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          text,
-          style: GoogleFonts.nunito(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
+  Widget _buildIconWithText(IconData icon, String text, int color,
+      [VoidCallback? onTap]) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 24,
             color: Color(color),
-            letterSpacing: -0.3,
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Text(
+            text,
+            style: GoogleFonts.nunito(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Color(color),
+              letterSpacing: -0.3,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
