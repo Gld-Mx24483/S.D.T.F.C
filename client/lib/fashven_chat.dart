@@ -1,6 +1,9 @@
-//fashven_chat.dart
+// fashven_chat.dart
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class FashvenChat extends StatefulWidget {
   final String selectedLocationName;
@@ -17,6 +20,21 @@ class FashvenChat extends StatefulWidget {
 
 class _FashvenChatState extends State<FashvenChat> {
   final TextEditingController _messageController = TextEditingController();
+  final List<Message> _messages = [];
+  final Random _random = Random();
+
+  final List<String> _aiResponses = [
+    "That sounds great! When should we meet?",
+    "I'm not sure about that. Can you provide more details?",
+    "Absolutely! I'll take care of it right away.",
+    "I'm sorry to hear that. Is there anything I can do to help?",
+    "Thanks for letting me know. I'll keep you updated.",
+    "That's an interesting idea. Let's discuss it further.",
+    "I'm excited about this project! When do we start?",
+    "I understand your concerns. Let's find a solution together.",
+    "Great job! Your hard work is really paying off.",
+    "I'll look into that and get back to you soon.",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -94,16 +112,34 @@ class _FashvenChatState extends State<FashvenChat> {
       body: Column(
         children: [
           Expanded(
-            child: Center(
-              child: Text(
-                'No Messages',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: const Color(0xFFA6A6A6),
-                ),
-              ),
-            ),
+            child: _messages.isEmpty
+                ? Center(
+                    child: Text(
+                      'No Messages',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFA6A6A6),
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    reverse: true,
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) {
+                      final message = _messages[_messages.length - 1 - index];
+                      if (message.isDateSeparator) {
+                        return DateSeparatorBubble(date: message.timestamp);
+                      } else {
+                        return Align(
+                          alignment: message.isSender
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: MessageBubble(message: message),
+                        );
+                      }
+                    },
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 3.0),
@@ -125,22 +161,36 @@ class _FashvenChatState extends State<FashvenChat> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _messageController,
-                        decoration: InputDecoration(
-                          hintText: 'Type a message...',
-                          hintStyle: GoogleFonts.nunito(
-                            color: Colors.grey.shade400,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxHeight: 120,
+                        ),
+                        child: TextField(
+                          controller: _messageController,
+                          decoration: InputDecoration(
+                            hintText: 'Type a message...',
+                            hintStyle: GoogleFonts.nunito(
+                              color: Colors.grey.shade400,
+                              fontSize: 16,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade200,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 12.0,
+                            ),
+                          ),
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
+                            color: Colors.black87,
                           ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey.shade200,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 12.0),
+                          cursorColor: const Color(0xFF621B2B),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
                         ),
                       ),
                     ),
@@ -154,10 +204,10 @@ class _FashvenChatState extends State<FashvenChat> {
                     ),
                     const SizedBox(width: 8.0),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: _sendMessage,
                       icon: const Icon(
                         Icons.send,
-                        color: Colors.blue,
+                        color: Color(0xFF621B2B),
                       ),
                     ),
                   ],
@@ -166,6 +216,150 @@ class _FashvenChatState extends State<FashvenChat> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _sendMessage() {
+    final text = _messageController.text.trim();
+    if (text.isNotEmpty) {
+      final now = DateTime.now();
+      if (_messages.isEmpty || !_isSameDay(_messages.last.timestamp, now)) {
+        _messages.add(Message.dateSeparator(now));
+      }
+
+      setState(() {
+        _messages.add(Message(text: text, isSender: true));
+        _messageController.clear();
+      });
+
+      Future.delayed(Duration(seconds: 1 + _random.nextInt(2)), () {
+        final aiResponse = _aiResponses[_random.nextInt(_aiResponses.length)];
+        setState(() {
+          _messages.add(Message(text: aiResponse, isSender: false));
+        });
+      });
+    }
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+}
+
+class Message {
+  final String text;
+  final bool isSender;
+  final DateTime timestamp;
+  final bool isDateSeparator;
+
+  Message({
+    required this.text,
+    required this.isSender,
+    DateTime? timestamp,
+  })  : timestamp = timestamp ?? DateTime.now(),
+        isDateSeparator = false;
+
+  Message.dateSeparator(this.timestamp)
+      : text = '',
+        isSender = false,
+        isDateSeparator = true;
+}
+
+class MessageBubble extends StatelessWidget {
+  final Message message;
+
+  const MessageBubble({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: message.isSender
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Container(
+            constraints: const BoxConstraints(maxWidth: 235),
+            decoration: BoxDecoration(
+              color: message.isSender ? const Color(0xFFDCF7C5) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                if (!message.isSender)
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 0,
+                    blurRadius: 1,
+                    offset: const Offset(0, 1),
+                  ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                message.text,
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4, right: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (message.isSender) ...[
+                  const Icon(Icons.done_all,
+                      size: 16, color: Color(0xFF34B7F1)),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  DateFormat('h:mm a').format(message.timestamp),
+                  style: GoogleFonts.nunito(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DateSeparatorBubble extends StatelessWidget {
+  final DateTime date;
+
+  const DateSeparatorBubble({super.key, required this.date});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Center(
+        child: Container(
+          width: 100,
+          height: 21,
+          decoration: BoxDecoration(
+            color: const Color(0xFFDDDDE9),
+            borderRadius: BorderRadius.circular(10.5),
+          ),
+          child: Center(
+            child: Text(
+              DateFormat('EEE, MMM d').format(date),
+              style: GoogleFonts.nunito(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF111827),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

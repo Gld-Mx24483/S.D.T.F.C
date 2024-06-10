@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'fash_cnt.dart';
 import 'fashven_chat.dart';
+import 'ven_proof_dets.dart';
 
 Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
   final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
@@ -174,6 +175,18 @@ class _MapViewScreenState extends State<MapViewScreen>
     );
   }
 
+  void _navigateToVendorProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VendorProfileDetails(
+          selectedLocationName: widget.shopDetails['name'],
+          address: '123 Main St, Anytown, NG',
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomSheetContent() {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -197,40 +210,43 @@ class _MapViewScreenState extends State<MapViewScreen>
           ),
         ),
         const SizedBox(height: 20),
-        Container(
-          width: 336,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Image.asset(
-                'pics/store.png',
-                width: 40,
-                height: 40,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  widget.shopDetails['name'],
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+        GestureDetector(
+          onTap: _navigateToVendorProfile,
+          child: Container(
+            width: 336,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Image.asset(
+                  'pics/store.png',
+                  width: 40,
+                  height: 40,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    widget.shopDetails['name'],
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.black),
-            ],
+                const Icon(Icons.arrow_forward_ios, color: Colors.black),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 20),
@@ -340,6 +356,7 @@ class _MapViewScreenState extends State<MapViewScreen>
                 markerId: const MarkerId('selected_location'),
                 position: widget.selectedLocation,
                 icon: _customStoreIcon,
+                onTap: _navigateToVendorProfile,
               ),
             },
             polylines: Set<Polyline>.of(polylines.values),
