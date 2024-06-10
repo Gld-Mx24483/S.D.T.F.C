@@ -41,7 +41,7 @@ class VendorProfileDetails extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             Image.asset(
-              'pics/store.png',
+              'pics/bigstore.png',
               width: 90,
               height: 90,
             ),
@@ -130,6 +130,8 @@ class VendorProfileDetails extends StatelessWidget {
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
                 ),
                 boxShadow: [
                   BoxShadow(
