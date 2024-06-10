@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'fash_cnt.dart';
+
 Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
   final BitmapDescriptor customIcon = await BitmapDescriptor.fromAssetImage(
     const ImageConfiguration(),
@@ -239,7 +241,40 @@ class _MapViewScreenState extends State<MapViewScreen>
             _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 100),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FashCnt()),
+                      (route) => false,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFBE5AA),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Back to Connect',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF621B2B),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -367,26 +402,28 @@ class _MapViewScreenState extends State<MapViewScreen>
                 child: AnimatedBuilder(
                   animation: _animation,
                   builder: (context, child) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20 * _animation.value),
-                          topRight: Radius.circular(20 * _animation.value),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black
-                                .withOpacity(0.1 * _animation.value),
-                            spreadRadius: 1,
-                            blurRadius: 10,
-                            offset: Offset(0, -5 * _animation.value),
-                          ),
-                        ],
+                    return ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20 * _animation.value),
+                        topRight: Radius.circular(20 * _animation.value),
                       ),
-                      child: SingleChildScrollView(
-                        controller: scrollController,
-                        child: _buildBottomSheetContent(),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black
+                                  .withOpacity(0.1 * _animation.value),
+                              spreadRadius: 1,
+                              blurRadius: 10,
+                              offset: Offset(0, -5 * _animation.value),
+                            ),
+                          ],
+                        ),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: _buildBottomSheetContent(),
+                        ),
                       ),
                     );
                   },
