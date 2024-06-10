@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'map_view_screen.dart';
+import 'connect_to_vendor_screen.dart';
 
 class ShopDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> shopDetails;
@@ -112,8 +112,8 @@ class ShopDetailsScreen extends StatelessWidget {
                     pageBuilder: (context, animation, secondaryAnimation) {
                       return FadeTransition(
                         opacity: animation,
-                        child: MapViewScreen(
-                          selectedLocation: shopDetails['position'],
+                        child: ConnectingToVendorScreen(
+                          shopDetails: shopDetails,
                           initialPosition: initialPosition,
                         ),
                       );
