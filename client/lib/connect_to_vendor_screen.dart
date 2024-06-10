@@ -1,4 +1,6 @@
 // connect_to_vendor_screen.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,6 +27,13 @@ class ConnectingToVendorScreen extends StatefulWidget {
 class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
   bool _isProcessing = false;
   bool _isRequestSent = false;
+  Timer? _autoNavigationTimer;
+
+  @override
+  void dispose() {
+    _autoNavigationTimer?.cancel();
+    super.dispose();
+  }
 
   void _showLoadingModal() {
     showDialog(
@@ -49,10 +58,32 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
               _isProcessing = false;
               _isRequestSent = true;
             });
+            _startAutoNavigationTimer();
           },
         );
       },
     );
+  }
+
+  void _startAutoNavigationTimer() {
+    _autoNavigationTimer = Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) {
+            return FadeTransition(
+              opacity: animation,
+              child: MapViewScreen(
+                selectedLocation: widget.shopDetails['position'],
+                initialPosition: widget.initialPosition,
+                shopDetails: widget.shopDetails,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 500),
+        ),
+      );
+    });
   }
 
   @override
@@ -69,7 +100,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               Text(
-                'Connecting to Vendor',
+                _isRequestSent ? 'Connected to Vendor' : 'Connecting to Vendor',
                 style: GoogleFonts.nunito(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -149,21 +180,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_isRequestSent) {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: MapViewScreen(
-                              selectedLocation: widget.shopDetails['position'],
-                              initialPosition: widget.initialPosition,
-                            ),
-                          );
-                        },
-                        transitionDuration: const Duration(milliseconds: 500),
-                      ),
-                    );
+                    // Do nothing, as we'll automatically navigate after 3 seconds
                   } else {
                     setState(() {
                       _isProcessing = true;
