@@ -1,7 +1,8 @@
+//fashven_chat.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class FashvenChat extends StatelessWidget {
+class FashvenChat extends StatefulWidget {
   final String selectedLocationName;
   final String selectedLocationAddress = '123 Main Street, Anytown, CA 12345';
 
@@ -9,6 +10,13 @@ class FashvenChat extends StatelessWidget {
     super.key,
     required this.selectedLocationName,
   });
+
+  @override
+  State<FashvenChat> createState() => _FashvenChatState();
+}
+
+class _FashvenChatState extends State<FashvenChat> {
+  final TextEditingController _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +27,7 @@ class FashvenChat extends StatelessWidget {
         child: Container(
           color: Colors.white,
           child: Padding(
-            // padding: const EdgeInsets.all(16.0),
             padding: const EdgeInsets.only(top: 40.0, left: 10.0, right: 10.0),
-
             child: Card(
               color: Colors.white,
               elevation: 4.0,
@@ -47,7 +53,7 @@ class FashvenChat extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          selectedLocationName,
+                          widget.selectedLocationName,
                           style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -55,7 +61,7 @@ class FashvenChat extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          selectedLocationAddress,
+                          widget.selectedLocationAddress,
                           style: GoogleFonts.nunito(
                             fontSize: 11,
                             fontWeight: FontWeight.w300,
@@ -85,15 +91,81 @@ class FashvenChat extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
-        child: Text(
-          'No Messages',
-          style: GoogleFonts.nunito(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF111827),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Text(
+                'No Messages',
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFFA6A6A6),
+                ),
+              ),
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 3.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        decoration: InputDecoration(
+                          hintText: 'Type a message...',
+                          hintStyle: GoogleFonts.nunito(
+                            color: Colors.grey.shade400,
+                            fontSize: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade200,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 12.0),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.attach_file,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.send,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
