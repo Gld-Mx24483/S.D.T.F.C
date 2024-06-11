@@ -1,17 +1,22 @@
 // fashven_chat.dart
+// ignore_for_file: avoid_print
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FashvenChat extends StatefulWidget {
   final String selectedLocationName;
   final String selectedLocationAddress = '123 Main Street, Anytown, CA 12345';
+  final String phoneNumber;
 
   const FashvenChat({
     super.key,
     required this.selectedLocationName,
+    required this.phoneNumber,
   });
 
   @override
@@ -93,7 +98,9 @@ class _FashvenChatState extends State<FashvenChat> {
                     Padding(
                       padding: const EdgeInsets.only(right: 20),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _makePhoneCall(widget.phoneNumber);
+                        },
                         icon: const Icon(
                           Icons.call_outlined,
                           color: Color(0xFF621B2B),
@@ -227,7 +234,6 @@ class _FashvenChatState extends State<FashvenChat> {
       if (_messages.isEmpty || !_isSameDay(_messages.last.timestamp, now)) {
         _messages.add(Message.dateSeparator(now));
       }
-
       setState(() {
         _messages.add(Message(text: text, isSender: true));
         _messageController.clear();
@@ -245,6 +251,18 @@ class _FashvenChatState extends State<FashvenChat> {
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      print('Could not launch $launchUri');
+    }
+  }
 }
 
 class Message {
@@ -252,14 +270,12 @@ class Message {
   final bool isSender;
   final DateTime timestamp;
   final bool isDateSeparator;
-
   Message({
     required this.text,
     required this.isSender,
     DateTime? timestamp,
   })  : timestamp = timestamp ?? DateTime.now(),
         isDateSeparator = false;
-
   Message.dateSeparator(this.timestamp)
       : text = '',
         isSender = false,
@@ -268,9 +284,7 @@ class Message {
 
 class MessageBubble extends StatelessWidget {
   final Message message;
-
   const MessageBubble({super.key, required this.message});
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -334,9 +348,7 @@ class MessageBubble extends StatelessWidget {
 
 class DateSeparatorBubble extends StatelessWidget {
   final DateTime date;
-
   const DateSeparatorBubble({super.key, required this.date});
-
   @override
   Widget build(BuildContext context) {
     return Padding(

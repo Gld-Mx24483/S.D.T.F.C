@@ -1,19 +1,23 @@
 // ven_prof_dets.dart
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'fashven_chat.dart';
-import 'ven_call.dart';
 import 'ven_proof_dets_bottom_navigation_bar.dart';
 
 class VendorProfileDetails extends StatefulWidget {
   final String selectedLocationName;
   final String address;
+  final String phoneNumber;
 
   const VendorProfileDetails({
     super.key,
     required this.selectedLocationName,
     required this.address,
+    required this.phoneNumber,
   });
 
   @override
@@ -22,6 +26,7 @@ class VendorProfileDetails extends StatefulWidget {
 
 class _VendorProfileDetailsState extends State<VendorProfileDetails> {
   String _selectedLabel = 'Profile';
+  int _selectedStarIndex = 0; // Track the selected star index
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +91,7 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
                     children: [
                       _buildIconWithText(
                           Icons.call_outlined, 'Call', 0xFF621B2B, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const VendorCall(
-                              vendorPhoneNumber: '+234 810 677 5111',
-                            ),
-                          ),
-                        );
+                        _makePhoneCall(widget.phoneNumber);
                       }),
                       _buildIconWithText(
                           Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
@@ -102,6 +100,7 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
                           MaterialPageRoute(
                             builder: (context) => FashvenChat(
                               selectedLocationName: widget.selectedLocationName,
+                              phoneNumber: widget.phoneNumber,
                             ),
                           ),
                         );
@@ -126,14 +125,23 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
                 5,
-                (index) => Container(
-                  width: 24,
-                  height: 24,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  child: const Icon(
-                    Icons.star_border,
-                    color: Color(0xFFFAD776),
-                    size: 30,
+                (index) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedStarIndex = index;
+                    });
+                  },
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(
+                      index < _selectedStarIndex + 1
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: const Color(0xFFFAD776),
+                      size: 30,
+                    ),
                   ),
                 ),
               ),
@@ -242,5 +250,17 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
         ],
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      print('Could not launch $launchUri');
+    }
   }
 }

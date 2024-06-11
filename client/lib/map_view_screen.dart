@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'fash_cnt.dart';
 import 'fashven_chat.dart';
-import 'ven_call.dart';
 import 'ven_proof_dets.dart';
 
 Future<BitmapDescriptor> getCustomIcon(String assetPath) async {
@@ -183,6 +182,7 @@ class _MapViewScreenState extends State<MapViewScreen>
         builder: (context) => VendorProfileDetails(
           selectedLocationName: widget.shopDetails['name'],
           address: '123 Main St, Anytown, NG',
+          phoneNumber: '08106775111',
         ),
       ),
     );
@@ -254,22 +254,14 @@ class _MapViewScreenState extends State<MapViewScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VendorCall(
-                    vendorPhoneNumber: '+234 810 677 5111',
-                  ),
-                ),
-              );
-            }),
+            _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B),
             _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => FashvenChat(
                     selectedLocationName: widget.shopDetails['name'],
+                    phoneNumber: '08106775111',
                   ),
                 ),
               );
@@ -318,7 +310,13 @@ class _MapViewScreenState extends State<MapViewScreen>
   Widget _buildIconWithText(IconData icon, String text, int color,
       [VoidCallback? onTap]) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (icon == Icons.call_outlined) {
+          _makePhoneCall('08106775111');
+        } else if (onTap != null) {
+          onTap();
+        }
+      },
       child: Column(
         children: [
           Icon(
@@ -339,6 +337,18 @@ class _MapViewScreenState extends State<MapViewScreen>
         ],
       ),
     );
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      print('Could not launch $launchUri');
+    }
   }
 
   @override
