@@ -1,3 +1,4 @@
+// fash_add_search_nav_me.dart
 // ignore_for_file: avoid_print, unnecessary_to_list_in_spreads, unused_field
 
 import 'dart:math';
@@ -10,34 +11,35 @@ import 'package:google_places_autocomplete_text_field/model/prediction.dart';
 
 import 'connect_to_vendor_screen.dart';
 
-class FashSearchNavMe extends StatefulWidget {
+class FashAddSearchNavMe extends StatefulWidget {
   final LatLng initialPosition;
   final bool isAddingNewLocation;
 
-  const FashSearchNavMe({
+  const FashAddSearchNavMe({
     super.key,
     required this.initialPosition,
     required this.isAddingNewLocation,
   });
 
   @override
-  State<FashSearchNavMe> createState() => _FashSearchNavMeState();
+  State<FashAddSearchNavMe> createState() => _FashAddSearchNavMeState();
 }
 
-class _FashSearchNavMeState extends State<FashSearchNavMe>
+class _FashAddSearchNavMeState extends State<FashAddSearchNavMe>
     with SingleTickerProviderStateMixin {
-  final TextEditingController _startingPointController =
+  final TextEditingController _startLocationController =
       TextEditingController();
-  final TextEditingController _marketLocationController =
-      TextEditingController();
+  final TextEditingController _destinationController = TextEditingController();
+  LatLng? _startLocation;
   LatLng? _selectedLocation;
-  LatLng? _marketLocation;
+  LatLng? _currentLocation;
   List<Map<String, dynamic>> nearbyLocations = [];
   Map<String, dynamic>? selectedNearbyLocation;
   late AnimationController _animationController;
   late Animation<double> _animation;
-  final FocusNode _startingPointFocusNode = FocusNode();
-  final FocusNode _marketLocationFocusNode = FocusNode();
+  final FocusNode _startLocationFocusNode = FocusNode();
+  final FocusNode _destinationFocusNode = FocusNode();
+  late bool _isAddingNewLocation;
 
   @override
   void initState() {
@@ -50,16 +52,17 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
-    _selectedLocation = widget.initialPosition;
+    _isAddingNewLocation = widget.isAddingNewLocation;
+    _currentLocation = widget.initialPosition;
   }
 
   @override
   void dispose() {
-    _startingPointController.dispose();
-    _marketLocationController.dispose();
+    _startLocationController.dispose();
+    _destinationController.dispose();
     _animationController.dispose();
-    _startingPointFocusNode.dispose();
-    _marketLocationFocusNode.dispose();
+    _startLocationFocusNode.dispose();
+    _destinationFocusNode.dispose();
     super.dispose();
   }
 
@@ -87,9 +90,9 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
 
     nearbyLocations.clear();
     for (var i = 0; i < numberOfLocations; i++) {
-      final lat = _marketLocation!.latitude +
+      final lat = _selectedLocation!.latitude +
           random.nextDouble() * 0.01 * (i % 2 == 0 ? 1 : -1);
-      final lng = _marketLocation!.longitude +
+      final lng = _selectedLocation!.longitude +
           random.nextDouble() * 0.01 * (i % 2 == 0 ? -1 : 1);
       nearbyLocations.add({
         'name': storeNames[i],
@@ -100,13 +103,6 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
 
   void _navigateToShopDetails() {
     if (selectedNearbyLocation != null) {
-      final initialPosition =
-          widget.isAddingNewLocation && _selectedLocation != null
-              ? _selectedLocation!
-              : widget.initialPosition;
-
-      print('Initial Position: $initialPosition');
-
       Navigator.push(
         context,
         PageRouteBuilder(
@@ -115,7 +111,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
               opacity: animation,
               child: ConnectingToVendorScreen(
                 shopDetails: selectedNearbyLocation!,
-                initialPosition: initialPosition,
+                initialPosition: _currentLocation!,
               ),
             );
           },
@@ -135,7 +131,6 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
               setState(() {
                 nearbyLocations.clear();
                 selectedNearbyLocation = null;
-                _marketLocation = null;
               });
               _animationController.reverse();
             } else {
@@ -174,124 +169,96 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      if (!widget.isAddingNewLocation)
-                        Column(
-                          children: [
-                            Container(
-                              width: 336,
-                              height: 40,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFF1F1F1),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10),
-                                ),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    const CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 7,
-                                      child: Icon(
-                                        Icons.circle,
-                                        color: Colors.blue,
-                                        size: 14,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        'Current Location',
-                                        style: GoogleFonts.nunito(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                      Container(
+                        width: 336,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF1F1F1),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
                         ),
-                      if (widget.isAddingNewLocation)
-                        Column(
-                          children: [
-                            Container(
-                              width: 336,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: const Color(0xFFFBE5AA),
-                                  width: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 12),
+                                child: const CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  radius: 7,
+                                  child: Icon(
+                                    Icons.circle,
+                                    color: Colors.blue,
+                                    size: 14,
+                                  ),
                                 ),
                               ),
-                              child: GooglePlacesAutoCompleteTextFormField(
-                                textEditingController: _startingPointController,
-                                googleAPIKey:
-                                    'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
-                                decoration: InputDecoration(
-                                  hintText: 'Starting point',
-                                  hintStyle: GoogleFonts.nunito(
-                                    fontSize: 14,
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: GooglePlacesAutoCompleteTextFormField(
+                                  textEditingController:
+                                      _startLocationController,
+                                  googleAPIKey:
+                                      'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
+                                  decoration: InputDecoration(
+                                    hintText: 'Add Start Location',
+                                    hintStyle: GoogleFonts.nunito(
+                                      fontSize: 14,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 10),
                                   ),
-                                  border: InputBorder.none,
-                                  prefixIcon: const Icon(
-                                    Icons.search,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  ),
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                ),
-                                debounceTime: 500,
-                                countries: const ["ng"],
-                                isLatLngRequired: true,
-                                focusNode: _startingPointFocusNode,
-                                getPlaceDetailWithLatLng:
-                                    (Prediction prediction) {
-                                  setState(() {
-                                    _selectedLocation = LatLng(
+                                  debounceTime: 500,
+                                  countries: const ["ng"],
+                                  isLatLngRequired: true,
+                                  focusNode: _startLocationFocusNode,
+                                  getPlaceDetailWithLatLng:
+                                      (Prediction prediction) {
+                                    setState(() {
+                                      _startLocation = LatLng(
                                         double.parse(prediction.lat!),
-                                        double.parse(prediction.lng!));
-                                  });
-                                  print(
-                                      'Selected Starting Point Coordinates: $_selectedLocation');
-                                },
-                                itmClick: (Prediction prediction) {
-                                  _startingPointController.text =
-                                      prediction.description ?? "";
-                                  _startingPointController.selection =
-                                      TextSelection.fromPosition(
-                                    TextPosition(
-                                      offset:
-                                          prediction.description?.length ?? 0,
-                                    ),
-                                  );
-                                },
+                                        double.parse(prediction.lng!),
+                                      );
+                                    });
+                                    _startLocationFocusNode.unfocus();
+                                  },
+                                  itmClick: (Prediction prediction) {
+                                    _startLocationController.text =
+                                        prediction.description ?? "";
+                                    _startLocationController.selection =
+                                        TextSelection.fromPosition(
+                                      TextPosition(
+                                        offset:
+                                            prediction.description?.length ?? 0,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                          ],
+                            ],
+                          ),
                         ),
+                      ),
+                      const SizedBox(height: 10),
                       Container(
                         width: 336,
                         height: 50,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 255, 255, 255),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
                           border: Border.all(
                             color: const Color(0xFFFBE5AA),
                             width: 2,
                           ),
                         ),
                         child: GooglePlacesAutoCompleteTextFormField(
-                          textEditingController: _marketLocationController,
+                          textEditingController: _destinationController,
                           googleAPIKey:
                               'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE',
                           decoration: InputDecoration(
@@ -310,20 +277,22 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
                           debounceTime: 500,
                           countries: const ["ng"],
                           isLatLngRequired: true,
-                          focusNode: _marketLocationFocusNode,
+                          focusNode: _destinationFocusNode,
                           getPlaceDetailWithLatLng: (Prediction prediction) {
                             setState(() {
-                              _marketLocation = LatLng(
-                                  double.parse(prediction.lat!),
-                                  double.parse(prediction.lng!));
+                              _selectedLocation = LatLng(
+                                double.parse(prediction.lat!),
+                                double.parse(prediction.lng!),
+                              );
                               _generateNearbyLocations();
                             });
                             _animationController.forward();
+                            _destinationFocusNode.unfocus();
                           },
                           itmClick: (Prediction prediction) {
-                            _marketLocationController.text =
+                            _destinationController.text =
                                 prediction.description ?? "";
-                            _marketLocationController.selection =
+                            _destinationController.selection =
                                 TextSelection.fromPosition(
                               TextPosition(
                                 offset: prediction.description?.length ?? 0,

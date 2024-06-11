@@ -1,5 +1,5 @@
 //connect_to_vendor_screen.dart
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, avoid_print
 
 import 'dart:async';
 
@@ -45,6 +45,9 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    print(
+        'Initial Position in ConnectingToVendorScreen: ${widget.initialPosition}');
   }
 
   @override
@@ -222,15 +225,6 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
                       ],
                     ),
                   ),
-                  // Expanded(
-                  //   child: Text(
-                  //     widget.shopDetails['name'],
-                  //     style: GoogleFonts.nunito(
-                  //       fontSize: 16,
-                  //       fontWeight: FontWeight.w600,
-                  //     ),
-                  //   ),
-                  // ),
                   GestureDetector(
                     onTap: _toggleBottomOptions,
                     child: AnimatedRotation(

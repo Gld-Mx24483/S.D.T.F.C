@@ -180,8 +180,8 @@ class FashMapCntState extends State<FashMapCnt> {
                 onTap: () {
                   setState(() {
                     selectedMap = 1;
-                    // Setting default location to Lagos
-                    selectedLocation = const LatLng(6.5244, 3.3792);
+                    selectedLocation =
+                        const LatLng(6.5244, 3.3792); // Default location
                   });
                 },
                 child: Column(
@@ -247,13 +247,14 @@ class FashMapCntState extends State<FashMapCnt> {
           Padding(
             padding: const EdgeInsets.only(bottom: 50),
             child: GestureDetector(
-              onTap: selectedLocation != null && selectedMap == 0
+              onTap: selectedLocation != null
                   ? () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => FashSearchNavMe(
                             initialPosition: selectedLocation!,
+                            isAddingNewLocation: selectedMap == 1,
                           ),
                         ),
                       );
