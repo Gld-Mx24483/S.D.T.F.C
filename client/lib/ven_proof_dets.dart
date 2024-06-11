@@ -60,8 +60,8 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
             ),
             const SizedBox(height: 20),
             Container(
-              width: 140,
-              height: 81,
+              width: 250,
+              height: 140,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),

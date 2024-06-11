@@ -1,10 +1,12 @@
 // fashven_chat.dart
 // ignore_for_file: avoid_print
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -154,6 +156,13 @@ class _FashvenChatState extends State<FashvenChat> {
                       final message = _messages[_messages.length - 1 - index];
                       if (message.isDateSeparator) {
                         return DateSeparatorBubble(date: message.timestamp);
+                      } else if (message.imageFile != null) {
+                        return Align(
+                          alignment: message.isSender
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: ImageBubble(message: message),
+                        );
                       } else {
                         return Align(
                           alignment: message.isSender
@@ -219,13 +228,15 @@ class _FashvenChatState extends State<FashvenChat> {
                       ),
                     ),
                     const SizedBox(width: 8.0),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.attach_file,
-                        color: Colors.grey,
-                      ),
-                    ),
+                    ImageUploader(onImageSelected: (imageFile) {
+                      setState(() {
+                        _messages.add(Message(
+                          text: '',
+                          isSender: true,
+                          imageFile: imageFile,
+                        ));
+                      });
+                    }),
                     const SizedBox(width: 8.0),
                     IconButton(
                       onPressed: _sendMessage,
@@ -287,21 +298,27 @@ class Message {
   final bool isSender;
   final DateTime timestamp;
   final bool isDateSeparator;
+  final File? imageFile;
+
   Message({
     required this.text,
     required this.isSender,
     DateTime? timestamp,
+    this.imageFile,
   })  : timestamp = timestamp ?? DateTime.now(),
         isDateSeparator = false;
+
   Message.dateSeparator(this.timestamp)
       : text = '',
         isSender = false,
-        isDateSeparator = true;
+        isDateSeparator = true,
+        imageFile = null;
 }
 
 class MessageBubble extends StatelessWidget {
   final Message message;
   const MessageBubble({super.key, required this.message});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -363,9 +380,113 @@ class MessageBubble extends StatelessWidget {
   }
 }
 
+class ImageBubble extends StatelessWidget {
+  final Message message;
+  const ImageBubble({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: message.isSender
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FullScreenImageView(
+                    imageFile: message.imageFile!,
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  if (!message.isSender)
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 0,
+                      blurRadius: 1,
+                      offset: const Offset(0, 1),
+                    ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  message.imageFile!,
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4, right: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (message.isSender) ...[
+                  const Icon(Icons.done_all,
+                      size: 16, color: Color(0xFF34B7F1)),
+                  const SizedBox(width: 4),
+                ],
+                Text(
+                  DateFormat('h:mm a').format(message.timestamp),
+                  style: GoogleFonts.nunito(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FullScreenImageView extends StatelessWidget {
+  final File imageFile;
+
+  const FullScreenImageView({super.key, required this.imageFile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+        ),
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          maxScale: 4,
+          child: Image.file(imageFile),
+        ),
+      ),
+    );
+  }
+}
+
 class DateSeparatorBubble extends StatelessWidget {
   final DateTime date;
   const DateSeparatorBubble({super.key, required this.date});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -390,6 +511,38 @@ class DateSeparatorBubble extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ImageUploader extends StatefulWidget {
+  final Function(File imageFile) onImageSelected;
+
+  const ImageUploader({super.key, required this.onImageSelected});
+
+  @override
+  State<ImageUploader> createState() => _ImageUploaderState();
+}
+
+class _ImageUploaderState extends State<ImageUploader> {
+  File? _imageFile;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () async {
+        final pickedFile =
+            await ImagePicker().pickImage(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          setState(() {
+            _imageFile = File(pickedFile.path);
+          });
+          widget.onImageSelected(_imageFile!);
+        }
+      },
+      icon: _imageFile == null
+          ? const Icon(Icons.attach_file, color: Colors.grey)
+          : const Icon(Icons.attach_file, color: Colors.grey),
     );
   }
 }
