@@ -45,6 +45,7 @@ class _MapViewScreenState extends State<MapViewScreen>
   late BitmapDescriptor _customStoreIcon;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  bool _showBottomOptions = false;
 
   @override
   void initState() {
@@ -188,6 +189,18 @@ class _MapViewScreenState extends State<MapViewScreen>
     );
   }
 
+  void _toggleBottomOptions() {
+    setState(() {
+      _showBottomOptions = !_showBottomOptions;
+    });
+
+    if (_showBottomOptions) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
   Widget _buildBottomSheetContent() {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -231,7 +244,7 @@ class _MapViewScreenState extends State<MapViewScreen>
             child: Row(
               children: [
                 Image.asset(
-                  'pics/store.png',
+                  'pics/bigstore.png',
                   width: 40,
                   height: 40,
                 ),
@@ -245,29 +258,43 @@ class _MapViewScreenState extends State<MapViewScreen>
                     ),
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios, color: Colors.black),
+                GestureDetector(
+                  onTap: _toggleBottomOptions,
+                  child: AnimatedRotation(
+                    turns: _showBottomOptions ? 0.25 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
         const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B),
-            _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FashvenChat(
-                    selectedLocationName: widget.shopDetails['name'],
-                    phoneNumber: '08106775111',
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: _showBottomOptions ? null : 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildIconWithText(Icons.call_outlined, 'Call', 0xFF621B2B),
+              _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FashvenChat(
+                      selectedLocationName: widget.shopDetails['name'],
+                      phoneNumber: '08106775111',
+                    ),
                   ),
-                ),
-              );
-            }),
-            _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
-          ],
+                );
+              }),
+              _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
+            ],
+          ),
         ),
         const SizedBox(height: 100),
         Padding(
@@ -317,24 +344,33 @@ class _MapViewScreenState extends State<MapViewScreen>
           onTap();
         }
       },
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 24,
-            color: Color(color),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: _showBottomOptions ? null : 0,
+        child: AnimatedOpacity(
+          opacity: _showBottomOptions ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 24,
+                color: Color(color),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                text,
+                style: GoogleFonts.nunito(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: Color(color),
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            text,
-            style: GoogleFonts.nunito(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Color(color),
-              letterSpacing: -0.3,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

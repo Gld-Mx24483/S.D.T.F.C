@@ -1,8 +1,15 @@
-// ven_prof_dets_bottom_navigation_bar.dart
+// ignore_for_file: unused_field, unused_import
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'designer_main_screen.dart';
 import 'fash_cnt.dart';
+import 'fash_dgn_dash.dart';
+import 'fash_dgn_wallet.dart';
+import 'fash_profile.dart';
+import 'fash_shop.dart';
+import 'no_record_screen.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
@@ -22,11 +29,12 @@ class CustomBottomNavigationBar extends StatefulWidget {
 
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   String selectedLabel = '';
+  Widget? _currentScreen;
 
   @override
   void initState() {
     super.initState();
-    selectedLabel = 'New'; // Set the default value to 'New'
+    selectedLabel = 'New';
   }
 
   @override
@@ -94,10 +102,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
     return GestureDetector(
       onTap: () {
-        setState(() {
-          selectedLabel = label;
-        });
-        widget.onItemTapped(label);
+        _showConfirmationDialog(label);
       },
       child: Container(
         height: 44,
@@ -195,6 +200,49 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showConfirmationDialog(String label) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: const Text('Are you sure you want to leave this screen?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _navigateToScreen(label);
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _navigateToScreen(String label) {
+    setState(() {
+      selectedLabel = label;
+      widget.onItemTapped(label);
+    });
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DesignerMainScreen(
+          initialPage: label,
         ),
       ),
     );

@@ -1,4 +1,6 @@
-// connect_to_vendor_screen.dart
+//connect_to_vendor_screen.dart
+// ignore_for_file: unused_field
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -24,15 +26,44 @@ class ConnectingToVendorScreen extends StatefulWidget {
       _ConnectingToVendorScreenState();
 }
 
-class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
+class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
+    with TickerProviderStateMixin {
   bool _isProcessing = false;
   bool _isRequestSent = false;
+  bool _showBottomOptions = false;
   Timer? _autoNavigationTimer;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
 
   @override
   void dispose() {
+    _animationController.dispose();
     _autoNavigationTimer?.cancel();
     super.dispose();
+  }
+
+  void _toggleBottomOptions() {
+    setState(() {
+      _showBottomOptions = !_showBottomOptions;
+    });
+
+    if (_showBottomOptions) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
   }
 
   void _showLoadingModal() {
@@ -57,7 +88,9 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
             setState(() {
               _isProcessing = false;
               _isRequestSent = true;
+              _showBottomOptions = true;
             });
+            _animationController.forward();
             _startAutoNavigationTimer();
           },
         );
@@ -86,6 +119,37 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
     });
   }
 
+  Widget _buildIconWithText(IconData icon, String text, int color) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: _showBottomOptions ? null : 0,
+      child: AnimatedOpacity(
+        opacity: _showBottomOptions ? 0.5 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: Color(color),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: GoogleFonts.nunito(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(color),
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,7 +164,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
                 onPressed: () => Navigator.pop(context),
               ),
               Text(
-                _isRequestSent ? 'Connected to Vendor' : 'Connecting to Vendor',
+                _isRequestSent ? 'Connected to Vendor' : 'Connect to Vendor',
                 style: GoogleFonts.nunito(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -130,21 +194,54 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
               child: Row(
                 children: [
                   Image.asset(
-                    'pics/store.png',
+                    'pics/bigstore.png',
                     width: 40,
                     height: 40,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Text(
-                      widget.shopDetails['name'],
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.shopDetails['name'],
+                          style: GoogleFonts.nunito(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '5 Points to connect',
+                          style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF621B2B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Expanded(
+                  //   child: Text(
+                  //     widget.shopDetails['name'],
+                  //     style: GoogleFonts.nunito(
+                  //       fontSize: 16,
+                  //       fontWeight: FontWeight.w600,
+                  //     ),
+                  //   ),
+                  // ),
+                  GestureDetector(
+                    onTap: _toggleBottomOptions,
+                    child: AnimatedRotation(
+                      turns: _showBottomOptions ? 0.25 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.black,
                       ),
                     ),
                   ),
-                  const Icon(Icons.arrow_forward_ios, color: Colors.black),
                 ],
               ),
             ),
@@ -168,7 +265,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
                 _buildIconWithText(
                   Icons.cancel_outlined,
                   'Cancel',
-                  0xFF621B2B,
+                  _isRequestSent ? 0xFF621B2B : 0xFF838384,
                 ),
               ],
             ),
@@ -199,7 +296,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
                 child: Text(
                   _isProcessing
                       ? 'Processing...'
-                      : (_isRequestSent ? 'Sent' : 'Process'),
+                      : (_isRequestSent ? 'Sent' : 'Connect'),
                   style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -211,28 +308,6 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildIconWithText(IconData icon, String text, int color) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          size: 24,
-          color: Color(color),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          text,
-          style: GoogleFonts.nunito(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: Color(color),
-            letterSpacing: -0.3,
-          ),
-        ),
-      ],
     );
   }
 }

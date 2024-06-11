@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
 import 'package:google_places_autocomplete_text_field/model/prediction.dart';
 
-import 'shop_details_screen.dart';
+import 'connect_to_vendor_screen.dart';
 
 class FashSearchNavMe extends StatefulWidget {
   final LatLng initialPosition;
@@ -94,7 +94,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
           pageBuilder: (context, animation, secondaryAnimation) {
             return FadeTransition(
               opacity: animation,
-              child: ShopDetailsScreen(
+              child: ConnectingToVendorScreen(
                 shopDetails: selectedNearbyLocation!,
                 initialPosition: widget.initialPosition,
               ),
