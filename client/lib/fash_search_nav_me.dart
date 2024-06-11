@@ -288,7 +288,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
                             child: Row(
                               children: [
                                 Image.asset(
-                                  'pics/store.png',
+                                  'pics/bigstore.png',
                                   width: 35.84,
                                   height: 40,
                                 ),
