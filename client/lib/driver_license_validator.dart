@@ -15,14 +15,14 @@ class DriverLicenseValidator {
       }
     }
     print('Recognized Text from Driver\'s License:\n$recognizedTextStr');
-    final RegExp bloodGroupRegExp = RegExp(r'BG\s*([A|B|AB|O][+-])');
+    final RegExp bloodGroupRegExp = RegExp(r'BG\s*([A|B|AB|O|0][+-]?)');
     final RegExp stateRegExp = RegExp(
         r'(LAGOS|AKWA IBOM|ANAMBRA|BAUCHI|BAYELSA|BENUE|BORNO|CROSS RIVER|DELTA|EBONYI|EDO|EKITI|ENUGU|GOMBE|IMO|JIGAWA|KADUNA|KANO|KATSINA|KEBBI|KOGI|KWARA|NASARAWA|NIGER|OGUN|ONDO|OSUN|OYO|PLATEAU|RIVERS|SOKOTO|TARABA|YOBE|ZAMFARA)\s*STATE');
     final RegExp surnameRegExp = RegExp(r'^([\w]+),\s+([\w]+\s+[\w]+)$');
     bool isBloodGroupValid = false;
     bool isStateValid = false;
     String surname = '';
-    String remainingName = '';
+
     for (final line in recognizedTextStr.split('\n')) {
       if (bloodGroupRegExp.hasMatch(line)) {
         isBloodGroupValid = true;
@@ -35,9 +35,8 @@ class DriverLicenseValidator {
       }
       if (surnameRegExp.hasMatch(line)) {
         surname = surnameRegExp.firstMatch(line)?.group(1) ?? '';
-        remainingName = surnameRegExp.firstMatch(line)?.group(2) ?? '';
+
         print('Surname match found: $surname');
-        print('Remaining name match found: $remainingName');
       }
     }
     bool isValid = isBloodGroupValid && isStateValid && surname.isNotEmpty;
