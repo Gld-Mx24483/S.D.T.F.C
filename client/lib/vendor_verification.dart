@@ -1,11 +1,12 @@
 // vendor_verification.dart
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'nin_validator.dart'; // Import the NinValidator
 import 'vendor_bottom_navigation_bar.dart';
 
 class VendorVerificationScreen extends StatefulWidget {
@@ -57,88 +58,16 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       _isValidatingIdFile = true;
     });
 
-    final TextRecognizer textRecognizer =
-        TextRecognizer(script: TextRecognitionScript.latin);
-    final RecognizedText recognizedText = await textRecognizer
-        .processImage(InputImage.fromFilePath(_idFile!.path));
-
-    String recognizedTextStr = '';
-
-    for (TextBlock block in recognizedText.blocks) {
-      for (TextLine line in block.lines) {
-        recognizedTextStr += '${line.text}\n';
-      }
-    }
-
-    print(recognizedTextStr);
-
-    // Regular expressions to capture dynamic values for NIN
-    final RegExp ninRegExp = RegExp(r'\b\d{11}\b');
-    final RegExp trackingIdRegExp = RegExp(r'Tracking ID:\s*([A-Z0-9]{15})');
-
-    // Regular expressions for other values (not used for validation)
-    final RegExp surnameRegExp = RegExp(r'Gender:\s*([A-Z ]+)');
-    final RegExp firstNameRegExp = RegExp(r'First Name:\s*([A-Z ]+)');
-    final RegExp middleNameRegExp = RegExp(r'Middle Name:\s*([A-Z]+)\s*([MF])');
-    // final RegExp sexRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)\s*([MF])');
-
-    String errorMessage = '';
     bool isValid = false;
+    String errorMessage = '';
 
-    // Check for NIN and Tracking ID if selected ID type is National Identification Number
     if (_selectedIdType == 'National Identification Number') {
-      if (ninRegExp.hasMatch(recognizedTextStr)) {
-        print(
-            'NIN match found: ${ninRegExp.firstMatch(recognizedTextStr)?.group(0)}');
-      } else {
-        print('No NIN match found');
-      }
-
-      if (trackingIdRegExp.hasMatch(recognizedTextStr)) {
-        print(
-            'Tracking ID match found: ${trackingIdRegExp.firstMatch(recognizedTextStr)?.group(1)}');
-      } else {
-        print('No Tracking ID match found');
-      }
-
-      if (ninRegExp.hasMatch(recognizedTextStr) &&
-          trackingIdRegExp.hasMatch(recognizedTextStr)) {
-        isValid = true;
-      } else {
+      isValid = await NinValidator.validateIdFile(_idFile!.path);
+      if (!isValid) {
         errorMessage = 'Not a valid NIN';
       }
     } else {
       errorMessage = 'Please select National Identification Number';
-    }
-
-    // Print matches for other regular expressions
-    if (surnameRegExp.hasMatch(recognizedTextStr)) {
-      print(
-          'Surname match found: ${surnameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
-    }
-
-    if (firstNameRegExp.hasMatch(recognizedTextStr)) {
-      print(
-          'First name match found: ${firstNameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
-    }
-
-    if (middleNameRegExp.hasMatch(recognizedTextStr)) {
-      print(
-          'Middle name match found: ${middleNameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
-      print(
-          'Sex match found: ${middleNameRegExp.firstMatch(recognizedTextStr)?.group(2)}');
-    }
-
-    // if (sexRegExp.hasMatch(recognizedTextStr)) {
-    //   // print(
-    //   //     'Sex match found: ${sexRegExp.firstMatch(recognizedTextStr)?.group(1)}');
-    //   print(
-    //       'Sex match found: ${sexRegExp.firstMatch(recognizedTextStr)?.group(2)}');
-    // }
-
-    // Log the error message
-    if (!isValid) {
-      print(errorMessage);
     }
 
     // Update the error message state
