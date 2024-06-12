@@ -1,3 +1,4 @@
+// vendor_verification.dart
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   PickedFile? _idFile;
   PickedFile? _addressFile;
   String _idFileError = '';
+  bool _isValidatingIdFile = false;
+  bool _isIdFileValid = false;
 
   Future<void> _pickIdFile() async {
     final ImagePicker picker = ImagePicker();
@@ -30,6 +33,8 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     if (idFile != null) {
       setState(() {
         _idFile = PickedFile(idFile.path);
+        _idFileError = '';
+        _isIdFileValid = false;
         _validateIdFile();
       });
     }
@@ -48,6 +53,10 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   }
 
   Future<void> _validateIdFile() async {
+    setState(() {
+      _isValidatingIdFile = true;
+    });
+
     final TextRecognizer textRecognizer =
         TextRecognizer(script: TextRecognitionScript.latin);
     final RecognizedText recognizedText = await textRecognizer
@@ -83,39 +92,51 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
         RegExp(r'Middle Name:\s*([A-Za-z ]+)\s*([MF])');
     final RegExp sexRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)\s*([MF])');
 
-    // Initialize error message
     String errorMessage = '';
+    bool isValid = true;
 
-    // Check for key phrases
+    // Check for key phrases for NIN
     for (var phrase in keyPhrases) {
       if (!recognizedTextStr.contains(phrase)) {
-        print('Not a valid NIN');
+        isValid = false;
+        errorMessage = 'Not a valid NIN';
+        break;
       }
     }
 
-    // Check for dynamic values
-    if (!ninRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
-    } else if (!trackingIdRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
-    } else if (!surnameRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
-    } else if (!firstNameRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
-    } else if (!middleNameRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
-    } else if (!sexRegExp.hasMatch(recognizedTextStr)) {
-      errorMessage = 'Not a valid NIN';
+    // Check for dynamic values for NIN
+    if (isValid) {
+      if (!ninRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      } else if (!trackingIdRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      } else if (!surnameRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      } else if (!firstNameRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      } else if (!middleNameRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      } else if (!sexRegExp.hasMatch(recognizedTextStr)) {
+        errorMessage = 'Not a valid NIN';
+        isValid = false;
+      }
     }
 
     // Log the error message
-    if (errorMessage.isNotEmpty) {
+    if (!isValid) {
       print(errorMessage);
     }
 
     // Update the error message state
     setState(() {
       _idFileError = errorMessage;
+      _isValidatingIdFile = false;
+      _isIdFileValid = isValid;
     });
   }
 
@@ -228,8 +249,11 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildUploadButton(
+// label: 'Upload Proof of Identification',
                       onTap: _pickIdFile,
                       file: _idFile,
+                      isValidating: _isValidatingIdFile,
+                      isValid: _isIdFileValid,
                       errorText: _idFileError,
                     ),
                     const SizedBox(height: 36),
@@ -242,7 +266,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                     const SizedBox(height: 50),
                     GestureDetector(
                       onTap: () {
-                        // Add new location logic
+// Add new location logic
                       },
                       child: Container(
                         width: double.infinity,
@@ -275,7 +299,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       ),
       bottomNavigationBar: VendorBottomNavigationBar(
         onItemTapped: (label) {
-          // Handle bottom navigation bar item taps
+// Handle bottom navigation bar item taps
         },
         tutorialStep: 0,
         selectedLabel: '',
@@ -387,6 +411,8 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     String? label,
     required VoidCallback onTap,
     required PickedFile? file,
+    bool isValidating = false,
+    bool isValid = false,
     String? errorText,
   }) {
     return Column(
@@ -396,42 +422,63 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
           Text(
             label,
             style: GoogleFonts.nunito(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              height: 1.5,
-              letterSpacing: -0.019,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
               color: Colors.black,
             ),
           ),
-        if (label != null) const SizedBox(height: 10),
+        if (label != null) const SizedBox(height: 8),
         GestureDetector(
           onTap: onTap,
           child: Container(
             width: double.infinity,
-            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color.fromARGB(45, 215, 215, 215),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFD8D7D7)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: Center(
-              child: file != null
-                  ? Text(
-                      'File selected: ${file.path.split('/').last}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                    )
-                  : Text(
-                      'Upload',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF000000),
-                      ),
+            child: isValidating
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xFF621B2B)),
                     ),
-            ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isValid)
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 24,
+                        ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          file != null
+                              ? 'File selected: ${file.path.split('/').last}'
+                              : label ?? 'Upload',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: const Color(0xFF000000),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ),
         if (errorText != null && errorText.isNotEmpty)
