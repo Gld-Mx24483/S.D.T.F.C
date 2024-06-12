@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'fash_cnt.dart';
+import 'vendor_cnt.dart';
 
 class VendorBottomNavigationBar extends StatefulWidget {
   final Function(String) onItemTapped;
@@ -159,7 +159,7 @@ class _VendorBottomNavigationBarState extends State<VendorBottomNavigationBar> {
               widget.onItemTapped('New');
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const FashCnt()),
+                MaterialPageRoute(builder: (context) => const VenCnt()),
               );
             },
             child: Container(
