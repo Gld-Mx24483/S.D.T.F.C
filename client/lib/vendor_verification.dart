@@ -63,8 +63,59 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
 
     print(recognizedTextStr);
 
+    // Key phrases to check for
+    const keyPhrases = [
+      'NIN',
+      "(0700-2255-646)",
+      '0700-CALL-NIMC',
+      "National ldentity Management Commission",
+      'helpdesk@nimc.gov.ng',
+      'Federal Republic of Nigeria',
+      'www.nimc.gov.ng',
+    ];
+
+    // Regular expressions to capture dynamic values for NIN
+    final RegExp ninRegExp = RegExp(r'\b\d{11}\b');
+    final RegExp trackingIdRegExp = RegExp(r'Tracking ID:\s*([A-Z0-9]+)');
+    final RegExp surnameRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)');
+    final RegExp firstNameRegExp = RegExp(r'First Name:\s*([A-Za-z ]+)');
+    final RegExp middleNameRegExp =
+        RegExp(r'Middle Name:\s*([A-Za-z ]+)\s*([MF])');
+    final RegExp sexRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)\s*([MF])');
+
+    // Initialize error message
+    String errorMessage = '';
+
+    // Check for key phrases
+    for (var phrase in keyPhrases) {
+      if (!recognizedTextStr.contains(phrase)) {
+        print('Not a valid NIN');
+      }
+    }
+
+    // Check for dynamic values
+    if (!ninRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    } else if (!trackingIdRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    } else if (!surnameRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    } else if (!firstNameRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    } else if (!middleNameRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    } else if (!sexRegExp.hasMatch(recognizedTextStr)) {
+      errorMessage = 'Not a valid NIN';
+    }
+
+    // Log the error message
+    if (errorMessage.isNotEmpty) {
+      print(errorMessage);
+    }
+
+    // Update the error message state
     setState(() {
-      _idFileError = ''; // Clear previous error
+      _idFileError = errorMessage;
     });
   }
 
