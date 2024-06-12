@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'vendor_bottom_navigation_bar.dart';
@@ -18,6 +21,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   String _selectedIdType = 'International Passport';
   PickedFile? _idFile;
   PickedFile? _addressFile;
+  String _idFileError = '';
 
   Future<void> _pickIdFile() async {
     final ImagePicker picker = ImagePicker();
@@ -26,6 +30,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     if (idFile != null) {
       setState(() {
         _idFile = PickedFile(idFile.path);
+        _validateIdFile();
       });
     }
   }
@@ -40,6 +45,27 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
         _addressFile = PickedFile(addressFile.path);
       });
     }
+  }
+
+  Future<void> _validateIdFile() async {
+    final TextRecognizer textRecognizer =
+        TextRecognizer(script: TextRecognitionScript.latin);
+    final RecognizedText recognizedText = await textRecognizer
+        .processImage(InputImage.fromFilePath(_idFile!.path));
+
+    String recognizedTextStr = '';
+
+    for (TextBlock block in recognizedText.blocks) {
+      for (TextLine line in block.lines) {
+        recognizedTextStr += '${line.text}\n';
+      }
+    }
+
+    print(recognizedTextStr);
+
+    setState(() {
+      _idFileError = ''; // Clear previous error
+    });
   }
 
   @override
@@ -131,6 +157,17 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                             ),
                           ),
                         ),
+                        DropdownMenuItem(
+                          value: "Driver's License",
+                          child: Text(
+                            "Driver's License",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                       ],
                       onChanged: (String? newValue) {
                         setState(() {
@@ -142,6 +179,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                     _buildUploadButton(
                       onTap: _pickIdFile,
                       file: _idFile,
+                      errorText: _idFileError,
                     ),
                     const SizedBox(height: 36),
                     _buildUploadButton(
@@ -298,6 +336,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     String? label,
     required VoidCallback onTap,
     required PickedFile? file,
+    String? errorText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,6 +383,17 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
             ),
           ),
         ),
+        if (errorText != null && errorText.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              errorText,
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }
