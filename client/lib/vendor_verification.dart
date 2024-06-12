@@ -85,22 +85,32 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       _idFileError = '';
     });
 
+    bool isValid;
+
     if (_selectedIdType == 'National Identification Number') {
-      bool isValid = await NinValidator.validateIdFile(_idFile!.path);
+      isValid = await NinValidator.validateIdFile(_idFile!.path);
       if (!isValid) {
         _idFileError = 'Not a valid NIN';
       }
     } else if (_selectedIdType == 'International Passport') {
-      await InternationalPassportValidator.recognizeAndValidatePassport(
-          _idFile!.path);
-      // You can add additional validation logic here later
+      isValid =
+          await InternationalPassportValidator.recognizeAndValidatePassport(
+              _idFile!.path);
+      if (!isValid) {
+        _idFileError = 'Not a valid International Passport';
+      }
+    } else if (_selectedIdType == "Driver's License") {
+      // Add validation logic for Driver's License here
+      isValid = false;
+      _idFileError = 'Driver\'s License validation not implemented';
     } else {
+      isValid = false;
       _idFileError = 'Please select a valid ID type';
     }
 
     setState(() {
       _isValidatingIdFile = false;
-      _isIdFileValid = _idFileError.isEmpty;
+      _isIdFileValid = isValid;
     });
   }
 
