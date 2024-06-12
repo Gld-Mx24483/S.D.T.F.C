@@ -6,7 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'nin_validator.dart'; // Import the NinValidator
+import 'international_passport_validator.dart';
+import 'nin_validator.dart';
 import 'vendor_bottom_navigation_bar.dart';
 
 class VendorVerificationScreen extends StatefulWidget {
@@ -53,28 +54,53 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     }
   }
 
+  // Future<void> _validateIdFile() async {
+  //   setState(() {
+  //     _isValidatingIdFile = true;
+  //   });
+
+  //   bool isValid = false;
+  //   String errorMessage = '';
+
+  //   if (_selectedIdType == 'National Identification Number') {
+  //     isValid = await NinValidator.validateIdFile(_idFile!.path);
+  //     if (!isValid) {
+  //       errorMessage = 'Not a valid NIN';
+  //     }
+  //   } else {
+  //     errorMessage = 'Please select National Identification Number';
+  //   }
+
+  //   // Update the error message state
+  //   setState(() {
+  //     _idFileError = errorMessage;
+  //     _isValidatingIdFile = false;
+  //     _isIdFileValid = isValid;
+  //   });
+  // }
+
   Future<void> _validateIdFile() async {
     setState(() {
       _isValidatingIdFile = true;
+      _idFileError = '';
     });
 
-    bool isValid = false;
-    String errorMessage = '';
-
     if (_selectedIdType == 'National Identification Number') {
-      isValid = await NinValidator.validateIdFile(_idFile!.path);
+      bool isValid = await NinValidator.validateIdFile(_idFile!.path);
       if (!isValid) {
-        errorMessage = 'Not a valid NIN';
+        _idFileError = 'Not a valid NIN';
       }
+    } else if (_selectedIdType == 'International Passport') {
+      await InternationalPassportValidator.recognizeAndValidatePassport(
+          _idFile!.path);
+      // You can add additional validation logic here later
     } else {
-      errorMessage = 'Please select National Identification Number';
+      _idFileError = 'Please select a valid ID type';
     }
 
-    // Update the error message state
     setState(() {
-      _idFileError = errorMessage;
       _isValidatingIdFile = false;
-      _isIdFileValid = isValid;
+      _isIdFileValid = _idFileError.isEmpty;
     });
   }
 
