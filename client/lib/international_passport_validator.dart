@@ -46,7 +46,7 @@ class InternationalPassportValidator {
         isValid = true;
         print('Sex match found: ${sexMatch?.group(0)}');
         print('Country code match found: ${countryCodeMatch?.group(0)}');
-        print('Surname: $surname');
+        print('Surname match found: $surname');
       } else {
         errorMessage = 'No valid surname found';
         print('Validation failed: $errorMessage');
