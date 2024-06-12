@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'driver_license_validator.dart';
 import 'international_passport_validator.dart';
 import 'nin_validator.dart';
 import 'vendor_bottom_navigation_bar.dart';
@@ -54,31 +55,6 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     }
   }
 
-  // Future<void> _validateIdFile() async {
-  //   setState(() {
-  //     _isValidatingIdFile = true;
-  //   });
-
-  //   bool isValid = false;
-  //   String errorMessage = '';
-
-  //   if (_selectedIdType == 'National Identification Number') {
-  //     isValid = await NinValidator.validateIdFile(_idFile!.path);
-  //     if (!isValid) {
-  //       errorMessage = 'Not a valid NIN';
-  //     }
-  //   } else {
-  //     errorMessage = 'Please select National Identification Number';
-  //   }
-
-  //   // Update the error message state
-  //   setState(() {
-  //     _idFileError = errorMessage;
-  //     _isValidatingIdFile = false;
-  //     _isIdFileValid = isValid;
-  //   });
-  // }
-
   Future<void> _validateIdFile() async {
     setState(() {
       _isValidatingIdFile = true;
@@ -100,9 +76,11 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
         _idFileError = 'Not a valid International Passport';
       }
     } else if (_selectedIdType == "Driver's License") {
-      // Add validation logic for Driver's License here
-      isValid = false;
-      _idFileError = 'Driver\'s License validation not implemented';
+      isValid = await DriverLicenseValidator.recognizeAndValidateDriversLicense(
+          _idFile!.path);
+      if (!isValid) {
+        _idFileError = 'Not a valid Driver License';
+      }
     } else {
       isValid = false;
       _idFileError = 'Please select a valid ID type';
@@ -113,6 +91,41 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       _isIdFileValid = isValid;
     });
   }
+
+  // Future<void> _validateIdFile() async {
+  //   setState(() {
+  //     _isValidatingIdFile = true;
+  //     _idFileError = '';
+  //   });
+
+  //   bool isValid;
+
+  //   if (_selectedIdType == 'National Identification Number') {
+  //     isValid = await NinValidator.validateIdFile(_idFile!.path);
+  //     if (!isValid) {
+  //       _idFileError = 'Not a valid NIN';
+  //     }
+  //   } else if (_selectedIdType == 'International Passport') {
+  //     isValid =
+  //         await InternationalPassportValidator.recognizeAndValidatePassport(
+  //             _idFile!.path);
+  //     if (!isValid) {
+  //       _idFileError = 'Not a valid International Passport';
+  //     }
+  //   } else if (_selectedIdType == "Driver's License") {
+  //     // Add validation logic for Driver's License here
+  //     isValid = false;
+  //     _idFileError = 'Driver\'s License validation not implemented';
+  //   } else {
+  //     isValid = false;
+  //     _idFileError = 'Please select a valid ID type';
+  //   }
+
+  //   setState(() {
+  //     _isValidatingIdFile = false;
+  //     _isIdFileValid = isValid;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
