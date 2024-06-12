@@ -72,60 +72,69 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
 
     print(recognizedTextStr);
 
-    // Key phrases to check for
-    const keyPhrases = [
-      'NIN',
-      "(0700-2255-646)",
-      '0700-CALL-NIMC',
-      "National ldentity Management Commission",
-      'helpdesk@nimc.gov.ng',
-      'Federal Republic of Nigeria',
-      'www.nimc.gov.ng',
-    ];
-
     // Regular expressions to capture dynamic values for NIN
     final RegExp ninRegExp = RegExp(r'\b\d{11}\b');
-    final RegExp trackingIdRegExp = RegExp(r'Tracking ID:\s*([A-Z0-9]+)');
-    final RegExp surnameRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)');
-    final RegExp firstNameRegExp = RegExp(r'First Name:\s*([A-Za-z ]+)');
-    final RegExp middleNameRegExp =
-        RegExp(r'Middle Name:\s*([A-Za-z ]+)\s*([MF])');
-    final RegExp sexRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)\s*([MF])');
+    final RegExp trackingIdRegExp = RegExp(r'Tracking ID:\s*([A-Z0-9]{15})');
+
+    // Regular expressions for other values (not used for validation)
+    final RegExp surnameRegExp = RegExp(r'Gender:\s*([A-Z ]+)');
+    final RegExp firstNameRegExp = RegExp(r'First Name:\s*([A-Z ]+)');
+    final RegExp middleNameRegExp = RegExp(r'Middle Name:\s*([A-Z]+)\s*([MF])');
+    // final RegExp sexRegExp = RegExp(r'Gender:\s*([A-Za-z ]+)\s*([MF])');
 
     String errorMessage = '';
-    bool isValid = true;
+    bool isValid = false;
 
-    // Check for key phrases for NIN
-    for (var phrase in keyPhrases) {
-      if (!recognizedTextStr.contains(phrase)) {
-        isValid = false;
-        errorMessage = 'Not a valid NIN';
-        break;
+    // Check for NIN and Tracking ID if selected ID type is National Identification Number
+    if (_selectedIdType == 'National Identification Number') {
+      if (ninRegExp.hasMatch(recognizedTextStr)) {
+        print(
+            'NIN match found: ${ninRegExp.firstMatch(recognizedTextStr)?.group(0)}');
+      } else {
+        print('No NIN match found');
       }
+
+      if (trackingIdRegExp.hasMatch(recognizedTextStr)) {
+        print(
+            'Tracking ID match found: ${trackingIdRegExp.firstMatch(recognizedTextStr)?.group(1)}');
+      } else {
+        print('No Tracking ID match found');
+      }
+
+      if (ninRegExp.hasMatch(recognizedTextStr) &&
+          trackingIdRegExp.hasMatch(recognizedTextStr)) {
+        isValid = true;
+      } else {
+        errorMessage = 'Not a valid NIN';
+      }
+    } else {
+      errorMessage = 'Please select National Identification Number';
     }
 
-    // Check for dynamic values for NIN
-    if (isValid) {
-      if (!ninRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      } else if (!trackingIdRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      } else if (!surnameRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      } else if (!firstNameRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      } else if (!middleNameRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      } else if (!sexRegExp.hasMatch(recognizedTextStr)) {
-        errorMessage = 'Not a valid NIN';
-        isValid = false;
-      }
+    // Print matches for other regular expressions
+    if (surnameRegExp.hasMatch(recognizedTextStr)) {
+      print(
+          'Surname match found: ${surnameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
     }
+
+    if (firstNameRegExp.hasMatch(recognizedTextStr)) {
+      print(
+          'First name match found: ${firstNameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
+    }
+
+    if (middleNameRegExp.hasMatch(recognizedTextStr)) {
+      print(
+          'Middle name match found: ${middleNameRegExp.firstMatch(recognizedTextStr)?.group(1)}');
+      print(
+          'Sex match found: ${middleNameRegExp.firstMatch(recognizedTextStr)?.group(2)}');
+    }
+
+    // if (sexRegExp.hasMatch(recognizedTextStr)) {
+    //   // print(
+    //   //     'Sex match found: ${sexRegExp.firstMatch(recognizedTextStr)?.group(1)}');
+    //   print(
+    //       'Sex match found: ${sexRegExp.firstMatch(recognizedTextStr)?.group(2)}');
+    // }
 
     // Log the error message
     if (!isValid) {
@@ -138,12 +147,6 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       _isValidatingIdFile = false;
       _isIdFileValid = isValid;
     });
-  }
-
-  @override
-  void dispose() {
-    _officialEmailController.dispose();
-    super.dispose();
   }
 
   @override
