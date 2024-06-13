@@ -1,14 +1,16 @@
-//connect_to_fash_dgn.dart
-// ignore_for_file: unused_element
+// connect_to_fash_dgn.dart
+// ignore_for_file: unused_element, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'loading_modal.dart';
 import 'request_accepted_modal.dart';
-import 'vendor_cnt.dart'; // Import the ven_cnt.dart file
+import 'vendor_cnt.dart';
+import 'venfash_chat.dart';
 
 class ConnectToFashDgn extends StatefulWidget {
   final LatLng initialPosition;
@@ -194,11 +196,13 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
                 Icons.call_outlined,
                 'Call',
                 _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+                _isRequestAccepted ? _makePhoneCall : null,
               ),
               _buildIconWithText(
                 Icons.chat_outlined,
                 'Chat',
                 _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+                _isRequestAccepted ? _navigateToChat : null,
               ),
               _buildIconWithText(
                 Icons.cancel_outlined,
@@ -327,7 +331,8 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
     );
   }
 
-  Widget _buildIconWithText(IconData icon, String text, int color) {
+  Widget _buildIconWithText(IconData icon, String text, int color,
+      [Function? onTap]) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: _showBottomOptions ? null : 0,
@@ -335,24 +340,27 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
         opacity: _showBottomOptions ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: Color(color),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              text,
-              style: GoogleFonts.nunito(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+        child: GestureDetector(
+          onTap: onTap != null ? () => onTap() : null,
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                size: 24,
                 color: Color(color),
-                letterSpacing: -0.3,
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                text,
+                style: GoogleFonts.nunito(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: Color(color),
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -399,6 +407,30 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
           onDismissed: () {},
         );
       },
+    );
+  }
+
+  Future<void> _makePhoneCall() async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: '08155757196',
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      print('Could not launch $launchUri');
+    }
+  }
+
+  void _navigateToChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const VenfashChat(
+          selectedLocationName: 'Designer 1',
+          phoneNumber: '08106775111',
+        ),
+      ),
     );
   }
 
