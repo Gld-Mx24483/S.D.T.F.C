@@ -1,6 +1,9 @@
-// incoming_request.dart
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'connect_to_fash_dgn.dart';
 
 class IncomingRequest extends StatefulWidget {
   const IncomingRequest({super.key});
@@ -12,6 +15,46 @@ class IncomingRequest extends StatefulWidget {
 class _IncomingRequestState extends State<IncomingRequest> {
   int _selectedIndex = 0;
   final List<bool> _showBottomOptions = List.generate(3, (_) => false);
+  Position? _currentPosition;
+  final List<LatLng> _designerLocations = [
+    const LatLng(6.5244, 3.6792), // Designer 1 location (Lagos Island)
+    const LatLng(6.4542, 3.3943), // Designer 2 location (Ikeja)
+    const LatLng(6.6318, 3.3535), // Designer 3 location (Lekki)
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    final position = await Geolocator.getCurrentPosition();
+    setState(() {
+      _currentPosition = position;
+    });
+  }
 
   void _selectUser(int index) {
     setState(() {
@@ -23,6 +66,22 @@ class _IncomingRequestState extends State<IncomingRequest> {
     setState(() {
       _showBottomOptions[index] = !_showBottomOptions[index];
     });
+  }
+
+  void _navigateToConnectToFashDgn(int index) {
+    if (_currentPosition != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConnectToFashDgn(
+            initialPosition:
+                LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+            selectedLocation: _designerLocations[index],
+            designerName: 'Designer ${index + 1}',
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildIconWithText(IconData icon, String text, bool isDisabled) {
@@ -122,7 +181,7 @@ class _IncomingRequestState extends State<IncomingRequest> {
               padding: const EdgeInsets.only(bottom: 20),
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle continue button press
+                  _navigateToConnectToFashDgn(_selectedIndex);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFBE5AA),
