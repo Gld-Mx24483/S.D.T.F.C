@@ -1,4 +1,3 @@
-//connect_to_fash_dgn.dart
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
@@ -22,57 +21,40 @@ class ConnectToFashDgn extends StatefulWidget {
   State<ConnectToFashDgn> createState() => _ConnectToFashDgnState();
 }
 
-class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
+class _ConnectToFashDgnState extends State<ConnectToFashDgn>
+    with TickerProviderStateMixin {
   late GoogleMapController _mapController;
-  // Map<PolylineId, Polyline> polylines = {};
   PolylinePoints polylinePoints = PolylinePoints();
   bool _showBottomOptions = false;
   BitmapDescriptor? _customIcon;
   BitmapDescriptor? _defaultIcon;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    // _setPolyline();
     _loadCustomIcon();
     _loadDefaultIcon();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setCameraToBounds();
     });
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
   void dispose() {
     _mapController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
-
-  // void _setPolyline() async {
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE', // Replace with your API key
-  //     PointLatLng(
-  //         widget.initialPosition.latitude, widget.initialPosition.longitude),
-  //     PointLatLng(
-  //         widget.selectedLocation.latitude, widget.selectedLocation.longitude),
-  //   );
-
-  //   if (result.points.isNotEmpty) {
-  //     List<LatLng> polylineCoordinates = [];
-  //     for (var point in result.points) {
-  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //     }
-
-  //     setState(() {
-  //       polylines.clear();
-  //       polylines[const PolylineId('polyline')] = Polyline(
-  //         polylineId: const PolylineId('polyline'),
-  //         color: Colors.black,
-  //         points: polylineCoordinates,
-  //         width: 5,
-  //       );
-  //     });
-  //   }
-  // }
 
   void _setCameraToBounds() {
     LatLngBounds bounds;
@@ -95,6 +77,12 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
     setState(() {
       _showBottomOptions = !_showBottomOptions;
     });
+
+    if (_showBottomOptions) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
   }
 
   Widget _buildBottomSheetContent() {
@@ -170,89 +158,113 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                color: Color(0xFFA6A6A6),
-                size: 24,
+              GestureDetector(
+                onTap: _toggleBottomOptions,
+                child: AnimatedRotation(
+                  turns: _showBottomOptions ? 0.25 : 0,
+                  duration: const Duration(milliseconds: 300),
+                  child: const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Color(0xFFA6A6A6),
+                    size: 24,
+                  ),
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 20),
-        Container(
-          width: 300,
-          height: 100,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: _showBottomOptions ? null : 0,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white, width: 2),
-                  image: const DecorationImage(
-                    image: AssetImage('pics/3.png'),
-                    fit: BoxFit.cover,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Product Category : Fabrics',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'Product Type : Silk',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'Colour Code : 0xFFAD43T2',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'Quantity : 5 Yards',
-                    style: GoogleFonts.nunito(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.3,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+              _buildIconWithText(Icons.call_outlined, 'Call', 0xFFA6A6A6, null),
+              _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFFA6A6A6, null),
+              _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
             ],
           ),
         ),
-        const SizedBox(height: 80),
+        const SizedBox(height: 20),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          height: _showBottomOptions ? 0 : null,
+          child: Container(
+            width: 300,
+            height: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white, width: 2),
+                    image: const DecorationImage(
+                      image: AssetImage('pics/3.png'),
+                      fit: BoxFit.cover,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Product Category : Fabrics',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.3,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      'Product Type : Silk',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.3,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      'Colour Code : 0xFFAD43T2',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.3,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      'Quantity : 5 Yards',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.3,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 65),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
@@ -273,6 +285,37 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
         ),
         const SizedBox(height: 20),
       ],
+    );
+  }
+
+  Widget _buildIconWithText(IconData icon, String text, int color, [param3]) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: _showBottomOptions ? null : 0,
+      child: AnimatedOpacity(
+        opacity: _showBottomOptions ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: Color(color),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: GoogleFonts.nunito(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(color),
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -315,7 +358,6 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
                 icon: _defaultIcon ?? BitmapDescriptor.defaultMarker,
               ),
             },
-            // polylines: Set<Polyline>.of(polylines.values),
           ),
           Positioned(
             top: 50,
@@ -344,30 +386,37 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
             builder: (BuildContext context, ScrollController scrollController) {
               return NotificationListener<DraggableScrollableNotification>(
                 onNotification: (notification) {
+                  _animationController.value = notification.extent;
                   return true;
                 },
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 10,
-                          offset: const Offset(0, -5),
+                child: AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20 * _animation.value),
+                        topRight: Radius.circular(20 * _animation.value),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black
+                                  .withOpacity(0.1 * _animation.value),
+                              spreadRadius: 1,
+                              blurRadius: 10,
+                              offset: Offset(0, -5 * _animation.value),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: _buildBottomSheetContent(),
-                    ),
-                  ),
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: _buildBottomSheetContent(),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },
