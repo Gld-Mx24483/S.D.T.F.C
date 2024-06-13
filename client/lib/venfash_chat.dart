@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'ven_proof_dets.dart';
+import 'fash_prof_dets.dart';
 
 class VenfashChat extends StatefulWidget {
   final String selectedLocationName;
@@ -56,7 +56,7 @@ class _VenfashChatState extends State<VenfashChat> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => VendorProfileDetails(
+                builder: (context) => FashProfileDetails(
                   selectedLocationName: widget.selectedLocationName,
                   address: widget.selectedLocationAddress,
                   phoneNumber: widget.phoneNumber,
