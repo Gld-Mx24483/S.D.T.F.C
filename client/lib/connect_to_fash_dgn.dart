@@ -1,3 +1,4 @@
+//connect_to_fash_dgn.dart
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
@@ -23,16 +24,18 @@ class ConnectToFashDgn extends StatefulWidget {
 
 class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
   late GoogleMapController _mapController;
-  Map<PolylineId, Polyline> polylines = {};
+  // Map<PolylineId, Polyline> polylines = {};
   PolylinePoints polylinePoints = PolylinePoints();
   bool _showBottomOptions = false;
   BitmapDescriptor? _customIcon;
+  BitmapDescriptor? _defaultIcon;
 
   @override
   void initState() {
     super.initState();
-    _setPolyline();
+    // _setPolyline();
     _loadCustomIcon();
+    _loadDefaultIcon();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setCameraToBounds();
     });
@@ -44,32 +47,32 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
     super.dispose();
   }
 
-  void _setPolyline() async {
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE', // Replace with your API key
-      PointLatLng(
-          widget.initialPosition.latitude, widget.initialPosition.longitude),
-      PointLatLng(
-          widget.selectedLocation.latitude, widget.selectedLocation.longitude),
-    );
+  // void _setPolyline() async {
+  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+  //     'AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE', // Replace with your API key
+  //     PointLatLng(
+  //         widget.initialPosition.latitude, widget.initialPosition.longitude),
+  //     PointLatLng(
+  //         widget.selectedLocation.latitude, widget.selectedLocation.longitude),
+  //   );
 
-    if (result.points.isNotEmpty) {
-      List<LatLng> polylineCoordinates = [];
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      }
+  //   if (result.points.isNotEmpty) {
+  //     List<LatLng> polylineCoordinates = [];
+  //     for (var point in result.points) {
+  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+  //     }
 
-      setState(() {
-        polylines.clear();
-        polylines[const PolylineId('polyline')] = Polyline(
-          polylineId: const PolylineId('polyline'),
-          color: Colors.black,
-          points: polylineCoordinates,
-          width: 5,
-        );
-      });
-    }
-  }
+  //     setState(() {
+  //       polylines.clear();
+  //       polylines[const PolylineId('polyline')] = Polyline(
+  //         polylineId: const PolylineId('polyline'),
+  //         color: Colors.black,
+  //         points: polylineCoordinates,
+  //         width: 5,
+  //       );
+  //     });
+  //   }
+  // }
 
   void _setCameraToBounds() {
     LatLngBounds bounds;
@@ -109,7 +112,7 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
         ),
         const SizedBox(height: 20),
         Text(
-          'Connected to Designer',
+          'Connect to Fashion Designer',
           style: GoogleFonts.nunito(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -117,16 +120,155 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
           ),
         ),
         const SizedBox(height: 20),
-        Padding(
+        Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('pics/userreq1.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Designer 1',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '123 Main St, City',
+                      style: GoogleFonts.nunito(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w300,
+                        color: const Color(0xFFA6A6A6),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '5 Points to connect',
+                      style: GoogleFonts.nunito(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF621B2B),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                color: Color(0xFFA6A6A6),
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          width: 300,
+          height: 100,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white, width: 2),
+                  image: const DecorationImage(
+                    image: AssetImage('pics/3.png'),
+                    fit: BoxFit.cover,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Product Category : Fabrics',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    'Product Type : Silk',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    'Colour Code : 0xFFAD43T2',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    'Quantity : 5 Yards',
+                    style: GoogleFonts.nunito(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 80),
+        ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFBE5AA),
+            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
           child: Text(
-            'You are now connected to ${widget.designerName}. You can start chatting or call them to discuss your fashion needs.',
+            'Accept Request',
             style: GoogleFonts.nunito(
               fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF621B2B),
             ),
-            textAlign: TextAlign.center,
           ),
         ),
         const SizedBox(height: 20),
@@ -139,6 +281,11 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
       const ImageConfiguration(),
       'pics/store.png',
     );
+  }
+
+  Future<void> _loadDefaultIcon() async {
+    _defaultIcon =
+        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
   }
 
   @override
@@ -160,17 +307,15 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
               Marker(
                 markerId: const MarkerId('initial_location'),
                 position: widget.initialPosition,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueGreen),
+                icon: _customIcon ?? BitmapDescriptor.defaultMarker,
               ),
-              if (_customIcon != null)
-                Marker(
-                  markerId: const MarkerId('selected_location'),
-                  position: widget.selectedLocation,
-                  icon: _customIcon!,
-                ),
+              Marker(
+                markerId: const MarkerId('selected_location'),
+                position: widget.selectedLocation,
+                icon: _defaultIcon ?? BitmapDescriptor.defaultMarker,
+              ),
             },
-            polylines: Set<Polyline>.of(polylines.values),
+            // polylines: Set<Polyline>.of(polylines.values),
           ),
           Positioned(
             top: 50,
