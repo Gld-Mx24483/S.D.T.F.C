@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'fash_map_cnt.dart';
+import 'incoming_request.dart';
 
 class VenCnt extends StatefulWidget {
   const VenCnt({super.key});
@@ -42,7 +42,7 @@ class VenCntState extends State<VenCnt> with SingleTickerProviderStateMixin {
       future: _delayedFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return const FashMapCnt();
+          return const IncomingRequest();
         } else {
           return Scaffold(
             body: Center(
