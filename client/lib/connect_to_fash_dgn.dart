@@ -1,9 +1,14 @@
+//connect_to_fash_dgn.dart
 // ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'loading_modal.dart';
+import 'request_accepted_modal.dart';
+import 'vendor_cnt.dart'; // Import the ven_cnt.dart file
 
 class ConnectToFashDgn extends StatefulWidget {
   final LatLng initialPosition;
@@ -30,6 +35,9 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
   BitmapDescriptor? _defaultIcon;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  bool _isProcessing = false;
+  bool _isRequestAccepted = false;
 
   @override
   void initState() {
@@ -100,7 +108,9 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
         ),
         const SizedBox(height: 20),
         Text(
-          'Connect to Fashion Designer',
+          _isRequestAccepted
+              ? 'Connected to Fashion Designer'
+              : 'Connecting to Fashion Designer',
           style: GoogleFonts.nunito(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -180,9 +190,21 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildIconWithText(Icons.call_outlined, 'Call', 0xFFA6A6A6, null),
-              _buildIconWithText(Icons.chat_outlined, 'Chat', 0xFFA6A6A6, null),
-              _buildIconWithText(Icons.cancel_outlined, 'Cancel', 0xFF621B2B),
+              _buildIconWithText(
+                Icons.call_outlined,
+                'Call',
+                _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+              ),
+              _buildIconWithText(
+                Icons.chat_outlined,
+                'Chat',
+                _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+              ),
+              _buildIconWithText(
+                Icons.cancel_outlined,
+                'Cancel',
+                0xFF621B2B,
+              ),
             ],
           ),
         ),
@@ -266,7 +288,22 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
         ),
         const SizedBox(height: 65),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            if (_isRequestAccepted) {
+              // Navigate to ven_cnt.dart
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const VenCnt(),
+                ),
+              );
+            } else {
+              setState(() {
+                _isProcessing = true;
+              });
+              _showLoadingModal();
+            }
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFFBE5AA),
             padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 12),
@@ -275,7 +312,9 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
             ),
           ),
           child: Text(
-            'Accept Request',
+            _isProcessing
+                ? 'Processing...'
+                : (_isRequestAccepted ? 'Back to Connect' : 'Accept Request'),
             style: GoogleFonts.nunito(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -288,7 +327,7 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
     );
   }
 
-  Widget _buildIconWithText(IconData icon, String text, int color, [param3]) {
+  Widget _buildIconWithText(IconData icon, String text, int color) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: _showBottomOptions ? null : 0,
@@ -329,6 +368,38 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
   Future<void> _loadDefaultIcon() async {
     _defaultIcon =
         BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
+  }
+
+  void _showLoadingModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return LoadingModal(
+          showNextModal: _showRequestAcceptedModal,
+        );
+      },
+    );
+  }
+
+  void _showRequestAcceptedModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return RequestAcceptedModal(
+          onComplete: () {
+            setState(() {
+              _isProcessing = false;
+              _isRequestAccepted = true;
+              _showBottomOptions = true;
+            });
+            _animationController.forward();
+          },
+          onDismissed: () {},
+        );
+      },
+    );
   }
 
   @override
