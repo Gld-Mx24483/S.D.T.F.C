@@ -1,5 +1,7 @@
 //vendor_products.dart
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unnecessary_cast
+
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +18,8 @@ class VendorProductsScreen extends StatefulWidget {
 
 class _VendorProductsScreenState extends State<VendorProductsScreen> {
   int? _selectedIndex;
-  final List<bool> _favoriteStatus = List.filled(6, false);
+  // final List<bool> _favoriteStatus = List.filled(6, false);
+  List<Map<String, dynamic>> myaddProducts = [];
   bool _isFabrics = true;
   bool _isEmbellishments = false;
   bool _isLinings = false;
@@ -44,11 +47,11 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
 
   List<String> myProducts = [];
 
-  void _toggleFavorite(int index) {
-    setState(() {
-      _favoriteStatus[index] = !_favoriteStatus[index];
-    });
-  }
+  // void _toggleFavorite(int index) {
+  //   setState(() {
+  //     _favoriteStatus[index] = !_favoriteStatus[index];
+  //   });
+  // }
 
   void _handleFilterSelection(String filter) {
     setState(() {
@@ -112,7 +115,13 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const AddMyProductScreen()),
-        );
+        ).then((result) {
+          if (result != null) {
+            setState(() {
+              myaddProducts.add(result as Map<String, dynamic>);
+            });
+          }
+        });
       } else if (value == 'suggested_product' && _selectedIndex != null) {
         Navigator.push(
           context,
@@ -217,25 +226,34 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                   color: const Color(0xFF621B2B),
                 ),
               ),
-              const SizedBox(height: 20),
-              Center(
-                child: myProducts.isEmpty
-                    ? Text(
-                        'No Products',
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey,
+              const SizedBox(height: 1),
+              Transform.translate(
+                offset: const Offset(0, -12),
+                child: myaddProducts.isEmpty
+                    ? Center(
+                        child: Text(
+                          'No Products',
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey,
+                          ),
                         ),
                       )
-                    : ListView.builder(
+                    : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.95,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: myProducts.length,
+                        itemCount: myaddProducts.length,
                         itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(myProducts[index]),
-                          );
+                          return _buildMyProductItem(
+                              myaddProducts[index] as Map<String, dynamic>);
                         },
                       ),
               ),
@@ -316,32 +334,32 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                   ),
                 ),
               ),
-            Positioned(
-              top: 5,
-              right: 1,
-              child: Container(
-                width: 45,
-                height: 35,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _favoriteStatus[index]
-                      ? const Color.fromARGB(231, 250, 215, 118)
-                      : const Color.fromARGB(220, 255, 255, 255),
-                ),
-                child: Center(
-                  child: IconButton(
-                    onPressed: () => _toggleFavorite(index),
-                    icon: Icon(
-                      Icons.favorite_border,
-                      color:
-                          _favoriteStatus[index] ? Colors.white : Colors.black,
-                      size: 22,
-                    ),
-                    alignment: Alignment.center,
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 5,
+            //   right: 1,
+            //   child: Container(
+            //     width: 45,
+            //     height: 35,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       color: _favoriteStatus[index]
+            //           ? const Color.fromARGB(231, 250, 215, 118)
+            //           : const Color.fromARGB(220, 255, 255, 255),
+            //     ),
+            //     child: Center(
+            //       child: IconButton(
+            //         onPressed: () => _toggleFavorite(index),
+            //         icon: Icon(
+            //           Icons.favorite_border,
+            //           color:
+            //               _favoriteStatus[index] ? Colors.white : Colors.black,
+            //           size: 22,
+            //         ),
+            //         alignment: Alignment.center,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             Positioned(
               bottom: 8,
               right: 8,
@@ -357,13 +375,16 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Bomber Jackets',
-                        style: GoogleFonts.nunito(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
-                          color: const Color(0xFF061023),
+                      Flexible(
+                        child: Text(
+                          'Bomber Jackets',
+                          style: GoogleFonts.nunito(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color: const Color(0xFF061023),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Row(
@@ -377,13 +398,16 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                             ),
                           ),
                           const SizedBox(width: 2),
-                          Text(
-                            _colorCodes[index % _colorCodes.length],
-                            style: GoogleFonts.nunito(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                              color: const Color(0xFF061023),
+                          Flexible(
+                            child: Text(
+                              _colorCodes[index % _colorCodes.length],
+                              style: GoogleFonts.nunito(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                height: 1.5,
+                                color: const Color(0xFF061023),
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -395,6 +419,86 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMyProductItem(Map<String, dynamic> product) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.grey.shade400,
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.file(
+              File(product['imagePath']),
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
+          ),
+          Positioned(
+            bottom: 8,
+            right: 8,
+            child: Container(
+              width: 81,
+              height: 35,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: const Color.fromARGB(220, 255, 255, 255),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6, 2, 2, 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        product['productType'],
+                        style: GoogleFonts.nunito(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: const Color(0xFF061023),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 9,
+                          decoration: BoxDecoration(
+                            color: Color(int.parse(
+                                '0xFF${product['colorCode'].substring(1)}')),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Flexible(
+                          child: Text(
+                            product['colorCode'],
+                            style: GoogleFonts.nunito(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5,
+                              color: const Color(0xFF061023),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

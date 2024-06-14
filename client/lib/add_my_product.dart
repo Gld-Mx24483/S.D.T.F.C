@@ -3,6 +3,7 @@
 // ignore_for_file: unnecessary_brace_in_string_interps, deprecated_member_use, library_private_types_in_public_api, non_constant_identifier_names, avoid_types_as_parameter_names
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -32,6 +33,103 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
   double _price = 0.0;
   final _formatter = NumberFormat('#,###');
 
+  // Product types for each category
+  final Map<String, List<String>> _productTypes = {
+    'Fabrics': [
+      'Silk Charmeuse',
+      'Tulle',
+      'Georgette',
+      'Crepe de Chine',
+      'Duchess Satin',
+      'Mikado',
+      'Dupioni Silk',
+      'Shantung Silk',
+      'Crepe Back Satin',
+      'Lamé',
+      'Jacquard',
+      'Taffeta',
+      'Cashmere',
+      'Mohair',
+      'Angora',
+      'Wool Crepe',
+      'Linen',
+      'Broderie Anglaise',
+      'Mesh'
+    ],
+    'Embellishments': [
+      'Beading',
+      'Sequins',
+      'Rhinestones',
+      'Crystals',
+      'Pearls',
+      'Embroidery',
+      'Appliqués',
+      'Lace',
+      'Feathers',
+      'Tassels',
+      'Fringe',
+      'Ribbons',
+      'Paillettes',
+      'Ruffles',
+      'Pleats',
+      'Piping',
+      'Fur',
+      'Brooches',
+      'Buttons'
+    ],
+    'Lining': [
+      'Silk Charmeuse Lining',
+      'Silk Habotai Lining',
+      'Silk Crepe de Chine Lining',
+      'Silk Satin Lining',
+      'Bemberg Rayon Lining',
+      'Acetate Lining',
+      'Polyester Lining',
+      'Viscose Lining',
+      'Cotton Sateen Lining',
+      'Cotton Voile Lining',
+      'Cupro Lining',
+      'Stretch Lining',
+      'Jacquard Lining',
+      'Taffeta Lining',
+      'Organza Lining',
+      'Mesh Lining',
+      'Satin Stretch Lining',
+      'Crepe Lining',
+      'Wool Lining'
+    ],
+    'Sewing Tools/Equipment': [
+      'Sewing machine',
+      'Serger (overlock machine)',
+      'Iron and ironing board',
+      'Sewing needles',
+      'Pins and pin cushions',
+      'Seam ripper',
+      'Scissors',
+      'Rotary cutter and cutting mat',
+      'Tape measure',
+      'Seam gauge',
+      "Tailor's chalk or fabric marker",
+      "Thimble",
+      "Presser feet",
+      'Bobbins and bobbin cases',
+      'Fabric stabilizers',
+      'Buttonholer attachment',
+      'Hemming aids',
+      'Bias tape maker',
+      'Embroidery hoop'
+    ],
+    'Fusibles': ['Pocketin'],
+    'Sewing Accessories': [
+      'Hemming gum',
+      'Zippers',
+      'Bomber Jacket zippers',
+      'Invisible zippers',
+      'Chain zippers',
+      'SBS zipper'
+    ],
+  };
+
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -39,6 +137,27 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
         _image = File(pickedFile.path);
       });
     }
+  }
+
+  void _saveProduct() {
+    if (_image == null || _productType.isEmpty || _selectedColors.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    final randomColor =
+        _selectedColors[Random().nextInt(_selectedColors.length)];
+    final colorCode = '#${randomColor.value.toRadixString(16).substring(2)}';
+
+    final newProduct = {
+      'imagePath': _image!.path,
+      'productType': _productType,
+      'colorCode': colorCode,
+    };
+
+    Navigator.pop(context, newProduct);
   }
 
   void _showColorPicker() {
@@ -134,9 +253,7 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                       Padding(
                         padding: const EdgeInsets.only(right: 16),
                         child: GestureDetector(
-                          onTap: () {
-                            // Implement save functionality
-                          },
+                          onTap: _saveProduct,
                           child: Text(
                             'Save',
                             style: GoogleFonts.nunito(
@@ -182,9 +299,11 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                 onChanged: (value) {
                   setState(() {
                     _productCategory = value!;
+                    _productType =
+                        ''; // Reset product type when category changes
                   });
                 },
-                items: ['Category 1', 'Category 2', 'Category 3'],
+                items: _productTypes.keys.toList(),
               ),
               const SizedBox(height: 16),
               _buildDropdownField(
@@ -195,7 +314,9 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                     _productType = value!;
                   });
                 },
-                items: ['Type 1', 'Type 2', 'Type 3'],
+                items: _productCategory.isNotEmpty
+                    ? _productTypes[_productCategory]!
+                    : [],
               ),
               const SizedBox(height: 16),
               _buildColorField(
@@ -253,6 +374,14 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                       ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                label: 'Product Description',
+                value: '',
+                onChanged: (value) {
+                  // Handle tags input
+                },
               ),
               const SizedBox(height: 16),
               _buildDropdownField(
@@ -326,14 +455,6 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                 value: '₦ ${_formatter.format(_price * _quantity)}',
                 enabled: false,
                 onChanged: (String) {},
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                label: 'Tags',
-                value: '',
-                onChanged: (value) {
-                  // Handle tags input
-                },
               ),
               const SizedBox(height: 25),
             ],
