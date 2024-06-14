@@ -1,5 +1,5 @@
 //vendor_products.dart
-// ignore_for_file: avoid_print, unnecessary_cast
+// ignore_for_file: unused_field
 
 import 'dart:io';
 
@@ -18,22 +18,23 @@ class VendorProductsScreen extends StatefulWidget {
 
 class _VendorProductsScreenState extends State<VendorProductsScreen> {
   int? _selectedIndex;
-  // final List<bool> _favoriteStatus = List.filled(6, false);
   List<Map<String, dynamic>> myaddProducts = [];
   bool _isFabrics = true;
   bool _isEmbellishments = false;
   bool _isLinings = false;
-  bool _isTrimmings = false;
-  bool _isColourCode = false;
-  bool _isPrice = false;
+  bool _isSewingToolsEquipment = false;
+  bool _isFusibles = false;
+  bool _isSewingAccessories = false;
+  bool _isSearchBarEnabled = true;
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _filteredProducts = [];
+  List<Map<String, dynamic>> _filteredSuggestions = [];
 
   final List<Color> _colors = [
     const Color(0xFFFF6B6B), // Red
     const Color(0xFFFFD93D), // Yellow
     const Color(0xFF6BCB77), // Green
     const Color(0xFF4D96FF), // Blue
-    const Color(0xFFB197FC), // Purple
-    const Color(0xFFFF9B71), // Orange
   ];
 
   final List<String> _colorCodes = [
@@ -41,26 +42,58 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
     '#FFD93D',
     '#6BCB77',
     '#4D96FF',
-    '#B197FC',
-    '#FF9B71',
   ];
 
-  List<String> myProducts = [];
+  final List<Map<String, dynamic>> _suggestions = [
+    {'productType': 'Bomber Jackets', 'colorCode': '#FF6B6B'},
+    {'productType': 'Leather Jackets', 'colorCode': '#FFD93D'},
+    {'productType': 'Denim Jackets', 'colorCode': '#6BCB77'},
+    {'productType': 'Puffer Jackets', 'colorCode': '#4D96FF'},
+  ];
 
-  // void _toggleFavorite(int index) {
-  //   setState(() {
-  //     _favoriteStatus[index] = !_favoriteStatus[index];
-  //   });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _filteredProducts = myaddProducts;
+    _filteredSuggestions = _suggestions;
+  }
+
+  void _filterProducts(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredProducts = myaddProducts;
+        _filteredSuggestions = _suggestions;
+      } else {
+        _filteredProducts = myaddProducts
+            .where((product) =>
+                product['productType']
+                    .toLowerCase()
+                    .contains(query.toLowerCase()) ||
+                product['colorCode']
+                    .toLowerCase()
+                    .contains(query.toLowerCase()))
+            .toList();
+        _filteredSuggestions = _suggestions
+            .where((product) =>
+                product['productType']
+                    .toLowerCase()
+                    .contains(query.toLowerCase()) ||
+                product['colorCode']
+                    .toLowerCase()
+                    .contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
 
   void _handleFilterSelection(String filter) {
     setState(() {
       _isFabrics = false;
       _isEmbellishments = false;
       _isLinings = false;
-      _isTrimmings = false;
-      _isColourCode = false;
-      _isPrice = false;
+      _isSewingToolsEquipment = false;
+      _isFusibles = false;
+      _isSewingAccessories = false;
 
       switch (filter) {
         case 'Fabrics':
@@ -72,14 +105,14 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
         case 'Linings':
           _isLinings = true;
           break;
-        case 'Trimmings':
-          _isTrimmings = true;
+        case 'Sewing Tools/Equipment':
+          _isSewingToolsEquipment = true;
           break;
-        case 'Colour Code':
-          _isColourCode = true;
+        case 'Fusibles':
+          _isFusibles = true;
           break;
-        case 'Price':
-          _isPrice = true;
+        case 'Sewing Accessories':
+          _isSewingAccessories = true;
           break;
       }
     });
@@ -119,6 +152,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
           if (result != null) {
             setState(() {
               myaddProducts.add(result as Map<String, dynamic>);
+              _filteredProducts = myaddProducts;
             });
           }
         });
@@ -137,31 +171,25 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  Center(
-                    child: Text(
-                      'Products',
-                      style: GoogleFonts.nunito(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF232323),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _showAddProductMenu,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        setState(() {
+          _isSearchBarEnabled = true;
+        });
+      },
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  children: [
+                    Center(
                       child: Text(
-                        'Add',
+                        'Products',
                         style: GoogleFonts.nunito(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -169,96 +197,166 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildFilterButton('Fabrics', _isFabrics),
-                    const SizedBox(width: 17),
-                    _buildFilterButton('Embellishments', _isEmbellishments),
-                    const SizedBox(width: 17),
-                    _buildFilterButton('Linings', _isLinings),
-                    const SizedBox(width: 17),
-                    _buildFilterButton('Trimmings', _isTrimmings),
-                    const SizedBox(width: 17),
-                    _buildFilterButton('Colour Code', _isColourCode),
-                    const SizedBox(width: 17),
-                    _buildFilterButton('Price', _isPrice),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                'Suggestions',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF621B2B),
-                ),
-              ),
-              Transform.translate(
-                offset: const Offset(0, -12),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.95,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return _buildProductItem(index);
-                  },
-                ),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                'My Products',
-                style: GoogleFonts.nunito(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF621B2B),
-                ),
-              ),
-              const SizedBox(height: 1),
-              Transform.translate(
-                offset: const Offset(0, -12),
-                child: myaddProducts.isEmpty
-                    ? Center(
+                    Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _showAddProductMenu,
                         child: Text(
-                          'No Products',
+                          'Add',
                           style: GoogleFonts.nunito(
                             fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF232323),
                           ),
                         ),
-                      )
-                    : GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.95,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: myaddProducts.length,
-                        itemBuilder: (context, index) {
-                          return _buildMyProductItem(
-                              myaddProducts[index] as Map<String, dynamic>);
-                        },
                       ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 335,
+                  height: 35.27,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBEBEB),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    enabled: _isSearchBarEnabled,
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      hintStyle: GoogleFonts.nunito(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: const Color(0xFFD9D9D9),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFFD9D9D9),
+                        size: 25,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _isSearchBarEnabled = true;
+                      });
+                    },
+                    onChanged: _filterProducts,
+                    textInputAction: TextInputAction.search,
+                    onEditingComplete: () {
+                      setState(() {
+                        _isSearchBarEnabled = false;
+                      });
+                      FocusScope.of(context).unfocus();
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterButton('Fabrics', _isFabrics),
+                      const SizedBox(width: 17),
+                      _buildFilterButton('Embellishments', _isEmbellishments),
+                      const SizedBox(width: 17),
+                      _buildFilterButton('Linings', _isLinings),
+                      const SizedBox(width: 17),
+                      _buildFilterButton(
+                          'Sewing Tools/Equipment', _isSewingToolsEquipment),
+                      const SizedBox(width: 17),
+                      _buildFilterButton('Fusibles', _isFusibles),
+                      const SizedBox(width: 17),
+                      _buildFilterButton(
+                          'Sewing Accessories', _isSewingAccessories),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Text(
+                  'Suggestions',
+                  style: GoogleFonts.nunito(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF621B2B),
+                  ),
+                ),
+                Transform.translate(
+                  offset: const Offset(0, -12),
+                  child: _filteredSuggestions.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No Suggestions',
+                            style: GoogleFonts.nunito(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.95,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _filteredSuggestions.length,
+                          itemBuilder: (context, index) {
+                            return _buildProductItem(index);
+                          },
+                        ),
+                ),
+                const SizedBox(height: 30),
+                Text(
+                  'My Products',
+                  style: GoogleFonts.nunito(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF621B2B),
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Transform.translate(
+                  offset: const Offset(0, -12),
+                  child: _filteredProducts.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No Products',
+                            style: GoogleFonts.nunito(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.95,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            return _buildMyProductItem(
+                                _filteredProducts[index]);
+                          },
+                        ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -334,32 +432,6 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                   ),
                 ),
               ),
-            // Positioned(
-            //   top: 5,
-            //   right: 1,
-            //   child: Container(
-            //     width: 45,
-            //     height: 35,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       color: _favoriteStatus[index]
-            //           ? const Color.fromARGB(231, 250, 215, 118)
-            //           : const Color.fromARGB(220, 255, 255, 255),
-            //     ),
-            //     child: Center(
-            //       child: IconButton(
-            //         onPressed: () => _toggleFavorite(index),
-            //         icon: Icon(
-            //           Icons.favorite_border,
-            //           color:
-            //               _favoriteStatus[index] ? Colors.white : Colors.black,
-            //           size: 22,
-            //         ),
-            //         alignment: Alignment.center,
-            //       ),
-            //     ),
-            //   ),
-            // ),
             Positioned(
               bottom: 8,
               right: 8,
@@ -377,7 +449,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                     children: [
                       Flexible(
                         child: Text(
-                          'Bomber Jackets',
+                          _filteredSuggestions[index]['productType'],
                           style: GoogleFonts.nunito(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
@@ -393,14 +465,15 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                             width: 12,
                             height: 9,
                             decoration: BoxDecoration(
-                              color: _colors[index % _colors.length],
+                              color: Color(int.parse(
+                                  '0xFF${_filteredSuggestions[index]['colorCode'].substring(1)}')),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
                           const SizedBox(width: 2),
                           Flexible(
                             child: Text(
-                              _colorCodes[index % _colorCodes.length],
+                              _filteredSuggestions[index]['colorCode'],
                               style: GoogleFonts.nunito(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
