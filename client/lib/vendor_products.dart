@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'add_my_product.dart';
+import 'add_suggested_product.dart';
 
 class VendorProductsScreen extends StatefulWidget {
   const VendorProductsScreen({super.key});
@@ -112,9 +113,15 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
           context,
           MaterialPageRoute(builder: (context) => const AddMyProductScreen()),
         );
-      } else if (value == 'suggested_product') {
-        // Handle adding suggested product
-        print('Add Suggested Product clicked');
+      } else if (value == 'suggested_product' && _selectedIndex != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddSuggestedProductScreen(
+              imagePath: 'pics/${_selectedIndex! + 1}.png',
+            ),
+          ),
+        );
       }
     });
   }
