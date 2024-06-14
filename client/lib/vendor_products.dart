@@ -1,7 +1,10 @@
+//vendor_products.dart
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'add_my_product.dart';
 
 class VendorProductsScreen extends StatefulWidget {
   const VendorProductsScreen({super.key});
@@ -105,8 +108,10 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
       ],
     ).then((value) {
       if (value == 'my_product') {
-        // Handle adding user's own product
-        print('Add My Product clicked');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const AddMyProductScreen()),
+        );
       } else if (value == 'suggested_product') {
         // Handle adding suggested product
         print('Add Suggested Product clicked');
