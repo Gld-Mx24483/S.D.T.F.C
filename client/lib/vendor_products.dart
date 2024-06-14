@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'add_my_product.dart';
 import 'add_suggested_product.dart';
+import 'my_product_info.dart';
 
 class VendorProductsScreen extends StatefulWidget {
   const VendorProductsScreen({super.key});
@@ -56,6 +57,23 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
     super.initState();
     _filteredProducts = myaddProducts;
     _filteredSuggestions = _suggestions;
+  }
+
+  void _navigateToMyProductInfo(Map<String, dynamic> product, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MyProductInfoScreen(
+          product: product,
+          onDelete: () {
+            setState(() {
+              myaddProducts.removeAt(index);
+              _filteredProducts = myaddProducts;
+            });
+          },
+        ),
+      ),
+    );
   }
 
   void _filterProducts(String query) {
@@ -357,7 +375,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                           itemCount: _filteredProducts.length,
                           itemBuilder: (context, index) {
                             return _buildMyProductItem(
-                                _filteredProducts[index]);
+                                _filteredProducts[index], index);
                           },
                         ),
                 ),
@@ -503,77 +521,80 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
     );
   }
 
-  Widget _buildMyProductItem(Map<String, dynamic> product) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.shade400,
-      ),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: _buildProductImage(product['imagePath']),
-          ),
-          Positioned(
-            bottom: 8,
-            right: 8,
-            child: Container(
-              width: 81,
-              height: 35,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                color: const Color.fromARGB(220, 255, 255, 255),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(6, 2, 2, 2),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        product['productType'],
-                        style: GoogleFonts.nunito(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w400,
-                          height: 1.5,
-                          color: const Color(0xFF061023),
+  Widget _buildMyProductItem(Map<String, dynamic> product, int index) {
+    return GestureDetector(
+      onTap: () => _navigateToMyProductInfo(product, index),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey.shade400,
+        ),
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _buildProductImage(product['imagePath']),
+            ),
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: Container(
+                width: 81,
+                height: 35,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  color: const Color.fromARGB(220, 255, 255, 255),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(6, 2, 2, 2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          product['productType'],
+                          style: GoogleFonts.nunito(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color: const Color(0xFF061023),
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 9,
-                          decoration: BoxDecoration(
-                            color: Color(int.parse(
-                                '0xFF${product['colorCode'].substring(1)}')),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        Flexible(
-                          child: Text(
-                            product['colorCode'],
-                            style: GoogleFonts.nunito(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                              color: const Color(0xFF061023),
+                      Row(
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 9,
+                            decoration: BoxDecoration(
+                              color: Color(int.parse(
+                                  '0xFF${product['colorCode'].substring(1)}')),
+                              borderRadius: BorderRadius.circular(2),
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 2),
+                          Flexible(
+                            child: Text(
+                              product['colorCode'],
+                              style: GoogleFonts.nunito(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                height: 1.5,
+                                color: const Color(0xFF061023),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

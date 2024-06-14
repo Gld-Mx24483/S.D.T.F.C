@@ -153,8 +153,18 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
 
     final newProduct = {
       'imagePath': _image!.path,
+      'productCategory': _productCategory,
       'productType': _productType,
       'colorCode': colorCode,
+      'selectedColors': _selectedColors
+          .map((c) => '#${c.value.toRadixString(16).substring(2)}')
+          .toList(),
+      'productStatus': _productStatus,
+      'weight': _weight,
+      'width': _width,
+      'thickness': _thickness,
+      'quantity': _quantity,
+      'price': _price,
     };
 
     Navigator.pop(context, newProduct);
