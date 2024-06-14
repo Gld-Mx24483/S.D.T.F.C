@@ -2,6 +2,9 @@
 
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use, non_constant_identifier_names, avoid_types_as_parameter_names, unnecessary_brace_in_string_interps
 
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +20,26 @@ class AddSuggestedProductScreen extends StatefulWidget {
       _AddSuggestedProductScreenState();
 }
 
+class SuggestedProduct {
+  final File imageFile;
+  final String productType;
+  final String colorCode;
+
+  SuggestedProduct({
+    required this.imageFile,
+    required this.productType,
+    required this.colorCode,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'imagePath': imageFile.path,
+      'productType': productType,
+      'colorCode': colorCode,
+    };
+  }
+}
+
 class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
   String _productCategory = '';
   String _productType = '';
@@ -29,6 +52,27 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
   int _quantity = 0;
   double _price = 0.0;
   final _formatter = NumberFormat('#,###');
+
+  void _saveProduct() {
+    if (_productType.isEmpty || _selectedColors.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    final randomColor =
+        _selectedColors[Random().nextInt(_selectedColors.length)];
+    final colorCode = '#${randomColor.value.toRadixString(16).substring(2)}';
+
+    final suggestedProduct = {
+      'imagePath': widget.imagePath,
+      'productType': _productType,
+      'colorCode': colorCode,
+    };
+
+    Navigator.pop(context, suggestedProduct);
+  }
 
   void _showColorPicker() {
     showDialog(
@@ -123,9 +167,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                       Padding(
                         padding: const EdgeInsets.only(right: 16),
                         child: GestureDetector(
-                          onTap: () {
-                            // Implement save functionality
-                          },
+                          onTap: _saveProduct,
                           child: Text(
                             'Save',
                             style: GoogleFonts.nunito(
@@ -239,6 +281,14 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              _buildTextField(
+                label: 'Product Description',
+                value: '',
+                onChanged: (value) {
+                  // Handle tags input
+                },
+              ),
+              const SizedBox(height: 16),
               _buildDropdownField(
                 label: 'Product Status',
                 value: _productStatus,
@@ -310,14 +360,6 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                 value: '₦ ${_formatter.format(_price * _quantity)}',
                 enabled: false,
                 onChanged: (String) {},
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(
-                label: 'Tags',
-                value: '',
-                onChanged: (value) {
-                  // Handle tags input
-                },
               ),
               const SizedBox(height: 25),
             ],

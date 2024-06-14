@@ -1,5 +1,5 @@
-//vendor_products.dart
-// ignore_for_file: unused_field
+// vendor_products.dart
+// ignore_for_file: unused_field, avoid_print
 
 import 'dart:io';
 
@@ -164,7 +164,14 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
               imagePath: 'pics/${_selectedIndex! + 1}.png',
             ),
           ),
-        );
+        ).then((result) {
+          if (result != null) {
+            setState(() {
+              myaddProducts.add(result as Map<String, dynamic>);
+              _filteredProducts = myaddProducts;
+            });
+          }
+        });
       }
     });
   }
@@ -506,12 +513,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.file(
-              File(product['imagePath']),
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-            ),
+            child: _buildProductImage(product['imagePath']),
           ),
           Positioned(
             bottom: 8,
@@ -574,5 +576,30 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildProductImage(String imagePath) {
+    if (imagePath.startsWith('pics/')) {
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    } else {
+      return Image.file(
+        File(imagePath),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          print('Error loading image: $error');
+          return Container(
+            color: Colors.grey,
+            child: const Icon(Icons.error),
+          );
+        },
+      );
+    }
   }
 }
