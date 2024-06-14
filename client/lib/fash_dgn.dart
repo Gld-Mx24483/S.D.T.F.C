@@ -1,3 +1,4 @@
+//-------------------------WITH API ENDPOINT----------------------------//
 //fash_dgn.dart
 
 // ignore_for_file: avoid_print, unused_local_variable
@@ -564,7 +565,9 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
 
 
 
-
+//----------------------------------------------------------------------//
+//----------------------------------------------------------------------//
+//----------------------------------------------------------------------//
 // //fash_dgn.dart
 
 // // ignore_for_file: avoid_print, unused_local_variable
@@ -1125,3 +1128,6 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
 //     return text.contains(RegExp(r'[a-zA-Z]'));
 //   }
 // }
+//----------------------------------------------------------------------//
+//----------------------------------------------------------------------//
+//----------------------------------------------------------------------//
