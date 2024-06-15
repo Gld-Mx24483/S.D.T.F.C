@@ -1,4 +1,6 @@
 // fash_dgn_dash.dart
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -165,26 +167,26 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CartScreen(),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 85.0),
-                            child: Image.asset(
-                              'pics/shopping-bag.png',
-                              color: const Color(0xFF621B2B),
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                        ),
+                        // const SizedBox(width: 10),
+                        // GestureDetector(
+                        //   onTap: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => const CartScreen(),
+                        //       ),
+                        //     );
+                        //   },
+                        //   child: Padding(
+                        //     padding: const EdgeInsets.only(top: 85.0),
+                        //     child: Image.asset(
+                        //       'pics/shopping-bag.png',
+                        //       color: const Color(0xFF621B2B),
+                        //       width: 20,
+                        //       height: 20,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     )
                   ],

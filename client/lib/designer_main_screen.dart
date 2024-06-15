@@ -115,7 +115,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
 
   void _nextTutorialStep() {
     setState(() {
-      if (_tutorialStep == 6) {
+      if (_tutorialStep == 5) {
         _currentScreen = const DesignerDashboard();
         _showTutorial = false;
       } else {
@@ -181,9 +181,6 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                               case 5:
                                 beginOffset = const Offset(0.0, 1.0);
                                 break;
-                              case 6:
-                                beginOffset = const Offset(-1.0, 0.0);
-                                break;
                               default:
                                 beginOffset = const Offset(0.0, 1.0);
                             }
@@ -216,7 +213,7 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                               ),
                               child: Center(
                                 child: Text(
-                                  _tutorialStep == 6 ? 'Begin' : 'Next',
+                                  _tutorialStep == 5 ? 'Begin' : 'Next',
                                   style: GoogleFonts.nunito(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -231,20 +228,9 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
                         if (_tutorialStep == 5)
                           Positioned(
                             top: 85,
-                            left: 290,
-                            child: Image.asset(
-                              'pics/bell.png',
-                              color: const Color.fromARGB(174, 250, 215, 118),
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                        if (_tutorialStep == 6)
-                          Positioned(
-                            top: 85,
                             left: 320,
                             child: Image.asset(
-                              'pics/shopping-bag.png',
+                              'pics/bell.png',
                               color: const Color.fromARGB(174, 250, 215, 118),
                               width: 20,
                               height: 20,
@@ -304,17 +290,8 @@ class _DesignerMainScreenState extends State<DesignerMainScreen>
         return _buildTutorialBubble(
           key: const ValueKey('tutorialStep5'),
           top: 95,
-          left: 215,
-          text: 'Notifications',
-          triangleOffset: 34.5,
-          isAbove: true,
-        );
-      case 6:
-        return _buildTutorialBubble(
-          key: const ValueKey('tutorialStep6'),
-          top: 95,
           left: 242,
-          text: 'Cart',
+          text: 'Notifications',
           triangleOffset: 38,
           isAbove: true,
         );

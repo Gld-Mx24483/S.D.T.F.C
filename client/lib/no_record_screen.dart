@@ -1,8 +1,8 @@
 //no_record_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'notification.dart';
-import 'cart.dart';
 
 class NoRecordScreen extends StatefulWidget {
   const NoRecordScreen({super.key});
@@ -137,26 +137,6 @@ class _NoRecordScreenState extends State<NoRecordScreen> {
                           padding: const EdgeInsets.only(top: 85.0),
                           child: Image.asset(
                             'pics/bell.png',
-                            color: const Color(0xFF621B2B),
-                            width: 20,
-                            height: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CartScreen(),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 85.0),
-                          child: Image.asset(
-                            'pics/shopping-bag.png',
                             color: const Color(0xFF621B2B),
                             width: 20,
                             height: 20,
