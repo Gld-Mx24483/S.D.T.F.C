@@ -78,7 +78,7 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
       'Brooches',
       'Buttons'
     ],
-    'Lining': [
+    'Linings': [
       'Silk Charmeuse Lining',
       'Silk Habotai Lining',
       'Silk Crepe de Chine Lining',

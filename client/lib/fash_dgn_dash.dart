@@ -20,9 +20,9 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
   bool _isFabrics = true;
   bool _isEmbellishments = false;
   bool _isLinings = false;
-  bool _isTrimmings = false;
-  bool _isColourCode = false;
-  bool _isPrice = false;
+  bool _isSewingToolsEquipment = false;
+  bool _isFusibles = false;
+  bool _isSewingAccessories = false;
   final List<bool> _favoriteStatus = List.filled(6, false);
   int? _selectedIndex;
   bool _isSearchBarEnabled = true;
@@ -49,9 +49,9 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
       _isFabrics = false;
       _isEmbellishments = false;
       _isLinings = false;
-      _isTrimmings = false;
-      _isColourCode = false;
-      _isPrice = false;
+      _isSewingToolsEquipment = false;
+      _isFusibles = false;
+      _isSewingAccessories = false;
 
       switch (filter) {
         case 'Fabrics':
@@ -63,14 +63,14 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
         case 'Linings':
           _isLinings = true;
           break;
-        case 'Trimmings':
-          _isTrimmings = true;
+        case 'Sewing Tools/Equipment':
+          _isSewingToolsEquipment = true;
           break;
-        case 'Colour Code':
-          _isColourCode = true;
+        case 'Fusibles':
+          _isFusibles = true;
           break;
         case 'Price':
-          _isPrice = true;
+          _isSewingAccessories = true;
           break;
       }
     });
@@ -322,12 +322,13 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                       ),
                       const SizedBox(width: 17),
                       GestureDetector(
-                        onTap: () => _handleFilterSelection('Trimmings'),
+                        onTap: () =>
+                            _handleFilterSelection('Sewing Tools/Equipment'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _isTrimmings
+                            color: _isSewingToolsEquipment
                                 ? const Color.fromARGB(189, 250, 215, 118)
                                 : const Color(0xFFD9D9D9),
                             borderRadius: const BorderRadius.only(
@@ -338,23 +339,25 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             ),
                           ),
                           child: Text(
-                            'Trimmings',
+                            'Sewing Tools/Equpment',
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color: _isTrimmings ? Colors.white : Colors.black,
+                              color: _isSewingToolsEquipment
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 17),
                       GestureDetector(
-                        onTap: () => _handleFilterSelection('Colour Code'),
+                        onTap: () => _handleFilterSelection('Fusibles'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _isColourCode
+                            color: _isFusibles
                                 ? const Color.fromARGB(189, 250, 215, 118)
                                 : const Color(0xFFD9D9D9),
                             borderRadius: const BorderRadius.only(
@@ -365,24 +368,24 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             ),
                           ),
                           child: Text(
-                            'Colour Code',
+                            'Fusibles',
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color:
-                                  _isColourCode ? Colors.white : Colors.black,
+                              color: _isFusibles ? Colors.white : Colors.black,
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 17),
                       GestureDetector(
-                        onTap: () => _handleFilterSelection('Price'),
+                        onTap: () =>
+                            _handleFilterSelection('Sewing Accessories'),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _isPrice
+                            color: _isSewingAccessories
                                 ? const Color.fromARGB(189, 250, 215, 118)
                                 : const Color(0xFFD9D9D9),
                             borderRadius: const BorderRadius.only(
@@ -393,11 +396,13 @@ class _DesignerDashboardState extends State<DesignerDashboard> {
                             ),
                           ),
                           child: Text(
-                            'Price',
+                            'Sewing Accessories',
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
-                              color: _isPrice ? Colors.white : Colors.black,
+                              color: _isSewingAccessories
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                         ),
