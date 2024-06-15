@@ -1,6 +1,6 @@
 // my_product_info.dart
 
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_print
 
 import 'dart:io';
 
@@ -109,16 +109,9 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
                 height: 246,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  image: widget.product['imagePath'] != null
-                      ? DecorationImage(
-                          image: FileImage(File(widget.product['imagePath'])),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
                 ),
-                child: widget.product['imagePath'] == null
-                    ? const Center(child: Text('No image available'))
-                    : null,
+                child: _buildProductImage(
+                    widget.product['imagePath'], widget.product['imageFile']),
               ),
               const SizedBox(height: 24),
               _buildInfoField('Product Category',
@@ -227,6 +220,67 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
     );
   }
 
+  Widget _buildProductImage(String? imagePath, dynamic imageFile) {
+    if (imageFile != null) {
+      if (imageFile is File && imageFile.existsSync()) {
+        return Image.file(
+          imageFile,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading image file: $error');
+            return Container(
+              color: Colors.grey,
+              child: const Icon(Icons.error),
+            );
+          },
+        );
+      } else if (imageFile is String) {
+        // Handle the case where imageFile is a string path
+        return Image.file(
+          File(imageFile),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading image from string path: $error');
+            return Container(
+              color: Colors.grey,
+              child: const Icon(Icons.error),
+            );
+          },
+        );
+      }
+    } else if (imagePath != null && imagePath.isNotEmpty) {
+      if (imagePath.startsWith('pics/')) {
+        return Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading asset image: $error');
+            return Container(
+              color: Colors.grey,
+              child: const Icon(Icons.error),
+            );
+          },
+        );
+      } else {
+        return Image.file(
+          File(imagePath),
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            print('Error loading image from path: $error');
+            return Container(
+              color: Colors.grey,
+              child: const Icon(Icons.error),
+            );
+          },
+        );
+      }
+    }
+    return Container(
+      color: Colors.grey,
+      child: const Icon(Icons.image_not_supported),
+    );
+  }
+
   Widget _buildInfoField(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -267,47 +321,6 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
       ),
     );
   }
-
-  // Widget _buildInfoField(String label, dynamic value) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           label,
-  //           style: GoogleFonts.nunito(
-  //             fontSize: 14,
-  //             fontWeight: FontWeight.w500,
-  //             height: 1.5,
-  //             letterSpacing: -0.019,
-  //             color: Colors.black,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 4),
-  //         Container(
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-  //           decoration: BoxDecoration(
-  //             color: const Color.fromARGB(45, 215, 215, 215),
-  //             borderRadius: BorderRadius.circular(8),
-  //             border: Border.all(
-  //               color: const Color(0xFFD8D7D7),
-  //             ),
-  //           ),
-  //           child: Text(
-  //             value?.toString() ?? 'N/A',
-  //             style: GoogleFonts.nunito(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.w400,
-  //               color: Colors.grey,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildColorField(String label, String colorCode) {
     return Padding(

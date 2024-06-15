@@ -536,7 +536,8 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: _buildProductImage(product['imagePath']),
+              child: _buildProductImage(
+                  product['imagePath'], product['imageFile']),
             ),
             Positioned(
               bottom: 8,
@@ -555,7 +556,7 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                     children: [
                       Flexible(
                         child: Text(
-                          product['productType'],
+                          product['productType'] ?? 'N/A',
                           style: GoogleFonts.nunito(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
@@ -572,14 +573,14 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
                             height: 9,
                             decoration: BoxDecoration(
                               color: Color(int.parse(
-                                  '0xFF${product['colorCode'].substring(1)}')),
+                                  '0xFF${product['colorCode']?.substring(1) ?? 'FFFFFF'}')),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
                           const SizedBox(width: 2),
                           Flexible(
                             child: Text(
-                              product['colorCode'],
+                              product['colorCode'] ?? 'N/A',
                               style: GoogleFonts.nunito(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -602,55 +603,30 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
     );
   }
 
-  // Widget _buildProductImage(String imagePath) {
-  //   if (imagePath.startsWith('pics/')) {
-  //     return Image.asset(
-  //       imagePath,
-  //       fit: BoxFit.cover,
-  //       width: double.infinity,
-  //       height: double.infinity,
-  //     );
-  //   } else {
-  //     return Image.file(
-  //       File(imagePath),
-  //       fit: BoxFit.cover,
-  //       width: double.infinity,
-  //       height: double.infinity,
-  //       errorBuilder: (context, error, stackTrace) {
-  //         print('Error loading image: $error');
-  //         return Container(
-  //           color: Colors.grey,
-  //           child: const Icon(Icons.error),
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
-
-  Widget _buildProductImage(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) {
-      return const Center(child: Text('No image available'));
-    } else if (File(imagePath).existsSync()) {
+  Widget _buildProductImage(String? imagePath, File? imageFile) {
+    if (imageFile != null && imageFile.existsSync()) {
       return Image.file(
-        File(imagePath),
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          print('Error loading image: $error');
-          return Container(
-            color: Colors.grey,
-            child: const Icon(Icons.error),
-          );
-        },
-      );
-    } else if (imagePath.startsWith('pics/')) {
-      return Image.asset(
-        imagePath,
+        imageFile,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
       );
+    } else if (imagePath != null && imagePath.isNotEmpty) {
+      if (imagePath.startsWith('pics/')) {
+        return Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      } else {
+        return Image.file(
+          File(imagePath),
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      }
     } else {
       return Container(
         color: Colors.grey,
