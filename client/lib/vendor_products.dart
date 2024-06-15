@@ -46,10 +46,10 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
   ];
 
   final List<Map<String, dynamic>> _suggestions = [
-    {'productType': 'Bomber Jackets', 'colorCode': '#FF6B6B'},
-    {'productType': 'Leather Jackets', 'colorCode': '#FFD93D'},
-    {'productType': 'Denim Jackets', 'colorCode': '#6BCB77'},
-    {'productType': 'Puffer Jackets', 'colorCode': '#4D96FF'},
+    {'productType': 'Tulle', 'colorCode': '#FF6B6B'},
+    {'productType': 'Jacquard', 'colorCode': '#FFD93D'},
+    {'productType': 'Angora', 'colorCode': '#6BCB77'},
+    {'productType': 'Linen', 'colorCode': '#4D96FF'},
   ];
 
   @override
@@ -175,11 +175,14 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
           }
         });
       } else if (value == 'suggested_product' && _selectedIndex != null) {
+        String selectedProductType =
+            _filteredSuggestions[_selectedIndex!]['productType'];
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => AddSuggestedProductScreen(
               imagePath: 'pics/${_selectedIndex! + 1}.png',
+              productType: selectedProductType,
             ),
           ),
         ).then((result) {
@@ -599,15 +602,35 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
     );
   }
 
-  Widget _buildProductImage(String imagePath) {
-    if (imagePath.startsWith('pics/')) {
-      return Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-      );
-    } else {
+  // Widget _buildProductImage(String imagePath) {
+  //   if (imagePath.startsWith('pics/')) {
+  //     return Image.asset(
+  //       imagePath,
+  //       fit: BoxFit.cover,
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //     );
+  //   } else {
+  //     return Image.file(
+  //       File(imagePath),
+  //       fit: BoxFit.cover,
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //       errorBuilder: (context, error, stackTrace) {
+  //         print('Error loading image: $error');
+  //         return Container(
+  //           color: Colors.grey,
+  //           child: const Icon(Icons.error),
+  //         );
+  //       },
+  //     );
+  //   }
+  // }
+
+  Widget _buildProductImage(String? imagePath) {
+    if (imagePath == null || imagePath.isEmpty) {
+      return const Center(child: Text('No image available'));
+    } else if (File(imagePath).existsSync()) {
       return Image.file(
         File(imagePath),
         fit: BoxFit.cover,
@@ -620,6 +643,18 @@ class _VendorProductsScreenState extends State<VendorProductsScreen> {
             child: const Icon(Icons.error),
           );
         },
+      );
+    } else if (imagePath.startsWith('pics/')) {
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    } else {
+      return Container(
+        color: Colors.grey,
+        child: const Icon(Icons.error),
       );
     }
   }

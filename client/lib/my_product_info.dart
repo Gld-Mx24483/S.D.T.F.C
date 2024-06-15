@@ -268,6 +268,47 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
     );
   }
 
+  // Widget _buildInfoField(String label, dynamic value) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           label,
+  //           style: GoogleFonts.nunito(
+  //             fontSize: 14,
+  //             fontWeight: FontWeight.w500,
+  //             height: 1.5,
+  //             letterSpacing: -0.019,
+  //             color: Colors.black,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 4),
+  //         Container(
+  //           width: double.infinity,
+  //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  //           decoration: BoxDecoration(
+  //             color: const Color.fromARGB(45, 215, 215, 215),
+  //             borderRadius: BorderRadius.circular(8),
+  //             border: Border.all(
+  //               color: const Color(0xFFD8D7D7),
+  //             ),
+  //           ),
+  //           child: Text(
+  //             value?.toString() ?? 'N/A',
+  //             style: GoogleFonts.nunito(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.w400,
+  //               color: Colors.grey,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildColorField(String label, String colorCode) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

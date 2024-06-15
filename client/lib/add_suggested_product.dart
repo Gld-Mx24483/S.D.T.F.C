@@ -1,6 +1,4 @@
-// add_suggested_product.dart
-
-// ignore_for_file: library_private_types_in_public_api, deprecated_member_use, non_constant_identifier_names, avoid_types_as_parameter_names, unnecessary_brace_in_string_interps
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use, non_constant_identifier_names, avoid_types_as_parameter_names, unnecessary_brace_in_string_interps, avoid_print
 
 import 'dart:io';
 import 'dart:math';
@@ -12,8 +10,13 @@ import 'package:intl/intl.dart';
 
 class AddSuggestedProductScreen extends StatefulWidget {
   final String imagePath;
+  final String productType;
 
-  const AddSuggestedProductScreen({super.key, required this.imagePath});
+  const AddSuggestedProductScreen({
+    super.key,
+    required this.imagePath,
+    required this.productType,
+  });
 
   @override
   _AddSuggestedProductScreenState createState() =>
@@ -24,11 +27,25 @@ class SuggestedProduct {
   final File imageFile;
   final String productType;
   final String colorCode;
+  final String productCategory;
+  final String productStatus;
+  final double weight;
+  final double width;
+  final String thickness;
+  final int quantity;
+  final double price;
 
   SuggestedProduct({
     required this.imageFile,
     required this.productType,
     required this.colorCode,
+    this.productCategory = 'N/A', // Default value
+    this.productStatus = 'In Stock', // Default value
+    this.weight = 0.0, // Default value
+    this.width = 0.0, // Default value
+    this.thickness = 'Light', // Default value
+    this.quantity = 0, // Default value
+    this.price = 0.0, // Default value
   });
 
   Map<String, dynamic> toMap() {
@@ -36,13 +53,20 @@ class SuggestedProduct {
       'imagePath': imageFile.path,
       'productType': productType,
       'colorCode': colorCode,
+      'productCategory': productCategory,
+      'productStatus': productStatus,
+      'weight': weight,
+      'width': width,
+      'thickness': thickness,
+      'quantity': quantity,
+      'price': price,
     };
   }
 }
 
 class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
-  String _productCategory = '';
-  String _productType = '';
+  late String _productCategory;
+  late String _productType;
   Color _productColor = Colors.black;
   final List<Color> _selectedColors = [];
   String _productStatus = 'In Stock';
@@ -53,8 +77,44 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
   double _price = 0.0;
   final _formatter = NumberFormat('#,###');
 
+  final Map<String, List<String>> _productTypes = {
+    'Fabrics': [
+      'Silk Charmeuse',
+      'Tulle',
+      'Georgette',
+      'Crepe de Chine',
+      'Duchess Satin',
+      'Mikado',
+      'Dupioni Silk',
+      'Shantung Silk',
+      'Crepe Back Satin',
+      'Lamé',
+      'Jacquard',
+      'Taffeta',
+      'Cashmere',
+      'Mohair',
+      'Angora',
+      'Wool Crepe',
+      'Linen',
+      'Broderie Anglaise',
+      'Mesh'
+    ],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _productType = widget.productType;
+    _randomizeProductCategoryAndType();
+  }
+
+  void _randomizeProductCategoryAndType() {
+    final categories = _productTypes.keys.toList();
+    _productCategory = categories[Random().nextInt(categories.length)];
+  }
+
   void _saveProduct() {
-    if (_productType.isEmpty || _selectedColors.isEmpty) {
+    if (_selectedColors.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all required fields')),
       );
@@ -65,23 +125,32 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
         _selectedColors[Random().nextInt(_selectedColors.length)];
     final colorCode = '#${randomColor.value.toRadixString(16).substring(2)}';
 
-    final suggestedProduct = {
-      'imagePath': widget.imagePath,
-      'productCategory': _productCategory,
-      'productType': _productType,
-      'colorCode': colorCode,
-      'selectedColors': _selectedColors
-          .map((c) => '#${c.value.toRadixString(16).substring(2)}')
-          .toList(),
-      'productStatus': _productStatus,
-      'weight': _weight,
-      'width': _width,
-      'thickness': _thickness,
-      'quantity': _quantity,
-      'price': _price,
-    };
+    final suggestedProduct = SuggestedProduct(
+      imageFile: File(widget.imagePath),
+      productType: _productType,
+      colorCode: colorCode,
+      productCategory: _productCategory,
+      productStatus: _productStatus,
+      weight: _weight,
+      width: _width,
+      thickness: _thickness,
+      quantity: _quantity,
+      price: _price,
+    );
 
-    Navigator.pop(context, suggestedProduct);
+    // Log or print the product details
+    print('Saved Product Details:');
+    print('Product Type: ${suggestedProduct.productType}');
+    print('Color Code: ${suggestedProduct.colorCode}');
+    print('Product Category: ${suggestedProduct.productCategory}');
+    print('Product Status: ${suggestedProduct.productStatus}');
+    print('Weight: ${suggestedProduct.weight}');
+    print('Width: ${suggestedProduct.width}');
+    print('Thickness: ${suggestedProduct.thickness}');
+    print('Quantity: ${suggestedProduct.quantity}');
+    print('Price: ${suggestedProduct.price}');
+
+    Navigator.pop(context, suggestedProduct.toMap());
   }
 
   void _showColorPicker() {
@@ -211,27 +280,14 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Rest of the fields remain the same as in add_my_product.dart
               _buildDropdownField(
                 label: 'Product Category',
                 value: _productCategory,
-                onChanged: (value) {
-                  setState(() {
-                    _productCategory = value!;
-                  });
-                },
-                items: ['Category 1', 'Category 2', 'Category 3'],
               ),
               const SizedBox(height: 16),
               _buildDropdownField(
                 label: 'Product Type',
                 value: _productType,
-                onChanged: (value) {
-                  setState(() {
-                    _productType = value!;
-                  });
-                },
-                items: ['Type 1', 'Type 2', 'Type 3'],
               ),
               const SizedBox(height: 16),
               _buildColorField(
@@ -281,10 +337,11 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                           height: 47,
                           margin: const EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFDADADA),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(Icons.add, color: Colors.grey),
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                                  Border.all(color: const Color(0xFF000000))),
+                          child: const Icon(Icons.add, color: Colors.black),
                         ),
                       ),
                   ],
@@ -382,8 +439,8 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
   Widget _buildDropdownField({
     required String label,
     required String value,
-    required Function(String?) onChanged,
-    required List<String> items,
+    List<String>? items,
+    Function(String?)? onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -403,7 +460,8 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
           const SizedBox(height: 10),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 16, vertical: 16), // Increased vertical padding
             decoration: BoxDecoration(
               color: const Color.fromARGB(45, 215, 215, 215),
               borderRadius: BorderRadius.circular(8),
@@ -411,19 +469,29 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                 color: const Color(0xFFD8D7D7),
               ),
             ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: value.isEmpty ? null : value,
-                hint: Text('Select ${label}'),
-                onChanged: onChanged,
-                items: items.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ),
+            child: items == null
+                ? Text(
+                    value,
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade600, // Grayed out text color
+                    ),
+                  )
+                : DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: value.isEmpty ? null : value,
+                      hint: Text('Select ${label}'),
+                      onChanged: onChanged,
+                      items:
+                          items.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -470,10 +538,11 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey,
+                      color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
-                  const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                  const Icon(Icons.arrow_drop_down,
+                      color: Color.fromARGB(255, 0, 0, 0)),
                 ],
               ),
             ),
