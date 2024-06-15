@@ -1,3 +1,4 @@
+//add_suggested_product.dart
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use, non_constant_identifier_names, avoid_types_as_parameter_names, unnecessary_brace_in_string_interps, avoid_print
 
 import 'dart:io';
@@ -28,6 +29,7 @@ class SuggestedProduct {
   final String productType;
   final String colorCode;
   final String productCategory;
+  final String productDescription;
   final String productStatus;
   final double weight;
   final double width;
@@ -39,13 +41,14 @@ class SuggestedProduct {
     required this.imageFile,
     required this.productType,
     required this.colorCode,
-    this.productCategory = 'N/A', // Default value
-    this.productStatus = 'In Stock', // Default value
-    this.weight = 0.0, // Default value
-    this.width = 0.0, // Default value
-    this.thickness = 'Light', // Default value
-    this.quantity = 0, // Default value
-    this.price = 0.0, // Default value
+    this.productCategory = 'N/A',
+    this.productDescription = 'N/A',
+    this.productStatus = 'In Stock',
+    this.weight = 0.0,
+    this.width = 0.0,
+    this.thickness = 'Light',
+    this.quantity = 0,
+    this.price = 0.0,
   });
 
   Map<String, dynamic> toMap() {
@@ -53,6 +56,7 @@ class SuggestedProduct {
       'imagePath': imageFile.path,
       'productType': productType,
       'colorCode': colorCode,
+      'productDescription': productDescription,
       'productCategory': productCategory,
       'productStatus': productStatus,
       'weight': weight,
@@ -75,6 +79,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
   String _thickness = 'Light';
   int _quantity = 0;
   double _price = 0.0;
+  String _productDescription = '';
   final _formatter = NumberFormat('#,###');
 
   final Map<String, List<String>> _productTypes = {
@@ -129,6 +134,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
       imageFile: File(widget.imagePath),
       productType: _productType,
       colorCode: colorCode,
+      productDescription: _productDescription,
       productCategory: _productCategory,
       productStatus: _productStatus,
       weight: _weight,
@@ -142,6 +148,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
     print('Saved Product Details:');
     print('Product Type: ${suggestedProduct.productType}');
     print('Color Code: ${suggestedProduct.colorCode}');
+    print('Product Description: ${suggestedProduct.productDescription}');
     print('Product Category: ${suggestedProduct.productCategory}');
     print('Product Status: ${suggestedProduct.productStatus}');
     print('Weight: ${suggestedProduct.weight}');
@@ -176,7 +183,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
               child: const Text('OK'),
               onPressed: () {
                 setState(() {
-                  if (_selectedColors.length < 3) {
+                  if (_selectedColors.length < 20) {
                     _selectedColors.add(_productColor);
                   }
                 });
@@ -297,62 +304,68 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    for (int i = 0; i < _selectedColors.length; i++)
-                      GestureDetector(
-                        onTap: () => _removeColor(i),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 53,
-                              height: 47,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                color: _selectedColors[i],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      for (int i = 0; i < _selectedColors.length; i++)
+                        GestureDetector(
+                          onTap: () => _removeColor(i),
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 53,
+                                height: 47,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: _selectedColors[i],
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Icon(Icons.close,
-                                    size: 18, color: Colors.black),
                               ),
-                            ),
-                          ],
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close,
+                                      size: 18, color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    if (_selectedColors.length < 3)
-                      GestureDetector(
-                        onTap: _showColorPicker,
-                        child: Container(
-                          width: 53,
-                          height: 47,
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: const Color(0xFF000000))),
-                          child: const Icon(Icons.add, color: Colors.black),
+                      if (_selectedColors.length < 10)
+                        GestureDetector(
+                          onTap: _showColorPicker,
+                          child: Container(
+                            width: 53,
+                            height: 47,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(10),
+                                border:
+                                    Border.all(color: const Color(0xFF000000))),
+                            child: const Icon(Icons.add, color: Colors.black),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Product Description',
-                value: '',
+                value: _productDescription,
                 onChanged: (value) {
-                  // Handle tags input
+                  setState(() {
+                    _productDescription = value;
+                  });
                 },
               ),
               const SizedBox(height: 16),
@@ -460,8 +473,7 @@ class _AddSuggestedProductScreenState extends State<AddSuggestedProductScreen> {
           const SizedBox(height: 10),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 16), // Increased vertical padding
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
               color: const Color.fromARGB(45, 215, 215, 215),
               borderRadius: BorderRadius.circular(8),

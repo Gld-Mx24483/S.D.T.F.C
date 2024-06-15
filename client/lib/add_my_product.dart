@@ -1,6 +1,6 @@
 // add_my_product.dart
 
-// ignore_for_file: unnecessary_brace_in_string_interps, deprecated_member_use, library_private_types_in_public_api, non_constant_identifier_names, avoid_types_as_parameter_names
+// ignore_for_file: unnecessary_brace_in_string_interps, deprecated_member_use, library_private_types_in_public_api, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print
 
 import 'dart:io';
 import 'dart:math';
@@ -25,6 +25,7 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
   String _productType = '';
   Color _productColor = Colors.black;
   final List<Color> _selectedColors = [];
+  String _productDescription = '';
   String _productStatus = 'In Stock';
   double _weight = 0.0;
   double _width = 0.0;
@@ -159,6 +160,7 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
       'selectedColors': _selectedColors
           .map((c) => '#${c.value.toRadixString(16).substring(2)}')
           .toList(),
+      'productDescription': _productDescription,
       'productStatus': _productStatus,
       'weight': _weight,
       'width': _width,
@@ -166,6 +168,23 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
       'quantity': _quantity,
       'price': _price,
     };
+
+    // Log the values
+    print('Product Details:');
+    print('Image Path: ${_image!.path}');
+    print('Category: $_productCategory');
+    print('Type: $_productType');
+    print('Color Code: $colorCode');
+    print(
+        'Selected Colors: ${_selectedColors.map((c) => '#${c.value.toRadixString(16).substring(2)}').toList()}');
+    print('Description: $_productDescription');
+
+    print('Status: $_productStatus');
+    print('Weight: $_weight');
+    print('Width: $_width');
+    print('Thickness: $_thickness');
+    print('Quantity: $_quantity');
+    print('Price: $_price');
 
     Navigator.pop(context, newProduct);
   }
@@ -193,7 +212,7 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
               child: const Text('OK'),
               onPressed: () {
                 setState(() {
-                  if (_selectedColors.length < 3) {
+                  if (_selectedColors.length < 20) {
                     _selectedColors.add(_productColor);
                   }
                 });
@@ -336,61 +355,68 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    for (int i = 0; i < _selectedColors.length; i++)
-                      GestureDetector(
-                        onTap: () => _removeColor(i),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 53,
-                              height: 47,
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                color: _selectedColors[i],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      for (int i = 0; i < _selectedColors.length; i++)
+                        GestureDetector(
+                          onTap: () => _removeColor(i),
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 53,
+                                height: 47,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: _selectedColors[i],
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Icon(Icons.close,
-                                    size: 18, color: Colors.black),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (_selectedColors.length < 3)
-                      GestureDetector(
-                        onTap: _showColorPicker,
-                        child: Container(
-                          width: 53,
-                          height: 47,
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFDADADA),
-                            borderRadius: BorderRadius.circular(10),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.close,
+                                      size: 18, color: Colors.black),
+                                ),
+                              ),
+                            ],
                           ),
-                          child: const Icon(Icons.add, color: Colors.grey),
                         ),
-                      ),
-                  ],
+                      if (_selectedColors.length < 20)
+                        GestureDetector(
+                          onTap: _showColorPicker,
+                          child: Container(
+                            width: 53,
+                            height: 47,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 255, 255, 255),
+                                borderRadius: BorderRadius.circular(10),
+                                border:
+                                    Border.all(color: const Color(0xFF000000))),
+                            child: const Icon(Icons.add, color: Colors.black),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 label: 'Product Description',
-                value: '',
+                value: _productDescription,
                 onChanged: (value) {
-                  // Handle tags input
+                  setState(() {
+                    _productDescription = value;
+                  });
                 },
               ),
               const SizedBox(height: 16),
@@ -565,10 +591,10 @@ class _AddMyProductScreenState extends State<AddMyProductScreen> {
                     style: GoogleFonts.nunito(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey,
+                      color: Colors.black,
                     ),
                   ),
-                  const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                  const Icon(Icons.arrow_drop_down, color: Colors.black),
                 ],
               ),
             ),
