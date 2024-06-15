@@ -31,11 +31,21 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
   void initState() {
     super.initState();
     currentColorCode = widget.product['colorCode'] ?? 'N/A';
-    _colors = (widget.product['selectedColors'] as List<String>?)
-            ?.map((colorString) =>
-                Color(int.parse('0xFF${colorString.substring(1)}')))
-            .toList() ??
+    _colors = (widget.product['selectedColors'] as List<dynamic>?)
+            ?.map((colorString) {
+          if (colorString is String) {
+            return Color(int.parse('0xFF${colorString.substring(1)}'));
+          }
+          return Colors.transparent;
+        }).toList() ??
         [];
+
+    // If _colors is empty, add the currentColorCode
+    if (_colors.isEmpty && currentColorCode != 'N/A') {
+      _colors.add(Color(int.parse('0xFF${currentColorCode.substring(1)}')));
+    }
+
+    // Ensure there are always 3 colors in the list
     while (_colors.length < 3) {
       _colors.add(Colors.transparent);
     }
@@ -98,7 +108,7 @@ class _MyProductInfoScreenState extends State<MyProductInfoScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 48), // Placeholder for symmetry
+                      const SizedBox(width: 48),
                     ],
                   ),
                 ),
