@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'fash_buss.dart';
-import 'fash_loc.dart';
+// import 'fash_loc.dart';
 import 'fash_my_acct.dart';
-import 'fash_nots.dart';
+// import 'fash_nots.dart';
 import 'fash_pas.dart';
-import 'fash_verification.dart';
+// import 'fash_verification.dart';
 import 'sign_out.dart';
 
 class FashProfileScreen extends StatelessWidget {
@@ -161,19 +161,6 @@ class FashProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               _buildFrameButton(
-                icon: Icons.verified_user_outlined,
-                iconColor: const Color(0xFFA6A6A6),
-                text: 'Verification',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FashVerificationScreen()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              _buildFrameButton(
                 icon: Icons.lock,
                 iconColor: const Color(0xFFA6A6A6),
                 text: 'Change Password',
@@ -185,41 +172,32 @@ class FashProfileScreen extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 20),
-              _buildFrameButton(
-                icon: Icons.inventory_2_outlined,
-                iconColor: const Color(0xFFA6A6A6),
-                text: 'Inventory',
-                onTap: () {
-                  // Add navigation or other logic here if needed
-                },
-              ),
-              const SizedBox(height: 20),
-              _buildFrameButton(
-                icon: Icons.notifications_outlined,
-                iconColor: const Color(0xFFA6A6A6),
-                text: 'Notifications',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FashNotsScreen()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              _buildFrameButton(
-                icon: Icons.location_on_outlined,
-                iconColor: const Color(0xFFA6A6A6),
-                text: 'Add New Location',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FashLocScreen()),
-                  );
-                },
-              ),
+              // const SizedBox(height: 20),
+              // _buildFrameButton(
+              //   icon: Icons.notifications_outlined,
+              //   iconColor: const Color(0xFFA6A6A6),
+              //   text: 'Notifications',
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //           builder: (context) => const FashNotsScreen()),
+              //     );
+              //   },
+              // ),
+              // const SizedBox(height: 20),
+              // _buildFrameButton(
+              //   icon: Icons.location_on_outlined,
+              //   iconColor: const Color(0xFFA6A6A6),
+              //   text: 'Add New Location',
+              //   onTap: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //           builder: (context) => const FashLocScreen()),
+              //     );
+              //   },
+              // ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.exit_to_app,
