@@ -16,11 +16,14 @@ class VendorDashboard extends StatefulWidget {
 class _VendorDashboardState extends State<VendorDashboard> {
   String _greeting = '';
   XFile? _selectedImage;
+  Map<String, TimeOfDay?> openHours = {};
+  Map<String, TimeOfDay?> closeHours = {};
 
   @override
   void initState() {
     super.initState();
     _determineGreeting();
+    _initializeBusinessHours();
   }
 
   void _determineGreeting() {
@@ -31,6 +34,21 @@ class _VendorDashboardState extends State<VendorDashboard> {
       _greeting = 'Good afternoon';
     } else {
       _greeting = 'Good evening';
+    }
+  }
+
+  void _initializeBusinessHours() {
+    List<String> days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday'
+    ];
+    for (String day in days) {
+      openHours[day] = null;
+      closeHours[day] = null;
     }
   }
 
@@ -98,6 +116,135 @@ class _VendorDashboardState extends State<VendorDashboard> {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _selectTime(
+      BuildContext context, String day, bool isOpenHour) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isOpenHour) {
+          openHours[day] = picked;
+        } else {
+          closeHours[day] = picked;
+        }
+      });
+    }
+  }
+
+  Widget _buildTimeInputRow(String day) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              day,
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _selectTime(context, day, true),
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          openHours[day] != null
+                              ? openHours[day]!.format(context)
+                              : 'Open',
+                          style: GoogleFonts.nunito(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => _selectTime(context, day, false),
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          closeHours[day] != null
+                              ? closeHours[day]!.format(context)
+                              : 'Close',
+                          style: GoogleFonts.nunito(fontSize: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInputField(String label) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 80,
+          child: Text(
+            label,
+            style: GoogleFonts.nunito(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              letterSpacing: -0.019,
+              color: const Color(0xFF000000),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: 40,
+            decoration: BoxDecoration(
+              // color: Colors.white,
+              color: const Color(0xFFEBEBEB).withOpacity(0.3),
+
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFFD8D7D7).withOpacity(0.2),
+              ),
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                // hintText: 'Enter $label',
+                hintStyle: GoogleFonts.nunito(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -239,6 +386,17 @@ class _VendorDashboardState extends State<VendorDashboard> {
                   color: const Color(0xFFEBEBEB).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    // hintText: 'Enter shop name',
+                    hintStyle: GoogleFonts.nunito(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -258,6 +416,18 @@ class _VendorDashboardState extends State<VendorDashboard> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFEBEBEB).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(10),
+                    // hintText: 'Enter business description',
+                    hintStyle: GoogleFonts.nunito(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -310,7 +480,6 @@ class _VendorDashboardState extends State<VendorDashboard> {
               const SizedBox(height: 10),
               Container(
                 width: 335,
-                height: 110,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEBEBEB).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
@@ -320,73 +489,139 @@ class _VendorDashboardState extends State<VendorDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Phone Number',
-                            style: GoogleFonts.nunito(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              height: 1.5,
-                              letterSpacing: -0.019,
-                              color: const Color(0xFF000000),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Container(
-                              height: 29,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEBEBEB).withOpacity(0.3),
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10),
-                                ),
-                                border: Border.all(
-                                  color:
-                                      const Color(0xFFD8D7D7).withOpacity(0.2),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      _buildInputField('Phone Number'),
                       const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          Text(
-                            'Email Address',
+                      _buildInputField('Email Address'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Shop Location',
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
+                  letterSpacing: -0.019,
+                  color: const Color(0xFF000000),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: 335,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildInputField('Address'),
+                      const SizedBox(height: 18),
+                      _buildInputField('City'),
+                      const SizedBox(height: 18),
+                      _buildInputField('Country'),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Business Hours',
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
+                  letterSpacing: -0.019,
+                  color: const Color(0xFF000000),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: 335,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Days                          Open Hours - Close Hours',
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildTimeInputRow('Monday'),
+                      _buildTimeInputRow('Tuesday'),
+                      _buildTimeInputRow('Wednesday'),
+                      _buildTimeInputRow('Thursday'),
+                      _buildTimeInputRow('Friday'),
+                      _buildTimeInputRow('Saturday'),
+                      const SizedBox(height: 10),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Save the business hours
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF621B2B),
+                          ),
+                          child: Text(
+                            'Save',
                             style: GoogleFonts.nunito(
                               fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              height: 1.5,
-                              letterSpacing: -0.019,
-                              color: const Color(0xFF000000),
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Container(
-                              height: 29,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEBEBEB).withOpacity(0.3),
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(10),
-                                  bottomRight: Radius.circular(10),
-                                ),
-                                border: Border.all(
-                                  color:
-                                      const Color(0xFFD8D7D7).withOpacity(0.2),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              Text(
+                'Additional Information',
+                style: GoogleFonts.nunito(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  height: 1.5,
+                  letterSpacing: -0.019,
+                  color: const Color(0xFF000000),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: 335,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: TextField(
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.all(16),
+                    // hintText: 'Enter additional information',
+                    hintStyle: GoogleFonts.nunito(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
             ],
           ),
         ),

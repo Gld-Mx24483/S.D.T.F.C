@@ -71,7 +71,7 @@ class FashShopScreen extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    'Add Product',
+                    'Coming Soon...',
                     style: GoogleFonts.nunito(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
