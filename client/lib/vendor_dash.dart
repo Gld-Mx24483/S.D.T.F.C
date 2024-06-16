@@ -167,7 +167,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                         child: Text(
                           openHours[day] != null
                               ? openHours[day]!.format(context)
-                              : 'Open',
+                              : '--',
                           style: GoogleFonts.nunito(fontSize: 14),
                         ),
                       ),
@@ -188,7 +188,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                         child: Text(
                           closeHours[day] != null
                               ? closeHours[day]!.format(context)
-                              : 'Close',
+                              : '--',
                           style: GoogleFonts.nunito(fontSize: 14),
                         ),
                       ),
