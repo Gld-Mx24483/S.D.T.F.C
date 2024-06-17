@@ -6,10 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'address_validator.dart';
 import 'driver_license_validator.dart';
 import 'international_passport_validator.dart';
 import 'nin_validator.dart';
 import 'vendor_bottom_navigation_bar.dart';
+import 'vendor_main_screen.dart';
 
 class VendorVerificationScreen extends StatefulWidget {
   const VendorVerificationScreen({super.key});
@@ -26,8 +28,13 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   PickedFile? _idFile;
   PickedFile? _addressFile;
   String _idFileError = '';
+  String _addressFileError = '';
   bool _isValidatingIdFile = false;
   bool _isIdFileValid = false;
+  bool _isValidatingAddressFile = false;
+  bool _isAddressFileValid = false;
+
+  bool get _isVerified => _isIdFileValid && _isAddressFileValid;
 
   Future<void> _pickIdFile() async {
     final ImagePicker picker = ImagePicker();
@@ -51,6 +58,9 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     if (addressFile != null) {
       setState(() {
         _addressFile = PickedFile(addressFile.path);
+        _addressFileError = '';
+        _isAddressFileValid = false;
+        _validateAddressFile();
       });
     }
   }
@@ -92,40 +102,23 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     });
   }
 
-  // Future<void> _validateIdFile() async {
-  //   setState(() {
-  //     _isValidatingIdFile = true;
-  //     _idFileError = '';
-  //   });
+  Future<void> _validateAddressFile() async {
+    setState(() {
+      _isValidatingAddressFile = true;
+      _addressFileError = '';
+    });
 
-  //   bool isValid;
+    bool isValid =
+        await AddressValidator.validateAddressFile(_addressFile!.path);
 
-  //   if (_selectedIdType == 'National Identification Number') {
-  //     isValid = await NinValidator.validateIdFile(_idFile!.path);
-  //     if (!isValid) {
-  //       _idFileError = 'Not a valid NIN';
-  //     }
-  //   } else if (_selectedIdType == 'International Passport') {
-  //     isValid =
-  //         await InternationalPassportValidator.recognizeAndValidatePassport(
-  //             _idFile!.path);
-  //     if (!isValid) {
-  //       _idFileError = 'Not a valid International Passport';
-  //     }
-  //   } else if (_selectedIdType == "Driver's License") {
-  //     // Add validation logic for Driver's License here
-  //     isValid = false;
-  //     _idFileError = 'Driver\'s License validation not implemented';
-  //   } else {
-  //     isValid = false;
-  //     _idFileError = 'Please select a valid ID type';
-  //   }
-
-  //   setState(() {
-  //     _isValidatingIdFile = false;
-  //     _isIdFileValid = isValid;
-  //   });
-  // }
+    setState(() {
+      _isValidatingAddressFile = false;
+      _isAddressFileValid = isValid;
+      if (!isValid) {
+        _addressFileError = 'Invalid address proof.';
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +223,6 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildUploadButton(
-// label: 'Upload Proof of Identification',
                       onTap: _pickIdFile,
                       file: _idFile,
                       isValidating: _isValidatingIdFile,
@@ -242,18 +234,31 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                       label: 'Upload Proof of Address',
                       onTap: _pickAddressFile,
                       file: _addressFile,
+                      isValidating: _isValidatingAddressFile,
+                      isValid: _isAddressFileValid,
+                      errorText: _addressFileError,
                     ),
                     const SizedBox(height: 32),
                     const SizedBox(height: 50),
                     GestureDetector(
-                      onTap: () {
-// Add new location logic
-                      },
+                      onTap: _isVerified
+                          ? () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const VendorMainScreen(
+                                      initialPage: 'Shop'),
+                                ),
+                              );
+                            }
+                          : null,
                       child: Container(
                         width: double.infinity,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFBE5AA),
+                          color: _isVerified
+                              ? const Color(0xFFFBE5AA)
+                              : Colors.grey,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
@@ -264,7 +269,9 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                               style: GoogleFonts.nunito(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF621B2B),
+                                color: _isVerified
+                                    ? const Color(0xFF621B2B)
+                                    : Colors.white,
                               ),
                             ),
                           ),
@@ -280,7 +287,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       ),
       bottomNavigationBar: VendorBottomNavigationBar(
         onItemTapped: (label) {
-// Handle bottom navigation bar item taps
+          // Handle bottom navigation bar item taps
         },
         tutorialStep: 0,
         selectedLabel: '',
@@ -447,7 +454,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
                         child: Text(
                           file != null
                               ? 'File selected: ${file.path.split('/').last}'
-                              : label ?? 'Upload',
+                              : 'Upload',
                           style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
