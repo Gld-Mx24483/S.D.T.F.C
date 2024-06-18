@@ -94,8 +94,6 @@ class ApiService {
     return await _secureStorage.read(key: 'access_token');
   }
 
-  // In api_service.dart
-
   static Future<Map<String, dynamic>?> getUserProfile() async {
     final url = Uri.parse('$baseUrl/users/profile');
     final accessToken = await getAccessToken();
@@ -124,6 +122,90 @@ class ApiService {
     } catch (e) {
       print('Error getting user profile: $e');
       return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> updateUserProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phoneNumber,
+  }) async {
+    final url = Uri.parse('$baseUrl/api/users');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    final body = {
+      'firstName': firstName,
+      'lastName': lastName,
+      // 'email': email,
+      'phoneNumber': phoneNumber,
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to update user profile: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error updating user profile: $e');
+      return null;
+    }
+  }
+
+  static Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final url = Uri.parse('$baseUrl/users/change-password');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    final body = {
+      'oldPassword': oldPassword,
+      'newPassword': newPassword,
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        print('Password changed successfully');
+        return true;
+      } else {
+        print('Failed to change password: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error changing password: $e');
+      return false;
     }
   }
 }

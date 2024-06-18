@@ -1,6 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'api_service.dart'; // Import the ApiService class
 import 'bottom_navigation_bar.dart';
 
 class FashPasScreen extends StatefulWidget {
@@ -39,6 +42,41 @@ class _FashPasScreenState extends State<FashPasScreen> {
   bool _passwordsMatch() {
     return _newPasswordController.text.isNotEmpty &&
         _newPasswordController.text == _confirmPasswordController.text;
+  }
+
+  void _changePassword() async {
+    final oldPassword = _oldPasswordController.text;
+    final newPassword = _newPasswordController.text;
+
+    if (oldPassword.isNotEmpty && newPassword.isNotEmpty) {
+      final success = await ApiService.changePassword(
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+
+      if (success) {
+        // Password changed successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password changed successfully'),
+          ),
+        );
+      } else {
+        // Failed to change password
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to change password'),
+          ),
+        );
+      }
+    } else {
+      // Show an error message if fields are empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter old and new passwords'),
+        ),
+      );
+    }
   }
 
   @override
@@ -133,9 +171,7 @@ class _FashPasScreenState extends State<FashPasScreen> {
                     ),
                     const SizedBox(height: 48),
                     GestureDetector(
-                      onTap: () {
-                        // Save changes logic
-                      },
+                      onTap: _changePassword, // Call the _changePassword method
                       child: Container(
                         width: double.infinity,
                         height: 50,

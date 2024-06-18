@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, use_build_context_synchronously
 
 import 'dart:io';
 
@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+import 'any_loading_modal.dart';
 import 'api_service.dart';
 import 'bottom_navigation_bar.dart';
 
@@ -41,6 +42,59 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         _lastNameController.text = userProfile['lastName'] ?? '';
         _emailController.text = userProfile['email'] ?? '';
       });
+    }
+  }
+
+  Future<void> _updateUserProfile() async {
+    final firstName = _firstNameController.text;
+    final lastName = _lastNameController.text;
+    // final email = _emailController.text;
+    final phoneNumber = _phoneNumberController.text;
+
+    // Show the loading modal
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AnyLoadingModal(),
+    );
+
+    try {
+      // Call the API to update the user profile
+      final response = await ApiService.updateUserProfile(
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        email: '',
+      );
+
+      if (response != null && response['statusCode'] == 200) {
+        // Update successful
+        Navigator.of(context).pop(); // Dismiss the loading modal
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Change Successful'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // Update failed
+        Navigator.of(context).pop(); // Dismiss the loading modal
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update profile'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Error occurred
+      Navigator.of(context).pop(); // Dismiss the loading modal
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -162,8 +216,29 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                     const SizedBox(height: 16),
                     _buildPhoneTextField(),
                     const SizedBox(height: 32),
+                    // GestureDetector(
+                    //   onTap: () {},
+                    //   child: Container(
+                    //     width: double.infinity,
+                    //     height: 50,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFFFBE5AA),
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //     child: Center(
+                    //       child: Text(
+                    //         'Save Changes',
+                    //         style: GoogleFonts.nunito(
+                    //           fontSize: 16,
+                    //           fontWeight: FontWeight.w700,
+                    //           color: const Color(0xFF621B2B),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: _updateUserProfile,
                       child: Container(
                         width: double.infinity,
                         height: 50,
