@@ -1,4 +1,5 @@
-//fash_my_acct.dart
+// ignore_for_file: unused_field
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+import 'api_service.dart';
 import 'bottom_navigation_bar.dart';
 
 class FashMyAcctScreen extends StatefulWidget {
@@ -16,16 +18,31 @@ class FashMyAcctScreen extends StatefulWidget {
 }
 
 class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
-  final TextEditingController _firstNameController =
-      TextEditingController(text: 'Sell');
-  final TextEditingController _lastNameController =
-      TextEditingController(text: 'Dome');
-  final TextEditingController _emailController =
-      TextEditingController(text: 'selldome@gmail.com');
-  final TextEditingController _phoneNumberController =
-      TextEditingController(text: '8166767196');
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   PickedFile? _imageFile;
+  Map<String, dynamic>? _userProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final userProfile = await ApiService.getUserProfile();
+    if (userProfile != null) {
+      setState(() {
+        _userProfile = userProfile;
+        _firstNameController.text = userProfile['firstName'] ?? '';
+        _lastNameController.text = userProfile['lastName'] ?? '';
+        _emailController.text = userProfile['email'] ?? '';
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -37,7 +54,6 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
   }
 
   Future<void> _pickImage() async {
-    // Show a dialog to allow the user to choose between camera and gallery
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
@@ -129,27 +145,25 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                     _buildTextField(
                       label: 'First Name',
                       controller: _firstNameController,
-                      hintText: 'Enter your first name',
+                      hintText: '--',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       label: 'Last Name',
                       controller: _lastNameController,
-                      hintText: 'Enter your last name',
+                      hintText: '--',
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
                       label: 'Email Address',
                       controller: _emailController,
-                      hintText: 'Enter your email address',
+                      hintText: '--',
                     ),
                     const SizedBox(height: 16),
                     _buildPhoneTextField(),
                     const SizedBox(height: 32),
                     GestureDetector(
-                      onTap: () {
-                        // Save changes logic
-                      },
+                      onTap: () {},
                       child: Container(
                         width: double.infinity,
                         height: 50,
@@ -255,7 +269,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         const SizedBox(height: 10),
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
-            // Handle phone number input changes
+// Handle phone number input changes
           },
           selectorConfig: const SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,

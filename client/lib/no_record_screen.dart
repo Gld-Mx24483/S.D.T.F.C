@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'api_service.dart';
 import 'notification.dart';
 
 class NoRecordScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class NoRecordScreen extends StatefulWidget {
 
 class _NoRecordScreenState extends State<NoRecordScreen> {
   String _greeting = '';
+  String _userName = '';
   bool _isFabrics = true;
   bool _isEmbellishments = false;
   bool _isLinings = false;
@@ -26,6 +28,7 @@ class _NoRecordScreenState extends State<NoRecordScreen> {
   void initState() {
     super.initState();
     _determineGreeting();
+    _fetchUserProfile();
   }
 
   void _determineGreeting() {
@@ -36,6 +39,17 @@ class _NoRecordScreenState extends State<NoRecordScreen> {
       _greeting = 'Good afternoon';
     } else {
       _greeting = 'Good evening';
+    }
+  }
+
+  void _fetchUserProfile() async {
+    final userProfile = await ApiService.getUserProfile();
+    if (userProfile != null &&
+        userProfile['firstName'] != null &&
+        userProfile['lastName'] != null) {
+      setState(() {
+        _userName = '${userProfile['firstName']} ${userProfile['lastName']}';
+      });
     }
   }
 
@@ -112,7 +126,7 @@ class _NoRecordScreenState extends State<NoRecordScreen> {
                         ),
                       ),
                       Text(
-                        'Designer',
+                        _userName,
                         style: GoogleFonts.nunito(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
