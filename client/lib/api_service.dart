@@ -142,7 +142,7 @@ class ApiService {
     final body = {
       'firstName': firstName,
       'lastName': lastName,
-      // 'email': email,
+      'email': email,
       'phoneNumber': phoneNumber,
     };
 

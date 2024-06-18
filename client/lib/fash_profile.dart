@@ -1,17 +1,40 @@
-// fash_profile.dart
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'api_service.dart';
 import 'fash_buss.dart';
-// import 'fash_loc.dart';
 import 'fash_my_acct.dart';
-// import 'fash_nots.dart';
 import 'fash_pas.dart';
-// import 'fash_verification.dart';
 import 'sign_out.dart';
 
-class FashProfileScreen extends StatelessWidget {
+class FashProfileScreen extends StatefulWidget {
   const FashProfileScreen({super.key});
+
+  @override
+  _FashProfileScreenState createState() => _FashProfileScreenState();
+}
+
+class _FashProfileScreenState extends State<FashProfileScreen> {
+  String? _firstName;
+  String? _lastName;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final profileData = await ApiService.getUserProfile();
+    if (profileData != null) {
+      setState(() {
+        _firstName = profileData['firstName'];
+        _lastName = profileData['lastName'];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +131,7 @@ class FashProfileScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'SellDome Tech',
+                                  '${_firstName ?? ''} ${_lastName ?? ''}',
                                   style: GoogleFonts.nunito(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
@@ -172,32 +195,6 @@ class FashProfileScreen extends StatelessWidget {
                   );
                 },
               ),
-              // const SizedBox(height: 20),
-              // _buildFrameButton(
-              //   icon: Icons.notifications_outlined,
-              //   iconColor: const Color(0xFFA6A6A6),
-              //   text: 'Notifications',
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //           builder: (context) => const FashNotsScreen()),
-              //     );
-              //   },
-              // ),
-              // const SizedBox(height: 20),
-              // _buildFrameButton(
-              //   icon: Icons.location_on_outlined,
-              //   iconColor: const Color(0xFFA6A6A6),
-              //   text: 'Add New Location',
-              //   onTap: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //           builder: (context) => const FashLocScreen()),
-              //     );
-              //   },
-              // ),
               const SizedBox(height: 20),
               _buildFrameButton(
                 icon: Icons.exit_to_app,
