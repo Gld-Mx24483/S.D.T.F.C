@@ -246,4 +246,37 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<Map<String, dynamic>?> sendTransactionDetails(
+      Map<String, dynamic> transactionDetails) async {
+    final url = Uri.parse('$baseUrl/connects/wallet/token/add');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(transactionDetails),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to send transaction details: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error sending transaction details: $e');
+      return null;
+    }
+  }
 }

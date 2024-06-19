@@ -104,12 +104,12 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       );
 
       if (response != null && response['statusCode'] == 200) {
-        // Update successful
-        Navigator.of(context).pop(); // Dismiss the loading modal
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Change Successful'),
+            content: Text('Changes Successful'),
             duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
           ),
         );
       } else {
@@ -276,6 +276,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                       label: 'Email Address',
                       controller: _emailController,
                       hintText: '--',
+                      isEmail: true,
                     ),
                     const SizedBox(height: 16),
                     _buildPhoneTextField(),
@@ -320,6 +321,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     required String label,
     required TextEditingController controller,
     required String hintText,
+    bool isEmail = false, // Add this parameter
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,6 +365,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
               ),
             ),
           ),
+          enabled: !isEmail, // Disable the field if it's the email input
         ),
       ],
     );

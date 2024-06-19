@@ -6,6 +6,7 @@ import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import 'api_service.dart';
 import 'loading_modal.dart';
 import 'trans_hist.dart';
 
@@ -22,6 +23,25 @@ class _WalletScreenState extends State<WalletScreen> {
   final TextEditingController _amountController = TextEditingController();
   int _walletPoints = 2000;
   final List<TransactionItem> _transactions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserProfile();
+  }
+
+  String? userEmail;
+
+  Future<void> fetchUserProfile() async {
+    final userProfile = await ApiService.getUserProfile();
+    if (userProfile != null) {
+      userEmail = userProfile['email'];
+    } else {
+      // Handle the case when the user profile is not fetched successfully
+      // You can show an error message or take appropriate action
+      print('Failed to fetch user profile');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -680,6 +700,15 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   void initiatePaystackPayment(BuildContext context) async {
+    if (userEmail == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text('Failed to fetch user email'),
+        ),
+      );
+      return;
+    }
     // const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
     const secretKey = 'sk_test_17b7c77bf4e8f219d2dd44cc4f9a5c3f0b87db7a';
     final amount = double.parse(_amountController.text) * 100;
@@ -688,7 +717,8 @@ class _WalletScreenState extends State<WalletScreen> {
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
-      email: 'selldometech@gmail.com',
+      email: userEmail ??
+          '', // Replace 'default@email.com' with a suitable default email
       amount: amount,
       currency: currency,
       channel: [
@@ -762,6 +792,23 @@ class _WalletScreenState extends State<WalletScreen> {
           ),
         );
       });
+
+      // Send transaction details to the server
+      final transactionDetails = {
+        'reference': response.data.reference,
+        'id': response.data.id,
+        'email': request.email,
+        'amount': nairaAmount,
+        'points': pointsReceived.toInt(),
+      };
+
+      final apiResponse =
+          await ApiService.sendTransactionDetails(transactionDetails);
+      if (apiResponse != null) {
+        print('Transaction details sent successfully');
+      } else {
+        print('Failed to send transaction details');
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
