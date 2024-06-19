@@ -114,7 +114,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         );
       } else {
         // Update failed
-        Navigator.of(context).pop(); // Dismiss the loading modal
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Failed to update profile'),
@@ -124,7 +124,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       }
     } catch (e) {
       // Error occurred
-      Navigator.of(context).pop(); // Dismiss the loading modal
+      Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('An error occurred'),
