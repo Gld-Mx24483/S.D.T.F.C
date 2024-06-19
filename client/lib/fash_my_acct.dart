@@ -1,7 +1,9 @@
-// ignore_for_file: unused_field, use_build_context_synchronously
+//fash_my_acct.dart
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_field
 
 import 'dart:io';
 
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,11 +28,16 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
 
   PickedFile? _imageFile;
   Map<String, dynamic>? _userProfile;
+  bool _isUploadingImage = false;
+
+  late CloudinaryPublic cloudinary;
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
+
+    cloudinary = CloudinaryPublic('dabq39lbk', 'jb14zkiw', cache: false);
   }
 
   Future<void> _fetchUserProfile() async {
@@ -45,13 +52,38 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     }
   }
 
+  Future<String?> _uploadImageToCloudinary() async {
+    if (_imageFile == null) {
+      return null;
+    }
+
+    setState(() {
+      _isUploadingImage = true;
+    });
+
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(_imageFile!.path, folder: 'profile_images'),
+      );
+      return response.secureUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    } finally {
+      setState(() {
+        _isUploadingImage = false;
+      });
+    }
+  }
+
   Future<void> _updateUserProfile() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
-    // final email = _emailController.text;
     final phoneNumber = _phoneNumberController.text;
 
-    // Show the loading modal
+    final imageUrl = await _uploadImageToCloudinary();
+    print('Uploaded image URL: $imageUrl'); // Print the uploaded image URL
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -59,12 +91,12 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     );
 
     try {
-      // Call the API to update the user profile
       final response = await ApiService.updateUserProfile(
         firstName: firstName,
         lastName: lastName,
         phoneNumber: phoneNumber,
         email: '',
+        imageUrl: imageUrl,
       );
 
       if (response != null && response['statusCode'] == 200) {
@@ -167,28 +199,45 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
               const SizedBox(height: 33),
               GestureDetector(
                 onTap: _pickImage,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFFDADADA),
-                  ),
-                  child: _imageFile != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
-                          child: Image.file(
-                            File(_imageFile!.path),
-                            width: 90,
-                            height: 90,
-                            fit: BoxFit.cover,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFFDADADA),
+                      ),
+                      child: _imageFile != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(45),
+                              child: Image.file(
+                                File(_imageFile!.path),
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.white,
+                            ),
+                    ),
+                    if (_isUploadingImage)
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withOpacity(0.5),
                           ),
-                        )
-                      : const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.white,
+                          child: const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
                         ),
+                      ),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
@@ -216,27 +265,6 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                     const SizedBox(height: 16),
                     _buildPhoneTextField(),
                     const SizedBox(height: 32),
-                    // GestureDetector(
-                    //   onTap: () {},
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     height: 50,
-                    //     decoration: BoxDecoration(
-                    //       color: const Color(0xFFFBE5AA),
-                    //       borderRadius: BorderRadius.circular(8),
-                    //     ),
-                    //     child: Center(
-                    //       child: Text(
-                    //         'Save Changes',
-                    //         style: GoogleFonts.nunito(
-                    //           fontSize: 16,
-                    //           fontWeight: FontWeight.w700,
-                    //           color: const Color(0xFF621B2B),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     GestureDetector(
                       onTap: _updateUserProfile,
                       child: Container(
@@ -267,7 +295,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
         onItemTapped: (label) {
-          // Handle bottom navigation bar item taps
+// Handle bottom navigation bar item taps
         },
         tutorialStep: 0,
         selectedLabel: '',

@@ -130,6 +130,7 @@ class ApiService {
     required String lastName,
     required String email,
     required String phoneNumber,
+    String? imageUrl, // Add the imageUrl parameter here
   }) async {
     final url = Uri.parse('$baseUrl/api/users');
     final accessToken = await getAccessToken();
@@ -144,6 +145,7 @@ class ApiService {
       'lastName': lastName,
       'email': email,
       'phoneNumber': phoneNumber,
+      'imageUrl': imageUrl, // Include the imageUrl in the request body
     };
 
     try {
