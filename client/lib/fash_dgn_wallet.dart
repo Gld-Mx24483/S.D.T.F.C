@@ -1,9 +1,29 @@
 // fash_dgn_wallet.dart
-// ignore_for_file: unused_import, unused_field, use_build_context_synchronously
+// ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+// import 'package:google_fonts/google_fonts.dart';
+
+// import 'loading_modal.dart';
+// import 'trans_hist.dart';
+
+// class WalletScreen extends StatefulWidget {
+//   const WalletScreen({super.key});
+
+//   @override
+//   State<WalletScreen> createState() => _WalletScreenState();
+// }
+
+// class _WalletScreenState extends State<WalletScreen> {
+//   final bool _isPointsSelected = true;
+//   bool _isAmountVisible = true;
+//   final TextEditingController _amountController = TextEditingController();
 
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import 'loading_modal.dart';
 import 'trans_hist.dart';
@@ -19,6 +39,7 @@ class _WalletScreenState extends State<WalletScreen> {
   final bool _isPointsSelected = true;
   bool _isAmountVisible = true;
   final TextEditingController _amountController = TextEditingController();
+  int _walletPoints = 2000;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +97,137 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
               ),
             ),
+            // Container(
+            //   width: 334,
+            //   height: 130,
+            //   margin: const EdgeInsets.only(top: 20),
+            //   padding: const EdgeInsets.fromLTRB(11, 32, 0, 0),
+            //   decoration: BoxDecoration(
+            //     color: const Color.fromARGB(100, 251, 229, 170),
+            //     borderRadius: const BorderRadius.all(
+            //       Radius.circular(8),
+            //     ),
+            //     border: Border.all(
+            //       color: const Color(0xFF621B2B),
+            //       width: 1,
+            //     ),
+            //     boxShadow: const [
+            //       BoxShadow(
+            //         color: Color.fromARGB(48, 255, 255, 255),
+            //         offset: Offset(0, -10),
+            //         blurRadius: 4,
+            //         spreadRadius: 0,
+            //       ),
+            //       BoxShadow(
+            //         color: Color.fromARGB(47, 152, 152, 152),
+            //         offset: Offset(0, 10),
+            //         blurRadius: 4,
+            //         spreadRadius: 0,
+            //       ),
+            //     ],
+            //   ),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Row(
+            //         children: [
+            //           Container(
+            //             width: 176,
+            //             height: 62,
+            //             padding: const EdgeInsets.only(left: 11),
+            //             child: Column(
+            //               crossAxisAlignment: CrossAxisAlignment.start,
+            //               children: [
+            //                 Row(
+            //                   children: [
+            //                     Text(
+            //                       'Points Wallet',
+            //                       style: GoogleFonts.nunito(
+            //                         fontSize: 13,
+            //                         fontWeight: FontWeight.w600,
+            //                         color: const Color(0xFF621B2B),
+            //                       ),
+            //                     ),
+            //                     const Spacer(),
+            //                     GestureDetector(
+            //                       onTap: () => setState(() =>
+            //                           _isAmountVisible = !_isAmountVisible),
+            //                       child: Padding(
+            //                         padding: const EdgeInsets.only(right: 55),
+            //                         child: Icon(
+            //                           _isAmountVisible
+            //                               ? Icons.visibility_outlined
+            //                               : Icons.visibility_off_outlined,
+            //                           color: const Color(0xFF621B2B),
+            //                         ),
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //                 const SizedBox(height: 2),
+            //                 Row(
+            //                   children: [
+            //                     Container(
+            //                       width: 34,
+            //                       height: 34,
+            //                       padding: const EdgeInsets.all(3),
+            //                       child: Image.asset('pics/coin.png'),
+            //                     ),
+            //                     const SizedBox(width: 4),
+            //                     _isAmountVisible
+            //                         ? Text(
+            //                             '2000',
+            //                             style: GoogleFonts.nunito(
+            //                               fontSize: 28,
+            //                               fontWeight: FontWeight.w700,
+            //                               color: const Color(0xFF621B2B),
+            //                             ),
+            //                           )
+            //                         : Transform.translate(
+            //                             offset: const Offset(0, 5),
+            //                             child: Text(
+            //                               '***',
+            //                               style: GoogleFonts.nunito(
+            //                                 fontSize: 28,
+            //                                 fontWeight: FontWeight.w700,
+            //                                 color: const Color(0xFF621B2B),
+            //                               ),
+            //                             ),
+            //                           ),
+            //                   ],
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+            //         ],
+            //       ),
+            //       Transform.translate(
+            //         offset: const Offset(180, -10),
+            //         child: Container(
+            //           width: 115,
+            //           height: 31,
+            //           decoration: const BoxDecoration(
+            //             color: Color.fromARGB(83, 255, 218, 116),
+            //             borderRadius: BorderRadius.all(
+            //               Radius.circular(5),
+            //             ),
+            //           ),
+            //           child: Center(
+            //             child: Text(
+            //               '100 Naira = 20 Points',
+            //               style: GoogleFonts.nunito(
+            //                 fontSize: 12,
+            //                 fontWeight: FontWeight.w600,
+            //                 color: const Color(0xFF621B2B),
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+
             Container(
               width: 334,
               height: 130,
@@ -155,7 +307,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                 const SizedBox(width: 4),
                                 _isAmountVisible
                                     ? Text(
-                                        '2000',
+                                        _walletPoints.toString(),
                                         style: GoogleFonts.nunito(
                                           fontSize: 28,
                                           fontWeight: FontWeight.w700,
@@ -583,8 +735,10 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   void initiatePaystackPayment(BuildContext context) async {
-    const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
+    // const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
+    const secretKey = 'sk_test_17b7c77bf4e8f219d2dd44cc4f9a5c3f0b87db7a';
     final amount = double.parse(_amountController.text) * 100;
+    final nairaAmount = double.parse(_amountController.text);
     const currency = PaystackCurrency.ngn;
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
@@ -628,18 +782,37 @@ class _WalletScreenState extends State<WalletScreen> {
       initializedTransaction.data?.reference ?? request.reference,
     );
 
-    if (response.status) {
+    print(response);
+
+    if (response.status &&
+        response.data.status == PaystackTransactionStatus.success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.green,
           content: Text('Payment successful!'),
         ),
       );
+
+      // Print payment details to the console
+      final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+      final dateTime = DateTime.now();
+      print('Reference: ${response.data.reference}');
+      print('Id: ${response.data.id}');
+      print('Email: ${request.email}');
+      print('Amount: $nairaAmount');
+      print('Points: ${(nairaAmount / 100) * 20}');
+      print('Date: ${formatter.format(dateTime)}');
+
+      // Update wallet points
+      final pointsReceived = (nairaAmount / 100) * 20;
+      setState(() {
+        _walletPoints += pointsReceived.toInt();
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: Colors.red,
-          content: Text(response.message),
+          content: Text('Payment Verification Failed'),
         ),
       );
     }

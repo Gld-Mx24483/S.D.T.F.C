@@ -1,8 +1,14 @@
-//fash_buss.dart
+// ignore_for_file: use_build_context_synchronously, unused_import
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+import 'any_loading_modal.dart';
+import 'api_service.dart';
 import 'bottom_navigation_bar.dart';
 
 class FashBussScreen extends StatefulWidget {
@@ -13,16 +19,15 @@ class FashBussScreen extends StatefulWidget {
 }
 
 class _FashBussScreenState extends State<FashBussScreen> {
-  final TextEditingController _businessNameController =
-      TextEditingController(text: 'Hemstofit');
+  final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _businessAddressController =
-      TextEditingController(text: '2 William drive');
+      TextEditingController();
   final TextEditingController _businessEmailController =
-      TextEditingController(text: 'hemstofit@gmail.com');
+      TextEditingController();
   final TextEditingController _businessDescriptionController =
-      TextEditingController(text: 'Fabrics');
+      TextEditingController();
   final TextEditingController _businessPhoneNumberController =
-      TextEditingController(text: '8106775111');
+      TextEditingController();
 
   @override
   void dispose() {
@@ -32,6 +37,69 @@ class _FashBussScreenState extends State<FashBussScreen> {
     _businessDescriptionController.dispose();
     _businessPhoneNumberController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveBusinessDetails() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AnyLoadingModal();
+      },
+    );
+
+    final name = _businessNameController.text;
+    final description = _businessDescriptionController.text;
+    final address = _businessAddressController.text;
+    final phone = _businessPhoneNumberController.text.replaceAll(' ', '');
+    final email = _businessEmailController.text;
+
+    final location = {
+      'street': '123 Main St', // Replace with actual street address
+      'city': 'New York', // Replace with actual city
+      'state': 'NY', // Replace with actual state
+      'country': 'USA', // Replace with actual country
+      'latitude': 40.7128, // Replace with actual latitude
+      'longitude': -74.0059, // Replace with actual longitude
+    };
+
+    final body = {
+      'name': name,
+      'description': description,
+      'address': address,
+      'phone': phone,
+      'email': email,
+      'location': location,
+    };
+
+    try {
+      final response = await ApiService.updateStore(body);
+      if (response != null && response['success']) {
+        // Business details updated successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Business details updated successfully'),
+          ),
+        );
+      } else {
+        // Failed to update business details
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update business details'),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
+    } finally {
+      // Close the loading modal
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -112,9 +180,7 @@ class _FashBussScreenState extends State<FashBussScreen> {
                     _buildPhoneTextField(),
                     const SizedBox(height: 32),
                     GestureDetector(
-                      onTap: () {
-                        // Save changes logic
-                      },
+                      onTap: _saveBusinessDetails,
                       child: Container(
                         width: double.infinity,
                         height: 50,
@@ -220,7 +286,7 @@ class _FashBussScreenState extends State<FashBussScreen> {
         const SizedBox(height: 10),
         InternationalPhoneNumberInput(
           onInputChanged: (PhoneNumber number) {
-            // Handle phone number input changes
+// Handle phone number input changes
           },
           selectorConfig: const SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
