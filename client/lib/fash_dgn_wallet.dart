@@ -1,25 +1,6 @@
 // fash_dgn_wallet.dart
 // ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_paystack_max/flutter_paystack_max.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// import 'loading_modal.dart';
-// import 'trans_hist.dart';
-
-// class WalletScreen extends StatefulWidget {
-//   const WalletScreen({super.key});
-
-//   @override
-//   State<WalletScreen> createState() => _WalletScreenState();
-// }
-
-// class _WalletScreenState extends State<WalletScreen> {
-//   final bool _isPointsSelected = true;
-//   bool _isAmountVisible = true;
-//   final TextEditingController _amountController = TextEditingController();
-
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack_max/flutter_paystack_max.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,6 +21,7 @@ class _WalletScreenState extends State<WalletScreen> {
   bool _isAmountVisible = true;
   final TextEditingController _amountController = TextEditingController();
   int _walletPoints = 2000;
+  final List<TransactionItem> _transactions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -97,137 +79,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 ),
               ),
             ),
-            // Container(
-            //   width: 334,
-            //   height: 130,
-            //   margin: const EdgeInsets.only(top: 20),
-            //   padding: const EdgeInsets.fromLTRB(11, 32, 0, 0),
-            //   decoration: BoxDecoration(
-            //     color: const Color.fromARGB(100, 251, 229, 170),
-            //     borderRadius: const BorderRadius.all(
-            //       Radius.circular(8),
-            //     ),
-            //     border: Border.all(
-            //       color: const Color(0xFF621B2B),
-            //       width: 1,
-            //     ),
-            //     boxShadow: const [
-            //       BoxShadow(
-            //         color: Color.fromARGB(48, 255, 255, 255),
-            //         offset: Offset(0, -10),
-            //         blurRadius: 4,
-            //         spreadRadius: 0,
-            //       ),
-            //       BoxShadow(
-            //         color: Color.fromARGB(47, 152, 152, 152),
-            //         offset: Offset(0, 10),
-            //         blurRadius: 4,
-            //         spreadRadius: 0,
-            //       ),
-            //     ],
-            //   ),
-            //   child: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Row(
-            //         children: [
-            //           Container(
-            //             width: 176,
-            //             height: 62,
-            //             padding: const EdgeInsets.only(left: 11),
-            //             child: Column(
-            //               crossAxisAlignment: CrossAxisAlignment.start,
-            //               children: [
-            //                 Row(
-            //                   children: [
-            //                     Text(
-            //                       'Points Wallet',
-            //                       style: GoogleFonts.nunito(
-            //                         fontSize: 13,
-            //                         fontWeight: FontWeight.w600,
-            //                         color: const Color(0xFF621B2B),
-            //                       ),
-            //                     ),
-            //                     const Spacer(),
-            //                     GestureDetector(
-            //                       onTap: () => setState(() =>
-            //                           _isAmountVisible = !_isAmountVisible),
-            //                       child: Padding(
-            //                         padding: const EdgeInsets.only(right: 55),
-            //                         child: Icon(
-            //                           _isAmountVisible
-            //                               ? Icons.visibility_outlined
-            //                               : Icons.visibility_off_outlined,
-            //                           color: const Color(0xFF621B2B),
-            //                         ),
-            //                       ),
-            //                     ),
-            //                   ],
-            //                 ),
-            //                 const SizedBox(height: 2),
-            //                 Row(
-            //                   children: [
-            //                     Container(
-            //                       width: 34,
-            //                       height: 34,
-            //                       padding: const EdgeInsets.all(3),
-            //                       child: Image.asset('pics/coin.png'),
-            //                     ),
-            //                     const SizedBox(width: 4),
-            //                     _isAmountVisible
-            //                         ? Text(
-            //                             '2000',
-            //                             style: GoogleFonts.nunito(
-            //                               fontSize: 28,
-            //                               fontWeight: FontWeight.w700,
-            //                               color: const Color(0xFF621B2B),
-            //                             ),
-            //                           )
-            //                         : Transform.translate(
-            //                             offset: const Offset(0, 5),
-            //                             child: Text(
-            //                               '***',
-            //                               style: GoogleFonts.nunito(
-            //                                 fontSize: 28,
-            //                                 fontWeight: FontWeight.w700,
-            //                                 color: const Color(0xFF621B2B),
-            //                               ),
-            //                             ),
-            //                           ),
-            //                   ],
-            //                 ),
-            //               ],
-            //             ),
-            //           ),
-            //         ],
-            //       ),
-            //       Transform.translate(
-            //         offset: const Offset(180, -10),
-            //         child: Container(
-            //           width: 115,
-            //           height: 31,
-            //           decoration: const BoxDecoration(
-            //             color: Color.fromARGB(83, 255, 218, 116),
-            //             borderRadius: BorderRadius.all(
-            //               Radius.circular(5),
-            //             ),
-            //           ),
-            //           child: Center(
-            //             child: Text(
-            //               '100 Naira = 20 Points',
-            //               style: GoogleFonts.nunito(
-            //                 fontSize: 12,
-            //                 fontWeight: FontWeight.w600,
-            //                 color: const Color(0xFF621B2B),
-            //               ),
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
             Container(
               width: 334,
               height: 130,
@@ -439,32 +290,126 @@ class _WalletScreenState extends State<WalletScreen> {
                 ],
               ),
             ),
-            Center(
-              child: Container(
-                width: 231,
-                height: 153,
-                margin: const EdgeInsets.only(top: 40),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      'pics/nothinghere.png',
-                      width: 130,
-                      height: 111,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'You haven\'t made any transactions yet.',
-                      style: GoogleFonts.nunito(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF4F4F4F),
+            const SizedBox(height: 1),
+            _transactions.isNotEmpty
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _transactions.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Container(
+                          width: 335,
+                          height: 72,
+                          padding: const EdgeInsets.fromLTRB(8, 16, 20, 16),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(172, 235, 235, 235),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFFEEEFF2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(137, 221, 221, 221),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Image.asset(
+                                        'pics/coin.png',
+                                        width: 24,
+                                        height: 24,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _transactions[index].description,
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF232323),
+                                        ),
+                                      ),
+                                      Text(
+                                        _transactions[index].date,
+                                        style: GoogleFonts.nunito(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w400,
+                                          color: const Color(0xFF636A64),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    _transactions[index].points,
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: _transactions[index].isCredit
+                                          ? const Color(0xFF157F0B)
+                                          : const Color(0xFFB51A1B),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Image.asset(
+                                    'pics/coin.png',
+                                    width: 16,
+                                    height: 18,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : Center(
+                    child: Container(
+                      width: 231,
+                      height: 153,
+                      margin: const EdgeInsets.only(top: 40),
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'pics/nothinghere.png',
+                            width: 130,
+                            height: 111,
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'You haven\'t made any transactions yet.',
+                            style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF4F4F4F),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                  ],
-                ),
-              ),
-            )
+                  )
           ],
         ),
       ),
@@ -807,6 +752,15 @@ class _WalletScreenState extends State<WalletScreen> {
       final pointsReceived = (nairaAmount / 100) * 20;
       setState(() {
         _walletPoints += pointsReceived.toInt();
+        _transactions.insert(
+          0,
+          TransactionItem(
+            description: 'Top Up from NGN Wallet',
+            date: formatter.format(dateTime),
+            points: '+${pointsReceived.toInt()}',
+            isCredit: true,
+          ),
+        );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -817,4 +771,18 @@ class _WalletScreenState extends State<WalletScreen> {
       );
     }
   }
+}
+
+class TransactionItem {
+  final String description;
+  final String date;
+  final String points;
+  final bool isCredit;
+
+  TransactionItem({
+    required this.description,
+    required this.date,
+    required this.points,
+    required this.isCredit,
+  });
 }

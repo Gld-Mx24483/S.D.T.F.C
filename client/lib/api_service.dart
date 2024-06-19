@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String baseUrl =
-      'https://2a1a-197-211-58-220.ngrok-free.app/api/v1';
+      'https://b7d6-197-211-58-213.ngrok-free.app/api/v1';
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   static Future<bool> signUpUser(
@@ -114,6 +114,9 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
+        // Print fetched data to console
+        print('Fetched user profile:');
+        print(responseData);
         return responseData['data'];
       } else {
         print('Failed to get user profile: ${response.body}');
@@ -130,9 +133,9 @@ class ApiService {
     required String lastName,
     required String email,
     required String phoneNumber,
-    String? imageUrl, // Add the imageUrl parameter here
+    String? profileImage,
   }) async {
-    final url = Uri.parse('$baseUrl/api/users');
+    final url = Uri.parse('$baseUrl/users');
     final accessToken = await getAccessToken();
 
     if (accessToken == null) {
@@ -145,7 +148,7 @@ class ApiService {
       'lastName': lastName,
       'email': email,
       'phoneNumber': phoneNumber,
-      'imageUrl': imageUrl, // Include the imageUrl in the request body
+      'profileImage': profileImage,
     };
 
     try {

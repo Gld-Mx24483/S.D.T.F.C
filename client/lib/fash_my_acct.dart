@@ -1,10 +1,12 @@
-//fash_my_acct.dart
-// ignore_for_file: use_build_context_synchronously, avoid_print, unused_field
+// fash_my_acct.dart
+// ignore_for_file: use_build_context_synchronously, avoid_print, unused_field, unused_import, unnecessary_import
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
@@ -48,6 +50,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         _firstNameController.text = userProfile['firstName'] ?? '';
         _lastNameController.text = userProfile['lastName'] ?? '';
         _emailController.text = userProfile['email'] ?? '';
+        _phoneNumberController.text = userProfile['phoneNumber'] ?? '';
       });
     }
   }
@@ -79,10 +82,11 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
   Future<void> _updateUserProfile() async {
     final firstName = _firstNameController.text;
     final lastName = _lastNameController.text;
+    final email = _emailController.text;
     final phoneNumber = _phoneNumberController.text;
 
-    final imageUrl = await _uploadImageToCloudinary();
-    print('Uploaded image URL: $imageUrl'); // Print the uploaded image URL
+    final profileImage = await _uploadImageToCloudinary();
+    print('Uploaded image URL: $profileImage');
 
     showDialog(
       context: context,
@@ -94,9 +98,9 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       final response = await ApiService.updateUserProfile(
         firstName: firstName,
         lastName: lastName,
+        email: email,
         phoneNumber: phoneNumber,
-        email: '',
-        imageUrl: imageUrl,
+        profileImage: profileImage,
       );
 
       if (response != null && response['statusCode'] == 200) {
@@ -218,11 +222,22 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
                                 fit: BoxFit.cover,
                               ),
                             )
-                          : const Icon(
-                              Icons.person,
-                              size: 50,
-                              color: Colors.white,
-                            ),
+                          : _userProfile != null &&
+                                  _userProfile!['profileImage'] != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(45),
+                                  child: Image.network(
+                                    _userProfile!['profileImage'],
+                                    width: 90,
+                                    height: 90,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: Colors.white,
+                                ),
                     ),
                     if (_isUploadingImage)
                       Positioned.fill(
@@ -294,9 +309,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        onItemTapped: (label) {
-// Handle bottom navigation bar item taps
-        },
+        onItemTapped: (label) {},
         tutorialStep: 0,
         selectedLabel: '',
       ),
@@ -355,6 +368,91 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     );
   }
 
+  Map<String, String> countryCodeToExamplePhoneNumber = {
+    'NG': '080 1234 567', // Nigeria
+    'US': '123 456 7890', // United States
+    'GB': '1234 567 890', // United Kingdom
+    'CA': '123 456 7890', // Canada
+    'AU': '123 456 789', // Australia
+    'NZ': '123 456 789', // New Zealand
+    'IN': '1234 567 890', // India
+    'ZA': '123 456 7890', // South Africa
+    'KE': '123 456 789', // Kenya
+    'GH': '123 456 789', // Ghana
+    'EG': '123 456 7890', // Egypt
+    'MA': '123 456 789', // Morocco
+    'SG': '1234 5678', // Singapore
+    'MY': '123 456 7890', // Malaysia
+    'PH': '123 456 7890', // Philippines
+    'TH': '123 456 789', // Thailand
+    'VN': '123 456 789', // Vietnam
+    'ID': '123 456 789', // Indonesia
+    'PK': '123 456 789', // Pakistan
+    'BD': '123 456 789', // Bangladesh
+    'LK': '123 456 789', // Sri Lanka
+    'NP': '123 456 789', // Nepal
+    'TR': '123 456 7890', // Turkey
+    'SA': '123 456 789', // Saudi Arabia
+    'AE': '123 456 789', // United Arab Emirates
+    'QA': '1234 5678', // Qatar
+    'KW': '1234 5678', // Kuwait
+    'OM': '123 456 789', // Oman
+    'BH': '1234 5678', // Bahrain
+    'JO': '123 456 789', // Jordan
+    'LB': '123 456 789', // Lebanon
+    'IQ': '123 456 789', // Iraq
+    'YE': '123 456 789', // Yemen
+    'PS': '123 456 789', // Palestine
+    'IL': '123 456 789', // Israel
+    'IR': '123 456 7890', // Iran
+    'RU': '123 456 7890', // Russia
+    'UA': '123 456 789', // Ukraine
+    'KZ': '123 456 789', // Kazakhstan
+    'UZ': '123 456 789', // Uzbekistan
+    'TJ': '123 456 789', // Tajikistan
+    'KG': '123 456 789', // Kyrgyzstan
+    'TM': '123 456 789', // Turkmenistan
+    'AZ': '123 456 789', // Azerbaijan
+    'AM': '123 456 789', // Armenia
+    'GE': '123 456 789', // Georgia
+    'BY': '123 456 789', // Belarus
+    'MD': '123 456 789', // Moldova
+    'RO': '123 456 789', // Romania
+    'BG': '123 456 789', // Bulgaria
+    'GR': '123 456 789', // Greece
+    'CY': '123 456 789', // Cyprus
+    'AL': '123 456 789', // Albania
+    'MK': '123 456 789', // North Macedonia
+    'RS': '123 456 789', // Serbia
+    'ME': '123 456 789', // Montenegro
+    'BA': '123 456 789', // Bosnia and Herzegovina
+    'HR': '123 456 789', // Croatia
+    'SI': '123 456 789', // Slovenia
+    'HU': '123 456 789', // Hungary
+    'SK': '123 456 789', // Slovakia
+    'CZ': '123 456 789', // Czech Republic
+    'PL': '123 456 789', // Poland
+    'LT': '123 456 789', // Lithuania
+    'LV': '123 456 789', // Latvia
+    'EE': '123 456 789', // Estonia
+    'FI': '123 456 789', // Finland
+    'SE': '123 456 789', // Sweden
+    'NO': '123 456 789', // Norway
+    'DK': '123 456 789', // Denmark
+    'IS': '123 456 789', // Iceland
+    'IE': '123 456 789', // Ireland
+    'PT': '123 456 789', // Portugal
+    'ES': '123 456 789', // Spain
+    'FR': '123 456 789', // France
+    'IT': '123 456 789', // Italy
+    'CH': '123 456 789', // Switzerland
+    'AT': '123 456 789', // Austria
+    'DE': '123 456 7890', // Germany
+    'NL': '123 456 789', // Netherlands
+    'BE': '123 456 789', // Belgium
+    'LU': '123 456 789', // Luxembourg
+  };
+
   Widget _buildPhoneTextField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,9 +469,7 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         ),
         const SizedBox(height: 10),
         InternationalPhoneNumberInput(
-          onInputChanged: (PhoneNumber number) {
-// Handle phone number input changes
-          },
+          onInputChanged: (PhoneNumber number) {},
           selectorConfig: const SelectorConfig(
             selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
           ),
@@ -394,7 +490,8 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
           inputDecoration: InputDecoration(
             fillColor: const Color.fromARGB(45, 215, 215, 215),
             filled: true,
-            hintText: 'Enter your phone number',
+            hintText: countryCodeToExamplePhoneNumber['NG'] ??
+                'Enter your phone number',
             hintStyle: const TextStyle(
               color: Color(0xFFD9D9D9),
             ),
@@ -417,6 +514,17 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
               ),
             ),
           ),
+          onSaved: (PhoneNumber number) {
+            // Handle phone number selection
+            setState(() {
+              _phoneNumberController.text = '';
+              _phoneNumberController.value = TextEditingValue(
+                text: _phoneNumberController.text,
+                selection: TextSelection.collapsed(
+                    offset: _phoneNumberController.text.length),
+              );
+            });
+          },
         ),
       ],
     );
