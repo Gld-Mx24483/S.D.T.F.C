@@ -1,14 +1,15 @@
-//selected_trans_hist.dart
+//selected_vendor_trans_hist.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-import 'fash_dgn_wallet.dart';
+import 'vendor_wallet.dart';
 
-class SelectedTransactionHistory extends StatelessWidget {
-  final TransactionItem transaction;
+class SelectedVendorTransactionHistory extends StatelessWidget {
+  final VendorTransactionItem transaction;
 
-  const SelectedTransactionHistory({super.key, required this.transaction});
+  const SelectedVendorTransactionHistory(
+      {super.key, required this.transaction});
 
   @override
   Widget build(BuildContext context) {

@@ -170,7 +170,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
         _shopController.text,
       );
 
-      Navigator.of(context).pop(); // Dismiss the loading modal
+      Navigator.of(context).pop();
 
       if (signUpSuccess) {
         _showVerificationSuccessModal();

@@ -1,6 +1,10 @@
+//vendor_pas.dart
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'api_service.dart';
 import 'vendor_bottom_navigation_bar.dart';
 
 class VendorPasScreen extends StatefulWidget {
@@ -32,13 +36,52 @@ class _VendorPasScreenState extends State<VendorPasScreen> {
     return value.contains(RegExp(r'\d'));
   }
 
-  bool _hasLetter(String value) {
-    return value.contains(RegExp(r'[a-zA-Z]'));
+  bool _haslowerLetter(String value) {
+    return value.contains(RegExp(r'[a-z]'));
+  }
+
+  bool _hasUpperLetter(String value) {
+    return value.contains(RegExp(r'[A-Z]'));
   }
 
   bool _passwordsMatch() {
     return _newPasswordController.text.isNotEmpty &&
         _newPasswordController.text == _confirmPasswordController.text;
+  }
+
+  void _changePassword() async {
+    final oldPassword = _oldPasswordController.text;
+    final newPassword = _newPasswordController.text;
+
+    if (oldPassword.isNotEmpty && newPassword.isNotEmpty) {
+      final success = await ApiService.changePassword(
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+
+      if (success) {
+        // Password changed successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password changed successfully'),
+          ),
+        );
+      } else {
+        // Failed to change password
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to change password'),
+          ),
+        );
+      }
+    } else {
+      // Show an error message if fields are empty
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter old and new passwords'),
+        ),
+      );
+    }
   }
 
   @override
@@ -133,9 +176,7 @@ class _VendorPasScreenState extends State<VendorPasScreen> {
                     ),
                     const SizedBox(height: 48),
                     GestureDetector(
-                      onTap: () {
-                        // Save changes logic
-                      },
+                      onTap: _changePassword, // Call the _changePassword method
                       child: Container(
                         width: double.infinity,
                         height: 50,
@@ -289,17 +330,39 @@ class _VendorPasScreenState extends State<VendorPasScreen> {
                 Row(
                   children: [
                     Icon(
-                      _hasLetter(controller.text)
+                      _haslowerLetter(controller.text)
                           ? Icons.check_circle
                           : Icons.circle_outlined,
-                      color: _hasLetter(controller.text)
+                      color: _haslowerLetter(controller.text)
                           ? Colors.green
                           : Colors.grey,
                       size: 18,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Contains a letter',
+                      'Contains at least a lowercase letter',
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      _hasUpperLetter(controller.text)
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                      color: _hasUpperLetter(controller.text)
+                          ? Colors.green
+                          : Colors.grey,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Contains at least an Uppercase letter',
                       style: GoogleFonts.nunito(
                         fontSize: 12,
                         color: Colors.grey,

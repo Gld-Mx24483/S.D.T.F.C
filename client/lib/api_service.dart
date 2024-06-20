@@ -83,6 +83,56 @@ class ApiService {
     }
   }
 
+  static Future<Map<String, dynamic>?> loginVendor(
+    String email,
+    String password,
+    String storeName,
+  ) async {
+    final url = Uri.parse('$baseUrl/auth/vendor/login');
+    final body = {
+      'email': email,
+      'password': password,
+      'storeName': storeName,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('Vendor Login Response:');
+        print('Message: ${responseData['message']}');
+        print('Data:');
+        if (responseData['data'] != null) {
+          responseData['data'].forEach((key, value) {
+            print('  $key: $value');
+          });
+        }
+        print('StatusCode: ${responseData['statusCode']}');
+        print('Timestamp: ${responseData['timestamp']}');
+
+        // Store the access token
+        if (responseData['data'] != null &&
+            responseData['data']['access_token'] != null) {
+          await _secureStorage.write(
+              key: 'access_token', value: responseData['data']['access_token']);
+        }
+
+        return responseData;
+      } else {
+        print('Vendor login failed: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error: $e');
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> loginUser(
       String email, String password) async {
     final url = Uri.parse('$baseUrl/auth/login');

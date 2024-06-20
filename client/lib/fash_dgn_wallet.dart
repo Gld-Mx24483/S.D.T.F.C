@@ -1,6 +1,5 @@
 // fash_dgn_wallet.dart
 // ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print, unused_element
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -115,77 +114,6 @@ class _WalletScreenState extends State<WalletScreen> {
       print('Error fetching wallet balance: $e');
     }
   }
-
-  // Future<void> fetchRecentTransactions() async {
-  //   final transactions = await ApiService.fetchRecentTransactions();
-  //   if (transactions != null) {
-  //     print('Received transactions:');
-  //     for (var transaction in transactions) {
-  //       print('Transaction Details:');
-  //       print('Id: ${transaction['id']}');
-  //       print('Amount: ${transaction['amount']}');
-  //       print('Reference: ${transaction['reference']}');
-  //       print('Points: ${transaction['point']}');
-  //       print('Created At: ${transaction['createdAt']}');
-
-  //       final createdAt = transaction['createdAt'] as List<dynamic>;
-  //       final year = createdAt[0];
-  //       final month = createdAt[1];
-  //       final day = createdAt[2];
-  //       final hour = createdAt[3];
-  //       final minute = createdAt[4];
-  //       final second = createdAt[5];
-
-  //       final filteredCreatedAt =
-  //           DateTime(year, month, day, hour, minute, second);
-  //       final formattedDate =
-  //           DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
-  //       print('Filtered Created At: $formattedDate');
-
-  //       print('---');
-  //     }
-
-  //     // Sort transactions by createdAt in descending order
-  //     transactions.sort((a, b) {
-  //       final createdAtA = a['createdAt'] as List<dynamic>;
-  //       final createdAtB = b['createdAt'] as List<dynamic>;
-
-  //       final dateA = DateTime(createdAtA[0], createdAtA[1], createdAtA[2],
-  //           createdAtA[3], createdAtA[4], createdAtA[5]);
-  //       final dateB = DateTime(createdAtB[0], createdAtB[1], createdAtB[2],
-  //           createdAtB[3], createdAtB[4], createdAtB[5]);
-
-  //       return dateB.compareTo(dateA); // Sort in descending order
-  //     });
-
-  //     setState(() {
-  //       _transactions = transactions.map((transaction) {
-  //         final isCredit = transaction['point'] > 0;
-  //         final createdAt = transaction['createdAt'] as List<dynamic>;
-  //         final year = createdAt[0];
-  //         final month = createdAt[1];
-  //         final day = createdAt[2];
-  //         final hour = createdAt[3];
-  //         final minute = createdAt[4];
-  //         final second = createdAt[5];
-
-  //         final filteredCreatedAt =
-  //             DateTime(year, month, day, hour, minute, second);
-  //         final formattedDate =
-  //             DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
-
-  //         return TransactionItem(
-  //           description: 'Top Up from NGN Wallet',
-  //           date: formattedDate,
-  //           points: '${isCredit ? '+' : '-'}${transaction['point'].round()}',
-  //           isCredit: isCredit,
-  //         );
-  //       }).toList();
-  //     });
-  //   } else {
-  //     print('Failed to fetch recent transactions');
-  //   }
-  // }
 
   Future<void> fetchRecentTransactions() async {
     final transactions = await ApiService.fetchRecentTransactions();
@@ -1066,20 +994,6 @@ class _WalletScreenState extends State<WalletScreen> {
     }
   }
 }
-
-// class TransactionItem {
-//   final String description;
-//   final String date;
-//   final String points;
-//   final bool isCredit;
-
-//   TransactionItem({
-//     required this.description,
-//     required this.date,
-//     required this.points,
-//     required this.isCredit,
-//   });
-// }
 
 class TransactionItem {
   final String description;
