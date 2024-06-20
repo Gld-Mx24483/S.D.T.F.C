@@ -251,17 +251,6 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     super.dispose();
   }
 
-  // Future<void> _pickImage() async {
-  //   final ImagePicker picker = ImagePicker();
-  //   final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-  //   if (image != null) {
-  //     setState(() {
-  //       _imageFile = PickedFile(image.path);
-  //     });
-  //   }
-  // }
-
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);

@@ -35,8 +35,12 @@ class _FashPasScreenState extends State<FashPasScreen> {
     return value.contains(RegExp(r'\d'));
   }
 
-  bool _hasLetter(String value) {
-    return value.contains(RegExp(r'[a-zA-Z]'));
+  bool _haslowerLetter(String value) {
+    return value.contains(RegExp(r'[a-z]'));
+  }
+
+  bool _hasUpperLetter(String value) {
+    return value.contains(RegExp(r'[A-Z]'));
   }
 
   bool _passwordsMatch() {
@@ -325,17 +329,39 @@ class _FashPasScreenState extends State<FashPasScreen> {
                 Row(
                   children: [
                     Icon(
-                      _hasLetter(controller.text)
+                      _haslowerLetter(controller.text)
                           ? Icons.check_circle
                           : Icons.circle_outlined,
-                      color: _hasLetter(controller.text)
+                      color: _haslowerLetter(controller.text)
                           ? Colors.green
                           : Colors.grey,
                       size: 18,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Contains a letter',
+                      'Contains at least a lowercase letter',
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      _hasUpperLetter(controller.text)
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                      color: _hasUpperLetter(controller.text)
+                          ? Colors.green
+                          : Colors.grey,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Contains at least an Uppercase letter',
                       style: GoogleFonts.nunito(
                         fontSize: 12,
                         color: Colors.grey,
