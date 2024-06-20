@@ -52,17 +52,20 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
       return false;
     }
 
-    bool hasLetter = false;
+    bool haslowerLetter = false;
+    bool hasupperLetter = false;
     bool hasNumber = false;
     bool isLengthValid = passwordController.text.length >= 8;
     for (int i = 0; i < passwordController.text.length; i++) {
-      if (_isLetter(passwordController.text[i])) {
-        hasLetter = true;
+      if (_islowerLetter(passwordController.text[i])) {
+        haslowerLetter = true;
+      } else if (_isupperLetter(passwordController.text[i])) {
+        hasupperLetter = true;
       } else if (_isDigit(passwordController.text[i])) {
         hasNumber = true;
       }
     }
-    if (!hasLetter || !hasNumber || !isLengthValid) {
+    if (!haslowerLetter || !hasupperLetter || !hasNumber || !isLengthValid) {
       return false;
     }
 
@@ -73,11 +76,14 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
     return true;
   }
 
-  bool _isLetter(String char) {
+  bool _islowerLetter(String char) {
     return char.codeUnitAt(0) >= 'a'.codeUnitAt(0) &&
-            char.codeUnitAt(0) <= 'z'.codeUnitAt(0) ||
-        char.codeUnitAt(0) >= 'A'.codeUnitAt(0) &&
-            char.codeUnitAt(0) <= 'Z'.codeUnitAt(0);
+        char.codeUnitAt(0) <= 'z'.codeUnitAt(0);
+  }
+
+  bool _isupperLetter(String char) {
+    return char.codeUnitAt(0) >= 'A'.codeUnitAt(0) &&
+        char.codeUnitAt(0) <= 'Z'.codeUnitAt(0);
   }
 
   bool _isDigit(String char) {
@@ -403,17 +409,39 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
                   Row(
                     children: [
                       Icon(
-                        _hasLetter(passwordController.text)
+                        _haslowerLetter(passwordController.text)
                             ? Icons.check_circle
                             : Icons.circle_outlined,
-                        color: _hasLetter(passwordController.text)
+                        color: _haslowerLetter(passwordController.text)
                             ? Colors.green
                             : Colors.grey,
                         size: 18,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Contains a letter',
+                        'Contains at least a lowercase letter',
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        _hasupperLetter(passwordController.text)
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
+                        color: _hasupperLetter(passwordController.text)
+                            ? Colors.green
+                            : Colors.grey,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Contains at least an Uppercase letter',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
                           color: Colors.grey,
@@ -556,8 +584,12 @@ class FashionDesignerScreenState extends State<FashionDesignerScreen> {
     return text.contains(RegExp(r'\d'));
   }
 
-  bool _hasLetter(String text) {
-    return text.contains(RegExp(r'[a-zA-Z]'));
+  bool _haslowerLetter(String text) {
+    return text.contains(RegExp(r'[a-z]'));
+  }
+
+  bool _hasupperLetter(String text) {
+    return text.contains(RegExp(r'[A-Z]'));
   }
 }
 

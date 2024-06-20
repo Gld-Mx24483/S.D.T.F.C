@@ -44,6 +44,45 @@ class ApiService {
     }
   }
 
+  static Future<bool> signUpVendor(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String shopName,
+  ) async {
+    final url = Uri.parse('$baseUrl/stores/vendor');
+    final body = {
+      "signupRequest": {
+        "email": email,
+        "password": password,
+        "firstName": firstName,
+        "lastName": lastName
+      },
+      "name": shopName,
+      "logo": null
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        print('Vendor signup successful: ${response.body}');
+        return true;
+      } else {
+        print('Vendor signup failed: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during vendor signup: $e');
+      return false;
+    }
+  }
+
   static Future<Map<String, dynamic>?> loginUser(
       String email, String password) async {
     final url = Uri.parse('$baseUrl/auth/login');

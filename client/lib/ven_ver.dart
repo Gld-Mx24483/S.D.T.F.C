@@ -1,5 +1,5 @@
 // ven_ver.dart
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:async';
 import 'dart:math';
@@ -8,6 +8,7 @@ import 'package:emailjs/emailjs.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'api_service.dart';
 import 'log_in.dart';
 
 class VenVerScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class VenVerScreen extends StatefulWidget {
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final TextEditingController shopController;
+  final String password;
 
   const VenVerScreen({
     super.key,
@@ -24,6 +26,7 @@ class VenVerScreen extends StatefulWidget {
     required this.firstNameController,
     required this.lastNameController,
     required this.shopController,
+    required this.password,
   });
 
   @override
@@ -36,6 +39,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _shopController;
+  late final String _password;
   final List<TextEditingController> _otpControllers =
       List.generate(6, (_) => TextEditingController());
   late Timer _timer;
@@ -51,6 +55,7 @@ class _VenVerScreenState extends State<VenVerScreen> {
     _firstNameController = widget.firstNameController;
     _lastNameController = widget.lastNameController;
     _shopController = widget.shopController;
+    _password = widget.password;
     String generatedOTP = _generateOTP();
     _sendEmailWithOTP(generatedOTP);
     _startCountdown();
@@ -116,21 +121,65 @@ class _VenVerScreenState extends State<VenVerScreen> {
     }
   }
 
-  void _validateOTPAndProceed() {
+  // void _validateOTPAndProceed() {
+  //   String enteredOTP = '';
+  //   for (var controller in _otpControllers) {
+  //     enteredOTP += controller.text;
+  //   }
+
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (context) => LoadingModal(
+  //       showNextModal: enteredOTP == _generatedOTP
+  //           ? _showVerificationSuccessModal
+  //           : _showVerificationFailedModal,
+  //     ),
+  //   );
+  // }
+
+  void _validateOTPAndProceed() async {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
       enteredOTP += controller.text;
     }
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => LoadingModal(
-        showNextModal: enteredOTP == _generatedOTP
-            ? _showVerificationSuccessModal
-            : _showVerificationFailedModal,
-      ),
-    );
+    if (enteredOTP == _generatedOTP) {
+      // showDialog(
+      //   context: context,
+      //   barrierDismissible: false,
+      //   builder: (context) => const LoadingModal(
+      //     showNextModal: null,
+      //   ),
+      // );
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => LoadingModal(
+          showNextModal: enteredOTP == _generatedOTP
+              ? _showVerificationSuccessModal
+              : _showVerificationFailedModal,
+        ),
+      );
+
+      bool signUpSuccess = await ApiService.signUpVendor(
+        _firstNameController.text,
+        _lastNameController.text,
+        _emailAddress,
+        _password,
+        _shopController.text,
+      );
+
+      Navigator.of(context).pop(); // Dismiss the loading modal
+
+      if (signUpSuccess) {
+        _showVerificationSuccessModal();
+      } else {
+        _showVerificationFailedModal();
+      }
+    } else {
+      _showVerificationFailedModal();
+    }
   }
 
   void _showVerificationSuccessModal() {
