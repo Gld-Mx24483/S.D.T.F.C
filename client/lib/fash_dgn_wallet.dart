@@ -1,111 +1,5 @@
-// // fash_dgn_wallet.dart
-// // ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
-
-// import 'dart:convert';
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_paystack_max/flutter_paystack_max.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:intl/intl.dart';
-
-// import 'any_loading_modal.dart';
-// import 'api_service.dart';
-// import 'loading_modal.dart';
-// import 'trans_hist.dart';
-
-// class WalletScreen extends StatefulWidget {
-//   const WalletScreen({super.key});
-
-//   @override
-//   State<WalletScreen> createState() => _WalletScreenState();
-// }
-
-// class _WalletScreenState extends State<WalletScreen> {
-//   final bool _isPointsSelected = true;
-//   bool _isAmountVisible = true;
-//   final TextEditingController _amountController = TextEditingController();
-//   int _walletPoints = 0;
-//   final List<TransactionItem> _transactions = [];
-//   bool _isLoading = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     fetchUserProfile().then((_) {
-//       _fetchData();
-//       fetchWalletBalance();
-//     });
-//   }
-
-//   Future<void> _fetchData() async {
-//     setState(() {
-//       _isLoading = true;
-//     });
-
-//     await fetchUserProfile().then((_) {
-//       fetchWalletBalance();
-//     });
-
-//     setState(() {
-//       _isLoading = false;
-//     });
-//   }
-
-//   String? userEmail;
-
-//   Future<void> fetchUserProfile() async {
-//     final userProfile = await ApiService.getUserProfile();
-//     if (userProfile != null) {
-//       userEmail = userProfile['email'];
-//       if (userEmail == null) {
-//         print('User email is null');
-//       }
-//     } else {
-//       print('Failed to fetch user profile');
-//     }
-//   }
-
-//   Future<void> fetchWalletBalance() async {
-//     final url = Uri.parse('${ApiService.baseUrl}/connects/wallet/balance');
-//     final accessToken = await ApiService.getAccessToken();
-
-//     if (accessToken == null) {
-//       print('No access token found');
-//       return;
-//     }
-
-//     try {
-//       final response = await http.get(
-//         url,
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Authorization': 'Bearer $accessToken',
-//         },
-//       );
-
-//       if (response.statusCode == 200) {
-//         final responseData = jsonDecode(response.body);
-//         if (responseData['data'] != null && responseData['data'] is Map) {
-//           final walletBalance = responseData['data']['balance'] ?? '***';
-//           print('Fetched wallet balance: $walletBalance');
-//           setState(() {
-//             _walletPoints = walletBalance.toInt();
-//           });
-//         } else {
-//           print('Failed to fetch wallet balance: ${response.body}');
-//         }
-//       } else {
-//         print('Failed to fetch wallet balance: ${response.body}');
-//       }
-//     } catch (e) {
-//       print('Error fetching wallet balance: $e');
-//     }
-//   }
-
 // fash_dgn_wallet.dart
-// ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
+// ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print, unused_element
 
 import 'dart:convert';
 
@@ -118,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'any_loading_modal.dart';
 import 'api_service.dart';
 import 'loading_modal.dart';
+import 'selected_trans_hist.dart';
 import 'trans_hist.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -143,6 +38,16 @@ class _WalletScreenState extends State<WalletScreen> {
       _fetchData();
       fetchWalletBalance();
     });
+  }
+
+  void _navigateToTransactionDetails(TransactionItem transaction) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            SelectedTransactionHistory(transaction: transaction),
+      ),
+    );
   }
 
   Future<void> _fetchData() async {
@@ -211,6 +116,77 @@ class _WalletScreenState extends State<WalletScreen> {
     }
   }
 
+  // Future<void> fetchRecentTransactions() async {
+  //   final transactions = await ApiService.fetchRecentTransactions();
+  //   if (transactions != null) {
+  //     print('Received transactions:');
+  //     for (var transaction in transactions) {
+  //       print('Transaction Details:');
+  //       print('Id: ${transaction['id']}');
+  //       print('Amount: ${transaction['amount']}');
+  //       print('Reference: ${transaction['reference']}');
+  //       print('Points: ${transaction['point']}');
+  //       print('Created At: ${transaction['createdAt']}');
+
+  //       final createdAt = transaction['createdAt'] as List<dynamic>;
+  //       final year = createdAt[0];
+  //       final month = createdAt[1];
+  //       final day = createdAt[2];
+  //       final hour = createdAt[3];
+  //       final minute = createdAt[4];
+  //       final second = createdAt[5];
+
+  //       final filteredCreatedAt =
+  //           DateTime(year, month, day, hour, minute, second);
+  //       final formattedDate =
+  //           DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
+  //       print('Filtered Created At: $formattedDate');
+
+  //       print('---');
+  //     }
+
+  //     // Sort transactions by createdAt in descending order
+  //     transactions.sort((a, b) {
+  //       final createdAtA = a['createdAt'] as List<dynamic>;
+  //       final createdAtB = b['createdAt'] as List<dynamic>;
+
+  //       final dateA = DateTime(createdAtA[0], createdAtA[1], createdAtA[2],
+  //           createdAtA[3], createdAtA[4], createdAtA[5]);
+  //       final dateB = DateTime(createdAtB[0], createdAtB[1], createdAtB[2],
+  //           createdAtB[3], createdAtB[4], createdAtB[5]);
+
+  //       return dateB.compareTo(dateA); // Sort in descending order
+  //     });
+
+  //     setState(() {
+  //       _transactions = transactions.map((transaction) {
+  //         final isCredit = transaction['point'] > 0;
+  //         final createdAt = transaction['createdAt'] as List<dynamic>;
+  //         final year = createdAt[0];
+  //         final month = createdAt[1];
+  //         final day = createdAt[2];
+  //         final hour = createdAt[3];
+  //         final minute = createdAt[4];
+  //         final second = createdAt[5];
+
+  //         final filteredCreatedAt =
+  //             DateTime(year, month, day, hour, minute, second);
+  //         final formattedDate =
+  //             DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
+
+  //         return TransactionItem(
+  //           description: 'Top Up from NGN Wallet',
+  //           date: formattedDate,
+  //           points: '${isCredit ? '+' : '-'}${transaction['point'].round()}',
+  //           isCredit: isCredit,
+  //         );
+  //       }).toList();
+  //     });
+  //   } else {
+  //     print('Failed to fetch recent transactions');
+  //   }
+  // }
+
   Future<void> fetchRecentTransactions() async {
     final transactions = await ApiService.fetchRecentTransactions();
     if (transactions != null) {
@@ -240,6 +216,19 @@ class _WalletScreenState extends State<WalletScreen> {
         print('---');
       }
 
+      // Sort transactions by createdAt in descending order
+      transactions.sort((a, b) {
+        final createdAtA = a['createdAt'] as List<dynamic>;
+        final createdAtB = b['createdAt'] as List<dynamic>;
+
+        final dateA = DateTime(createdAtA[0], createdAtA[1], createdAtA[2],
+            createdAtA[3], createdAtA[4], createdAtA[5]);
+        final dateB = DateTime(createdAtB[0], createdAtB[1], createdAtB[2],
+            createdAtB[3], createdAtB[4], createdAtB[5]);
+
+        return dateB.compareTo(dateA); // Sort in descending order
+      });
+
       setState(() {
         _transactions = transactions.map((transaction) {
           final isCredit = transaction['point'] > 0;
@@ -259,8 +248,11 @@ class _WalletScreenState extends State<WalletScreen> {
           return TransactionItem(
             description: 'Top Up from NGN Wallet',
             date: formattedDate,
-            points: '${isCredit ? '+' : '-'}${transaction['point'].round()}',
+            points: '${isCredit ? '' : ''}${transaction['point'].round()}',
             isCredit: isCredit,
+            createdAt: transaction['createdAt'], // Add this line
+            amount: transaction['amount'].toString(), // Add this line
+            reference: transaction['reference'], // Add this line
           );
         }).toList();
       });
@@ -525,8 +517,8 @@ class _WalletScreenState extends State<WalletScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  const TransactionHistoryPage(),
+                              builder: (context) => TransactionHistoryPage(
+                                  transactions: _transactions),
                             ),
                           );
                         },
@@ -547,93 +539,110 @@ class _WalletScreenState extends State<WalletScreen> {
                     ? ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _transactions.length,
+                        itemCount: _transactions.length > 3
+                            ? 3
+                            : _transactions.length, // Limit to 3 items
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Container(
-                              width: 335,
-                              height: 72,
-                              padding: const EdgeInsets.fromLTRB(8, 16, 20, 16),
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(172, 235, 235, 235),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: const Color(0xFFEEEFF2),
-                                  width: 1,
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      SelectedTransactionHistory(
+                                    transaction: _transactions[index],
+                                  ),
                                 ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: const BoxDecoration(
-                                          color: Color.fromARGB(
-                                              137, 221, 221, 221),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8),
-                                          child: Image.asset(
-                                            'pics/coin.png',
-                                            width: 24,
-                                            height: 24,
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Container(
+                                width: 335,
+                                height: 72,
+                                padding:
+                                    const EdgeInsets.fromLTRB(8, 16, 20, 16),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(172, 235, 235, 235),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFFEEEFF2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: const BoxDecoration(
+                                            color: Color.fromARGB(
+                                                137, 221, 221, 221),
+                                            shape: BoxShape.circle,
                                           ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            _transactions[index].description,
-                                            style: GoogleFonts.nunito(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF232323),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8),
+                                            child: Image.asset(
+                                              'pics/coin.png',
+                                              width: 24,
+                                              height: 24,
                                             ),
                                           ),
-                                          Text(
-                                            _transactions[index].date,
-                                            style: GoogleFonts.nunito(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                              color: const Color(0xFF636A64),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        _transactions[index].points,
-                                        style: GoogleFonts.nunito(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                          color: _transactions[index].isCredit
-                                              ? const Color(0xFF157F0B)
-                                              : const Color(0xFFB51A1B),
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Image.asset(
-                                        'pics/coin.png',
-                                        width: 16,
-                                        height: 18,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(width: 12),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              _transactions[index].description,
+                                              style: GoogleFonts.nunito(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF232323),
+                                              ),
+                                            ),
+                                            Text(
+                                              _transactions[index].date,
+                                              style: GoogleFonts.nunito(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                                color: const Color(0xFF636A64),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Image.asset(
+                                          'pics/coin.png',
+                                          width: 16,
+                                          height: 18,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          _transactions[index].points,
+                                          style: GoogleFonts.nunito(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            color: _transactions[index].isCredit
+                                                ? const Color(0xFF157F0B)
+                                                : const Color(0xFFB51A1B),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -1024,6 +1033,9 @@ class _WalletScreenState extends State<WalletScreen> {
             date: formatter.format(dateTime),
             points: '+${pointsReceived.toInt()}',
             isCredit: true,
+            reference: '',
+            amount: '',
+            createdAt: [],
           ),
         );
       });
@@ -1055,16 +1067,36 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 }
 
+// class TransactionItem {
+//   final String description;
+//   final String date;
+//   final String points;
+//   final bool isCredit;
+
+//   TransactionItem({
+//     required this.description,
+//     required this.date,
+//     required this.points,
+//     required this.isCredit,
+//   });
+// }
+
 class TransactionItem {
   final String description;
   final String date;
   final String points;
   final bool isCredit;
+  final List<dynamic> createdAt;
+  final String amount;
+  final String reference;
 
   TransactionItem({
     required this.description,
     required this.date,
     required this.points,
     required this.isCredit,
+    required this.createdAt,
+    required this.amount,
+    required this.reference,
   });
 }

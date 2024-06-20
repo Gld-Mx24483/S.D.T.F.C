@@ -271,7 +271,9 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const TransactionHistoryPage(),
+                          builder: (context) => const TransactionHistoryPage(
+                            transactions: [],
+                          ),
                         ),
                       );
                     },
