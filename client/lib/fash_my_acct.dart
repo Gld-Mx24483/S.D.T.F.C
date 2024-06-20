@@ -31,13 +31,18 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
   PickedFile? _imageFile;
   Map<String, dynamic>? _userProfile;
   bool _isUploadingImage = false;
+  bool _isLoading = true;
 
   late CloudinaryPublic cloudinary;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserProfile();
+    _fetchUserProfile().then((_) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
 
     cloudinary = CloudinaryPublic('dabq39lbk', 'jb14zkiw', cache: false);
   }
@@ -77,6 +82,109 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
         _isUploadingImage = false;
       });
     }
+  }
+
+  void _showImagePreview() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color.fromARGB(7, 251, 229, 170),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: SizedBox(
+              width: 300,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.file(
+                      File(_imageFile!.path),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _imageFile = null;
+                          });
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color(0xFFFBE5AA), // background color
+                        ),
+                        child: const Text(
+                          'Remove',
+                          style:
+                              TextStyle(color: Color(0xFF621B2B)), // text color
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFBE5AA),
+                        ),
+                        child: const Text(
+                          'Keep',
+                          style: TextStyle(color: Color(0xFF621B2B)),
+                          // text color
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showImageSelectionModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
+                onTap: _pickImage,
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Remove image'),
+                onTap: () {
+                  setState(() {
+                    _imageFile = null;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _updateUserProfile() async {
@@ -143,6 +251,17 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
     super.dispose();
   }
 
+  // Future<void> _pickImage() async {
+  //   final ImagePicker picker = ImagePicker();
+  //   final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+  //   if (image != null) {
+  //     setState(() {
+  //       _imageFile = PickedFile(image.path);
+  //     });
+  //   }
+  // }
+
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -151,170 +270,181 @@ class _FashMyAcctScreenState extends State<FashMyAcctScreen> {
       setState(() {
         _imageFile = PickedFile(image.path);
       });
+      _showImagePreview();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          color: Colors.white,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 35),
-                child: Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: const BoxDecoration(),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          margin: const EdgeInsets.only(left: 20),
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Color.fromARGB(255, 1, 1, 1),
+    return Stack(children: [
+      if (_isLoading)
+        const Positioned.fill(
+          child: AnyLoadingModal(),
+        ),
+      Scaffold(
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            color: Colors.white,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 35),
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: const BoxDecoration(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            margin: const EdgeInsets.only(left: 20),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Color.fromARGB(255, 1, 1, 1),
+                            ),
                           ),
                         ),
-                      ),
-                      Text(
-                        'My Account',
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF232323),
+                        Text(
+                          'My Account',
+                          style: GoogleFonts.nunito(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF232323),
+                          ),
                         ),
+                        const SizedBox(width: 44),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 33),
+                // GestureDetector(
+                //   onTap: _pickImage,
+                //   child: Stack(
+                GestureDetector(
+                  onTap: _showImageSelectionModal,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 90,
+                        height: 90,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFDADADA),
+                        ),
+                        child: _imageFile != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(45),
+                                child: Image.file(
+                                  File(_imageFile!.path),
+                                  width: 90,
+                                  height: 90,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : _userProfile != null &&
+                                    _userProfile!['profileImage'] != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(45),
+                                    child: Image.network(
+                                      _userProfile!['profileImage'],
+                                      width: 90,
+                                      height: 90,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.person,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
                       ),
-                      const SizedBox(width: 44),
+                      if (_isUploadingImage)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            child: const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 33),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 90,
-                      height: 90,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFFDADADA),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      _buildTextField(
+                        label: 'First Name',
+                        controller: _firstNameController,
+                        hintText: '--',
                       ),
-                      child: _imageFile != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(45),
-                              child: Image.file(
-                                File(_imageFile!.path),
-                                width: 90,
-                                height: 90,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : _userProfile != null &&
-                                  _userProfile!['profileImage'] != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(45),
-                                  child: Image.network(
-                                    _userProfile!['profileImage'],
-                                    width: 90,
-                                    height: 90,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                  size: 50,
-                                  color: Colors.white,
-                                ),
-                    ),
-                    if (_isUploadingImage)
-                      Positioned.fill(
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Last Name',
+                        controller: _lastNameController,
+                        hintText: '--',
+                      ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Email Address',
+                        controller: _emailController,
+                        hintText: '--',
+                        isEmail: true,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPhoneTextField(),
+                      const SizedBox(height: 32),
+                      GestureDetector(
+                        onTap: _updateUserProfile,
                         child: Container(
+                          width: double.infinity,
+                          height: 50,
                           decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black.withOpacity(0.5),
+                            color: const Color(0xFFFBE5AA),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    _buildTextField(
-                      label: 'First Name',
-                      controller: _firstNameController,
-                      hintText: '--',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Last Name',
-                      controller: _lastNameController,
-                      hintText: '--',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Email Address',
-                      controller: _emailController,
-                      hintText: '--',
-                      isEmail: true,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildPhoneTextField(),
-                    const SizedBox(height: 32),
-                    GestureDetector(
-                      onTap: _updateUserProfile,
-                      child: Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFBE5AA),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Save Changes',
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF621B2B),
+                          child: Center(
+                            child: Text(
+                              'Save Changes',
+                              style: GoogleFonts.nunito(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF621B2B),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: CustomBottomNavigationBar(
+          onItemTapped: (label) {},
+          tutorialStep: 0,
+          selectedLabel: '',
+        ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onItemTapped: (label) {},
-        tutorialStep: 0,
-        selectedLabel: '',
-      ),
-    );
+    ]);
   }
 
   Widget _buildTextField({

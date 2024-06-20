@@ -1,3 +1,109 @@
+// // fash_dgn_wallet.dart
+// // ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
+
+// import 'dart:convert';
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_paystack_max/flutter_paystack_max.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:intl/intl.dart';
+
+// import 'any_loading_modal.dart';
+// import 'api_service.dart';
+// import 'loading_modal.dart';
+// import 'trans_hist.dart';
+
+// class WalletScreen extends StatefulWidget {
+//   const WalletScreen({super.key});
+
+//   @override
+//   State<WalletScreen> createState() => _WalletScreenState();
+// }
+
+// class _WalletScreenState extends State<WalletScreen> {
+//   final bool _isPointsSelected = true;
+//   bool _isAmountVisible = true;
+//   final TextEditingController _amountController = TextEditingController();
+//   int _walletPoints = 0;
+//   final List<TransactionItem> _transactions = [];
+//   bool _isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     fetchUserProfile().then((_) {
+//       _fetchData();
+//       fetchWalletBalance();
+//     });
+//   }
+
+//   Future<void> _fetchData() async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+
+//     await fetchUserProfile().then((_) {
+//       fetchWalletBalance();
+//     });
+
+//     setState(() {
+//       _isLoading = false;
+//     });
+//   }
+
+//   String? userEmail;
+
+//   Future<void> fetchUserProfile() async {
+//     final userProfile = await ApiService.getUserProfile();
+//     if (userProfile != null) {
+//       userEmail = userProfile['email'];
+//       if (userEmail == null) {
+//         print('User email is null');
+//       }
+//     } else {
+//       print('Failed to fetch user profile');
+//     }
+//   }
+
+//   Future<void> fetchWalletBalance() async {
+//     final url = Uri.parse('${ApiService.baseUrl}/connects/wallet/balance');
+//     final accessToken = await ApiService.getAccessToken();
+
+//     if (accessToken == null) {
+//       print('No access token found');
+//       return;
+//     }
+
+//     try {
+//       final response = await http.get(
+//         url,
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': 'Bearer $accessToken',
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         final responseData = jsonDecode(response.body);
+//         if (responseData['data'] != null && responseData['data'] is Map) {
+//           final walletBalance = responseData['data']['balance'] ?? '***';
+//           print('Fetched wallet balance: $walletBalance');
+//           setState(() {
+//             _walletPoints = walletBalance.toInt();
+//           });
+//         } else {
+//           print('Failed to fetch wallet balance: ${response.body}');
+//         }
+//       } else {
+//         print('Failed to fetch wallet balance: ${response.body}');
+//       }
+//     } catch (e) {
+//       print('Error fetching wallet balance: $e');
+//     }
+//   }
+
 // fash_dgn_wallet.dart
 // ignore_for_file: unused_import, unused_field, use_build_context_synchronously, avoid_print
 
@@ -26,7 +132,7 @@ class _WalletScreenState extends State<WalletScreen> {
   bool _isAmountVisible = true;
   final TextEditingController _amountController = TextEditingController();
   int _walletPoints = 0;
-  final List<TransactionItem> _transactions = [];
+  List<TransactionItem> _transactions = [];
   bool _isLoading = true;
 
   @override
@@ -41,15 +147,16 @@ class _WalletScreenState extends State<WalletScreen> {
 
   Future<void> _fetchData() async {
     setState(() {
-      _isLoading = true; // Set _isLoading to true before fetching data
+      _isLoading = true;
     });
 
     await fetchUserProfile().then((_) {
       fetchWalletBalance();
+      fetchRecentTransactions();
     });
 
     setState(() {
-      _isLoading = false; // Set _isLoading to false after fetching data
+      _isLoading = false;
     });
   }
 
@@ -101,6 +208,64 @@ class _WalletScreenState extends State<WalletScreen> {
       }
     } catch (e) {
       print('Error fetching wallet balance: $e');
+    }
+  }
+
+  Future<void> fetchRecentTransactions() async {
+    final transactions = await ApiService.fetchRecentTransactions();
+    if (transactions != null) {
+      print('Received transactions:');
+      for (var transaction in transactions) {
+        print('Transaction Details:');
+        print('Id: ${transaction['id']}');
+        print('Amount: ${transaction['amount']}');
+        print('Reference: ${transaction['reference']}');
+        print('Points: ${transaction['point']}');
+        print('Created At: ${transaction['createdAt']}');
+
+        final createdAt = transaction['createdAt'] as List<dynamic>;
+        final year = createdAt[0];
+        final month = createdAt[1];
+        final day = createdAt[2];
+        final hour = createdAt[3];
+        final minute = createdAt[4];
+        final second = createdAt[5];
+
+        final filteredCreatedAt =
+            DateTime(year, month, day, hour, minute, second);
+        final formattedDate =
+            DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
+        print('Filtered Created At: $formattedDate');
+
+        print('---');
+      }
+
+      setState(() {
+        _transactions = transactions.map((transaction) {
+          final isCredit = transaction['point'] > 0;
+          final createdAt = transaction['createdAt'] as List<dynamic>;
+          final year = createdAt[0];
+          final month = createdAt[1];
+          final day = createdAt[2];
+          final hour = createdAt[3];
+          final minute = createdAt[4];
+          final second = createdAt[5];
+
+          final filteredCreatedAt =
+              DateTime(year, month, day, hour, minute, second);
+          final formattedDate =
+              DateFormat('yyyy/MM/dd hh:mm a').format(filteredCreatedAt);
+
+          return TransactionItem(
+            description: 'Top Up from NGN Wallet',
+            date: formattedDate,
+            points: '${isCredit ? '+' : '-'}${transaction['point'].round()}',
+            isCredit: isCredit,
+          );
+        }).toList();
+      });
+    } else {
+      print('Failed to fetch recent transactions');
     }
   }
 
@@ -788,8 +953,7 @@ class _WalletScreenState extends State<WalletScreen> {
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
-      email: userEmail ??
-          '', // Replace 'default@email.com' with a suitable default email
+      email: userEmail ?? '',
       amount: amount,
       currency: currency,
       channel: [

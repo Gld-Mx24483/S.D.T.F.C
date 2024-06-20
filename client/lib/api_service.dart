@@ -279,4 +279,39 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<List<dynamic>?> fetchRecentTransactions() async {
+    final url = Uri.parse('$baseUrl/connects/wallet/transactions');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['data'] != null && responseData['data'] is List) {
+          return responseData['data'];
+        } else {
+          print('Failed to fetch recent transactions: ${response.body}');
+        }
+      } else {
+        print('Failed to fetch recent transactions: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching recent transactions: $e');
+    }
+
+    return null;
+  }
 }
