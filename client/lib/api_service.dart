@@ -303,39 +303,6 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> updateStore(
-      Map<String, dynamic> body) async {
-    final url = Uri.parse('$baseUrl/stores/update');
-    final accessToken = await getAccessToken();
-
-    if (accessToken == null) {
-      print('No access token found');
-      return null;
-    }
-
-    try {
-      final response = await http.put(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: jsonEncode(body),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        return responseData;
-      } else {
-        print('Failed to update store details: ${response.body}');
-        return null;
-      }
-    } catch (e) {
-      print('Error updating store details: $e');
-      return null;
-    }
-  }
-
   static Future<Map<String, dynamic>?> sendTransactionDetails(
       Map<String, dynamic> transactionDetails) async {
     final url = Uri.parse('$baseUrl/connects/wallet/token/add');
@@ -402,5 +369,103 @@ class ApiService {
     }
 
     return null;
+  }
+
+  static Future<Map<String, dynamic>?> updateStore(
+      Map<String, dynamic> body) async {
+    final url = Uri.parse('$baseUrl/stores/update');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to update store details: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error updating store details: $e');
+      return null;
+    }
+  }
+
+  // // Add this method to the ApiService class
+  // static Future<Map<String, dynamic>?> fetchStoreDetails() async {
+  //   final url = Uri.parse('$baseUrl/stores');
+  //   final accessToken = await getAccessToken();
+
+  //   if (accessToken == null) {
+  //     print('No access token found');
+  //     return null;
+  //   }
+
+  //   try {
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $accessToken',
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responseData = jsonDecode(response.body);
+  //       return responseData['data'];
+  //     } else {
+  //       print('Failed to fetch store details: ${response.body}');
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching store details: $e');
+  //     return null;
+  //   }
+  // }
+
+  // Add this method to the ApiService class
+
+  static Future<Map<String, dynamic>?> fetchStoreDetails() async {
+    final url = Uri.parse('$baseUrl/stores');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['data'];
+      } else {
+        print('Failed to fetch store details: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching store details: $e');
+      return null;
+    }
   }
 }
