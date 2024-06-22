@@ -228,6 +228,84 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     }
   }
 
+  Future<void> _deleteCurrentAddress() async {
+    if (_addresses.isEmpty || _currentAddressIndex >= _addresses.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No address to delete')),
+      );
+      return;
+    }
+
+    final addressId = _addresses[_currentAddressIndex]['id'];
+    if (addressId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cannot delete this address')),
+      );
+      return;
+    }
+
+    // Show confirmation dialog
+    bool confirm = await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Confirm Deletion'),
+              content:
+                  const Text('Are you sure you want to delete this address?'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: const Text('Delete'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+
+    if (!confirm) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final result = await ApiService.deleteStoreAddress(addressId);
+      if (result == true) {
+        setState(() {
+          _addresses.removeAt(_currentAddressIndex);
+          if (_addresses.isNotEmpty) {
+            _currentAddressIndex = _currentAddressIndex % _addresses.length;
+            _updateCurrentAddress();
+          } else {
+            _clearAddressFields();
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Address deleted successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete address')),
+        );
+      }
+    } catch (e) {
+      print('Error deleting address: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('An error occurred while deleting the address')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -464,9 +542,9 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
               ),
             ),
             TextButton(
-              onPressed: _clearAddressFields,
+              onPressed: _deleteCurrentAddress,
               child: Text(
-                'Clear Fields',
+                'Delete Address',
                 style: GoogleFonts.nunito(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -481,10 +559,6 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
           country: _countryController,
           state: _stateController,
           city: _cityController,
-          // textFieldInputBorder: OutlineInputBorder(
-          //   borderRadius: BorderRadius.circular(8),
-          //   borderSide: const BorderSide(color: Color(0xFFD8D7D7)),
-          // ),
         ),
       ],
     );

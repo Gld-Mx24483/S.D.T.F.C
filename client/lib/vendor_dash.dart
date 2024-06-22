@@ -564,7 +564,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                     const SizedBox(height: 25),
                     _buildLogoSection(),
                     const SizedBox(height: 16),
-                    _buildDisabledTextField('Shop Name', _shopName),
+                    _buildDisabledTextField('Business Name', _shopName),
                     const SizedBox(height: 16),
                     _buildDisabledTextField(
                         'Business Description', _businessDescription),

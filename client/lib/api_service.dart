@@ -508,4 +508,35 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<bool> deleteStoreAddress(String addressId) async {
+    final url = Uri.parse('$baseUrl/stores/address/$addressId/delete');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Address deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete address: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error deleting address: $e');
+      return false;
+    }
+  }
 }

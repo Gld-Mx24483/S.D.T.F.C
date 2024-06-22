@@ -1,3 +1,4 @@
+// vendor_loc.dart
 // ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:country_state_city_pro/country_state_city_pro.dart';
@@ -8,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
+import 'api_service.dart';
 import 'vendor_bottom_navigation_bar.dart';
 
 class VendorLocScreen extends StatefulWidget {
@@ -25,6 +27,7 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
 
   bool _useCurrentLocation = false;
   LatLng? _selectedLocation;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -51,6 +54,55 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to get current location')),
       );
+    }
+  }
+
+  Future<void> _addLocation() async {
+    if (_streetController.text.isEmpty ||
+        _countryController.text.isEmpty ||
+        _stateController.text.isEmpty ||
+        _cityController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all address fields')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final addressData = {
+      "street": _streetController.text,
+      "city": _cityController.text,
+      "state": _stateController.text,
+      "country": _countryController.text,
+      "latitude": _selectedLocation?.latitude,
+      "longitude": _selectedLocation?.longitude,
+    };
+
+    try {
+      final result = await ApiService.createStoreAddress(addressData);
+      if (result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location added successfully')),
+        );
+        Navigator.pop(context, true); // Return true to indicate success
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to add location')),
+        );
+      }
+    } catch (e) {
+      print('Error adding location: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('An error occurred while adding location')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -112,25 +164,27 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
                     _buildAddressPicker(),
                     const SizedBox(height: 62),
                     GestureDetector(
-                      onTap: () {
-                        // Add Location logic
-                      },
+                      onTap: _isLoading ? null : _addLocation,
                       child: Container(
                         width: double.infinity,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFBE5AA),
+                          color: _isLoading
+                              ? Colors.grey
+                              : const Color(0xFFFBE5AA),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
-                          child: Text(
-                            'Add Location',
-                            style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF621B2B),
-                            ),
-                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  'Add Location',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF621B2B),
+                                  ),
+                                ),
                         ),
                       ),
                     ),
