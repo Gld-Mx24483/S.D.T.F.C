@@ -738,7 +738,7 @@ class FashVerScreen extends StatefulWidget {
   final String otp;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
-  // final TextEditingController shopController;
+
   final String password;
 
   const FashVerScreen({
@@ -747,7 +747,6 @@ class FashVerScreen extends StatefulWidget {
     required this.emailAddress,
     required this.firstNameController,
     required this.lastNameController,
-    // required this.shopController,
     required this.password,
   });
 
@@ -822,7 +821,6 @@ class _FashVerScreenState extends State<FashVerScreen> {
       'email': _emailAddress,
       'otp': otp,
       'message': 'Hi ${_firstNameController.text} ${_lastNameController.text},',
-      // 'shopName': _shopController.text,
     };
 
     try {
@@ -862,10 +860,9 @@ class _FashVerScreenState extends State<FashVerScreen> {
             _lastNameController.text,
             _emailAddress,
             _password,
-            // _shopController.text,
           );
 
-          Navigator.of(context).pop(); // Dismiss the LoadingModal
+          Navigator.of(context).pop();
 
           if (signUpSuccess) {
             _showAccountCreationSuccessModal();
@@ -873,7 +870,7 @@ class _FashVerScreenState extends State<FashVerScreen> {
             _showAccountCreationFailedModal();
           }
         } catch (e) {
-          Navigator.of(context).pop(); // Dismiss the LoadingModal
+          Navigator.of(context).pop();
           _showAccountCreationFailedModal();
         }
       });
