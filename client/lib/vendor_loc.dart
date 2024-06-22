@@ -1,6 +1,12 @@
+// ignore_for_file: avoid_print, use_build_context_synchronously
+
+import 'package:country_state_city_pro/country_state_city_pro.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 
 import 'vendor_bottom_navigation_bar.dart';
 
@@ -12,22 +18,40 @@ class VendorLocScreen extends StatefulWidget {
 }
 
 class _VendorLocScreenState extends State<VendorLocScreen> {
-  final TextEditingController _storeNameController =
-      TextEditingController(text: 'Hemstofit_stores');
-  final TextEditingController _storeEmailController =
-      TextEditingController(text: 'hemstofit_stores@gmail.com');
-  final TextEditingController _storePhoneNumberController =
-      TextEditingController(text: '8106775111');
-  final TextEditingController _storeAddressController =
-      TextEditingController(text: '2 William drive silverbird');
+  final TextEditingController _streetController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+
+  bool _useCurrentLocation = false;
+  LatLng? _selectedLocation;
 
   @override
   void dispose() {
-    _storeNameController.dispose();
-    _storeEmailController.dispose();
-    _storePhoneNumberController.dispose();
-    _storeAddressController.dispose();
+    _streetController.dispose();
+    _countryController.dispose();
+    _stateController.dispose();
+    _cityController.dispose();
     super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        _selectedLocation = LatLng(position.latitude, position.longitude);
+        _useCurrentLocation = true;
+        _streetController.text = 'Current Location';
+      });
+      print('Current Location: $_selectedLocation');
+    } catch (e) {
+      print('Error getting current location: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to get current location')),
+      );
+    }
   }
 
   @override
@@ -81,29 +105,11 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildTextField(
-                      label: 'Store Name',
-                      controller: _storeNameController,
-                      hintText: 'Enter store name',
-                    ),
+                    _buildLocationInput(),
+                    const SizedBox(height: 8),
+                    _buildLocationStatusIndicator(),
                     const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Store Email',
-                      controller: _storeEmailController,
-                      hintText: 'Enter store email',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildPhoneTextField(
-                      label: 'Store Phone Number',
-                      controller: _storePhoneNumberController,
-                      hintText: 'Enter store phone number',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                      label: 'Store Address',
-                      controller: _storeAddressController,
-                      hintText: 'Enter store address',
-                    ),
+                    _buildAddressPicker(),
                     const SizedBox(height: 62),
                     GestureDetector(
                       onTap: () {
@@ -145,16 +151,12 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-  }) {
+  Widget _buildLocationInput() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          'Street',
           style: GoogleFonts.nunito(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -164,49 +166,101 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            fillColor: const Color.fromARGB(45, 215, 215, 215),
-            filled: true,
-            hintText: hintText,
-            hintStyle: const TextStyle(
-              color: Color(0xFFD9D9D9),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFFD8D7D7),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(45, 215, 215, 215),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFFD8D7D7)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: GooglePlaceAutoCompleteTextField(
+                  textEditingController: _streetController,
+                  googleAPIKey: "AIzaSyCTYqVltSQBBAmgOqneKuz_cc1fHEyoMvE",
+                  inputDecoration: const InputDecoration(
+                    hintText: 'Enter your street address',
+                    hintStyle: TextStyle(color: Color(0xFFD9D9D9)),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15),
+                  ),
+                  debounceTime: 800,
+                  countries: const ["ng"],
+                  isLatLngRequired: true,
+                  getPlaceDetailWithLatLng: (Prediction prediction) {
+                    setState(() {
+                      _selectedLocation = LatLng(
+                        double.parse(prediction.lat ?? "0"),
+                        double.parse(prediction.lng ?? "0"),
+                      );
+                      _useCurrentLocation = false;
+                    });
+                    print('Selected Location: $_selectedLocation');
+                  },
+                  itemClick: (Prediction prediction) {
+                    _streetController.text = prediction.description ?? "";
+                    _streetController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: prediction.description?.length ?? 0),
+                    );
+                  },
+                ),
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFFD8D7D7),
+              TextButton(
+                onPressed: () {
+                  _getCurrentLocation();
+                },
+                child: Text(
+                  'Use Current',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF621B2B),
+                  ),
+                ),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFF621B2B),
-              ),
-            ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPhoneTextField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-  }) {
+  Widget _buildLocationStatusIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color:
+            _useCurrentLocation ? Colors.green.shade100 : Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _useCurrentLocation ? Icons.location_on : Icons.location_on,
+            size: 16,
+            color: _useCurrentLocation ? Colors.green : Colors.grey,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _useCurrentLocation ? 'Current Location' : 'Inputted Location',
+            style: GoogleFonts.nunito(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: _useCurrentLocation ? Colors.green : Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddressPicker() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          'Address',
           style: GoogleFonts.nunito(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -216,53 +270,10 @@ class _VendorLocScreenState extends State<VendorLocScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        InternationalPhoneNumberInput(
-          onInputChanged: (PhoneNumber number) {
-            // Handle phone number input changes
-          },
-          selectorConfig: const SelectorConfig(
-            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-          ),
-          ignoreBlank: false,
-          autoValidateMode: AutovalidateMode.disabled,
-          selectorTextStyle: GoogleFonts.nunito(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: -0.019,
-            color: Colors.black,
-          ),
-          initialValue: PhoneNumber(isoCode: 'NG'),
-          textFieldController: controller,
-          formatInput: false,
-          keyboardType: const TextInputType.numberWithOptions(
-              signed: true, decimal: true),
-          inputDecoration: InputDecoration(
-            fillColor: const Color.fromARGB(45, 215, 215, 215),
-            filled: true,
-            hintText: hintText,
-            hintStyle: const TextStyle(
-              color: Color(0xFFD9D9D9),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFFD8D7D7),
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFFD8D7D7),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(
-                color: Color(0xFF621B2B),
-              ),
-            ),
-          ),
+        CountryStateCityPicker(
+          country: _countryController,
+          state: _stateController,
+          city: _cityController,
         ),
       ],
     );
