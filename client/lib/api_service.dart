@@ -383,7 +383,20 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        return responseData['data'];
+        final storeData = responseData['data'];
+
+        // Print fetched data to console
+        print('Fetched store details:');
+        print(storeData);
+
+        // Ensure the logo is included in the returned data
+        if (storeData != null && storeData['logo'] != null) {
+          print('Store logo URL: ${storeData['logo']}');
+        } else {
+          print('No logo found in the store details');
+        }
+
+        return storeData;
       } else {
         print('Failed to fetch store details: ${response.body}');
         return null;
@@ -394,9 +407,8 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> updateStoreLogo(
-      String logoUrl, String shopName) async {
-    final url = Uri.parse('$baseUrl/stores');
+  static Future<Map<String, dynamic>?> updateStoreLogo(String logoUrl) async {
+    final url = Uri.parse('$baseUrl/stores/update');
     final accessToken = await getAccessToken();
 
     if (accessToken == null) {
@@ -405,12 +417,11 @@ class ApiService {
     }
 
     final body = {
-      'name': shopName,
       'logo': logoUrl,
     };
 
     try {
-      final response = await http.post(
+      final response = await http.put(
         url,
         headers: {
           'Content-Type': 'application/json',

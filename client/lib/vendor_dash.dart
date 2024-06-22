@@ -1,5 +1,5 @@
 // vendor_dash.dart
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, unused_field, unused_import
 
 import 'dart:io';
 
@@ -33,6 +33,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
   String _phoneNumber = '';
   String _emailAddress = '';
   bool _isLoading = true;
+  String? _currentLogoUrl;
 
   late CloudinaryPublic cloudinary;
 
@@ -80,6 +81,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _businessDescription = storeDetails['description'] ?? '';
           _phoneNumber = storeDetails['phone'] ?? '';
           _emailAddress = storeDetails['email'] ?? '';
+          _currentLogoUrl = storeDetails['logo'];
         });
       } else {
         print('Failed to fetch store details');
@@ -128,9 +130,12 @@ class _VendorDashboardState extends State<VendorDashboard> {
         CloudinaryFile.fromFile(_selectedImage!.path, folder: 'store_logos'),
       );
       final logoUrl = response.secureUrl;
-      final result = await ApiService.updateStoreLogo(logoUrl, _shopName);
+      final result = await ApiService.updateStoreLogo(logoUrl);
 
       if (result != null && result['statusCode'] == 200) {
+        setState(() {
+          _currentLogoUrl = logoUrl;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Logo updated successfully'),
@@ -198,10 +203,17 @@ class _VendorDashboardState extends State<VendorDashboard> {
             onPressed: () async {
               Navigator.pop(context);
               setState(() {
-                _selectedImage = null;
+                _isLoading = true;
               });
-              final result = await ApiService.updateStoreLogo('', _shopName);
+              final result = await ApiService.updateStoreLogo('');
+              setState(() {
+                _isLoading = false;
+              });
               if (result != null && result['statusCode'] == 200) {
+                setState(() {
+                  _currentLogoUrl = null;
+                  _selectedImage = null;
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Logo removed successfully'),
@@ -268,6 +280,64 @@ class _VendorDashboardState extends State<VendorDashboard> {
         }
       });
     }
+  }
+
+  Widget _buildLogoSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Logo',
+          style: GoogleFonts.nunito(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            height: 1.5,
+            letterSpacing: -0.019,
+            color: const Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 10),
+        if (_currentLogoUrl != null && _currentLogoUrl!.isNotEmpty)
+          GestureDetector(
+            onTap: () => _showLogoOptions(context),
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(_currentLogoUrl!),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          )
+        else
+          GestureDetector(
+            onTap: _selectImage,
+            child: Container(
+              width: 335.01,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEBEBEB).withOpacity(0.3),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  'Upload',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    height: 1.5,
+                    letterSpacing: -0.019,
+                    color: const Color(0xFF621B2B),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 
   Widget _buildDisabledTextField(String label, String value) {
@@ -448,59 +518,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                       ],
                     ),
                     const SizedBox(height: 25),
-                    Text(
-                      'Logo',
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        height: 1.5,
-                        letterSpacing: -0.019,
-                        color: const Color(0xFF000000),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (_selectedImage == null)
-                      GestureDetector(
-                        onTap: _selectImage,
-                        child: Container(
-                          width: 335.01,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEBEBEB).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Upload',
-                              style: GoogleFonts.nunito(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                height: 1.5,
-                                letterSpacing: -0.019,
-                                color: const Color(0xFF621B2B),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: () => _showLogoOptions(context),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: FileImage(File(_selectedImage!.path)),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                      ),
+                    _buildLogoSection(),
                     const SizedBox(height: 16),
                     _buildDisabledTextField('Shop Name', _shopName),
                     const SizedBox(height: 16),
