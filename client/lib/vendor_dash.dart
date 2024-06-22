@@ -1,8 +1,9 @@
 // vendor_dash.dart
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:io';
 
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -33,9 +34,12 @@ class _VendorDashboardState extends State<VendorDashboard> {
   String _emailAddress = '';
   bool _isLoading = true;
 
+  late CloudinaryPublic cloudinary;
+
   @override
   void initState() {
     super.initState();
+    cloudinary = CloudinaryPublic('dabq39lbk', 'jb14zkiw', cache: false);
     _determineGreeting();
     _initializeBusinessHours();
     _checkVerificationStatus();
@@ -78,7 +82,6 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _emailAddress = storeDetails['email'] ?? '';
         });
       } else {
-        // Handle error
         print('Failed to fetch store details');
       }
     } catch (e) {
@@ -111,14 +114,65 @@ class _VendorDashboardState extends State<VendorDashboard> {
     });
   }
 
+  Future<void> _uploadImageToCloudinary() async {
+    if (_selectedImage == null) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(_selectedImage!.path, folder: 'store_logos'),
+      );
+      final logoUrl = response.secureUrl;
+      final result = await ApiService.updateStoreLogo(logoUrl, _shopName);
+
+      if (result != null && result['statusCode'] == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logo updated successfully'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update logo'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error uploading logo'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Future<void> _selectImage() async {
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
       setState(() {
-        _selectedImage = pickedImage;
+        _selectedImage = XFile(pickedImage.path);
       });
+
+      await _uploadImageToCloudinary();
     }
   }
 
@@ -141,11 +195,29 @@ class _VendorDashboardState extends State<VendorDashboard> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
               setState(() {
                 _selectedImage = null;
               });
+              final result = await ApiService.updateStoreLogo('', _shopName);
+              if (result != null && result['statusCode'] == 200) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Logo removed successfully'),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Failed to remove logo'),
+                    duration: Duration(seconds: 2),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: Text(
               'Delete Logo',
@@ -156,7 +228,10 @@ class _VendorDashboardState extends State<VendorDashboard> {
             ),
           ),
           TextButton(
-            onPressed: _selectImage,
+            onPressed: () {
+              Navigator.pop(context);
+              _selectImage();
+            },
             child: Text(
               'Change Logo',
               style: GoogleFonts.nunito(
@@ -604,9 +679,7 @@ class _VendorDashboardState extends State<VendorDashboard> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // Save the business hours
-                                },
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF621B2B),
                                 ),

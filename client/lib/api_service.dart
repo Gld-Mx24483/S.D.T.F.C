@@ -64,11 +64,13 @@ class ApiService {
     };
 
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
+      final response = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30)); // Add a timeout
 
       if (response.statusCode == 200) {
         print('Vendor signup successful: ${response.body}');
@@ -79,57 +81,7 @@ class ApiService {
       }
     } catch (e) {
       print('Error during vendor signup: $e');
-      return false;
-    }
-  }
-
-  static Future<Map<String, dynamic>?> loginVendor(
-    String email,
-    String password,
-    String storeName,
-  ) async {
-    final url = Uri.parse('$baseUrl/auth/vendor/login');
-    final body = {
-      'email': email,
-      'password': password,
-      'storeName': storeName,
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print('Vendor Login Response:');
-        print('Message: ${responseData['message']}');
-        print('Data:');
-        if (responseData['data'] != null) {
-          responseData['data'].forEach((key, value) {
-            print('  $key: $value');
-          });
-        }
-        print('StatusCode: ${responseData['statusCode']}');
-        print('Timestamp: ${responseData['timestamp']}');
-
-        // Store the access token
-        if (responseData['data'] != null &&
-            responseData['data']['access_token'] != null) {
-          await _secureStorage.write(
-              key: 'access_token', value: responseData['data']['access_token']);
-        }
-
-        return responseData;
-      } else {
-        print('Vendor login failed: ${response.body}');
-        return null;
-      }
-    } catch (e) {
-      print('Error: $e');
-      return null;
+      rethrow; // Re-throw the exception to be caught in _validateOTPAndProceed
     }
   }
 
@@ -163,9 +115,16 @@ class ApiService {
 
         // Store the access token
         if (responseData['data'] != null &&
-            responseData['data']['access_token'] != null) {
+            responseData['data']['accessToken'] != null) {
           await _secureStorage.write(
-              key: 'access_token', value: responseData['data']['access_token']);
+              key: 'access_token', value: responseData['data']['accessToken']);
+        }
+
+        // Store the user type
+        if (responseData['data'] != null &&
+            responseData['data']['userType'] != null) {
+          await _secureStorage.write(
+              key: 'user_type', value: responseData['data']['userType']);
         }
 
         return responseData;
@@ -404,40 +363,6 @@ class ApiService {
     }
   }
 
-  // // Add this method to the ApiService class
-  // static Future<Map<String, dynamic>?> fetchStoreDetails() async {
-  //   final url = Uri.parse('$baseUrl/stores');
-  //   final accessToken = await getAccessToken();
-
-  //   if (accessToken == null) {
-  //     print('No access token found');
-  //     return null;
-  //   }
-
-  //   try {
-  //     final response = await http.get(
-  //       url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $accessToken',
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final responseData = jsonDecode(response.body);
-  //       return responseData['data'];
-  //     } else {
-  //       print('Failed to fetch store details: ${response.body}');
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching store details: $e');
-  //     return null;
-  //   }
-  // }
-
-  // Add this method to the ApiService class
-
   static Future<Map<String, dynamic>?> fetchStoreDetails() async {
     final url = Uri.parse('$baseUrl/stores');
     final accessToken = await getAccessToken();
@@ -465,6 +390,44 @@ class ApiService {
       }
     } catch (e) {
       print('Error fetching store details: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> updateStoreLogo(
+      String logoUrl, String shopName) async {
+    final url = Uri.parse('$baseUrl/stores');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    final body = {
+      'name': shopName,
+      'logo': logoUrl,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to update store logo: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error updating store logo: $e');
       return null;
     }
   }

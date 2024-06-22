@@ -40,18 +40,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     final email = _emailController.text;
     final password = _passwordController.text;
-    final shopName = _shopNameController.text;
 
     setState(() {
       _showLoadingModal = true;
     });
 
-    if (_isVendor) {
-      final loginResult =
-          await ApiService.loginVendor(email, password, shopName);
-      if (loginResult != null) {
-        print('Vendor Access Token: ${await ApiService.getAccessToken()}');
+    final loginResult = await ApiService.loginUser(email, password);
+    if (loginResult != null) {
+      print('Access Token: ${await ApiService.getAccessToken()}');
+      final userType = loginResult['data']['userType'];
 
+      if (userType == 'VENDOR') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -61,18 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
-      } else {
-        setState(() {
-          _showError = true;
-          _errorMessage = 'The email, password, or shop name is incorrect';
-          _showLoadingModal = false;
-        });
-      }
-    } else {
-      final loginResult = await ApiService.loginUser(email, password);
-      if (loginResult != null) {
-        print('Access Token: ${await ApiService.getAccessToken()}');
-
+      } else if (userType == 'USER') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -85,10 +73,16 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         setState(() {
           _showError = true;
-          _errorMessage = 'The email or password is incorrect';
+          _errorMessage = 'Invalid user type';
           _showLoadingModal = false;
         });
       }
+    } else {
+      setState(() {
+        _showError = true;
+        _errorMessage = 'The email or password is incorrect';
+        _showLoadingModal = false;
+      });
     }
   }
 
@@ -143,14 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Enter your password',
                     isPassword: true,
                   ),
-                  if (_isVendor) ...[
-                    const SizedBox(height: 16),
-                    _buildInputField(
-                      controller: _shopNameController,
-                      label: 'Shop Name',
-                      hintText: 'Enter your shop name',
-                    ),
-                  ],
                   if (_showError)
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),

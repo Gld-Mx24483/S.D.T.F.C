@@ -1,5 +1,5 @@
 // ven_ver.dart
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, unused_field
 
 import 'dart:async';
 import 'dart:math';
@@ -121,23 +121,6 @@ class _VenVerScreenState extends State<VenVerScreen> {
     }
   }
 
-  // void _validateOTPAndProceed() {
-  //   String enteredOTP = '';
-  //   for (var controller in _otpControllers) {
-  //     enteredOTP += controller.text;
-  //   }
-
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => LoadingModal(
-  //       showNextModal: enteredOTP == _generatedOTP
-  //           ? _showVerificationSuccessModal
-  //           : _showVerificationFailedModal,
-  //     ),
-  //   );
-  // }
-
   void _validateOTPAndProceed() async {
     String enteredOTP = '';
     for (var controller in _otpControllers) {
@@ -145,65 +128,71 @@ class _VenVerScreenState extends State<VenVerScreen> {
     }
 
     if (enteredOTP == _generatedOTP) {
-      // showDialog(
-      //   context: context,
-      //   barrierDismissible: false,
-      //   builder: (context) => const LoadingModal(
-      //     showNextModal: null,
-      //   ),
-      // );
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => LoadingModal(
-          showNextModal: enteredOTP == _generatedOTP
-              ? _showVerificationSuccessModal
-              : _showVerificationFailedModal,
-        ),
-      );
+      _showVerificationSuccessModal(() async {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const LoadingModal(message: 'Creating account...'),
+        );
 
-      bool signUpSuccess = await ApiService.signUpVendor(
-        _firstNameController.text,
-        _lastNameController.text,
-        _emailAddress,
-        _password,
-        _shopController.text,
-      );
+        try {
+          bool signUpSuccess = await ApiService.signUpVendor(
+            _firstNameController.text,
+            _lastNameController.text,
+            _emailAddress,
+            _password,
+            _shopController.text,
+          );
 
-      Navigator.of(context).pop();
+          Navigator.of(context).pop(); // Dismiss the LoadingModal
 
-      if (signUpSuccess) {
-        _showVerificationSuccessModal();
-      } else {
-        _showVerificationFailedModal();
-      }
+          if (signUpSuccess) {
+            _showAccountCreationSuccessModal();
+          } else {
+            _showAccountCreationFailedModal();
+          }
+        } catch (e) {
+          Navigator.of(context).pop(); // Dismiss the LoadingModal
+          _showAccountCreationFailedModal();
+        }
+      });
     } else {
       _showVerificationFailedModal();
     }
   }
 
-  void _showVerificationSuccessModal() {
+  void _showVerificationSuccessModal(VoidCallback onContinue) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => VerificationSuccessModal(otp: _otp),
-    ).then((value) {
-      if (value != null && value) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      }
-    });
+      builder: (context) => VerificationSuccessModal(onContinue: onContinue),
+    );
+  }
+
+  void _showAccountCreationSuccessModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AccountCreationSuccessModal(),
+    );
+  }
+
+  void _showAccountCreationFailedModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AccountCreationFailedModal(
+        onTryAgain: _validateOTPAndProceed,
+      ),
+    );
   }
 
   void _showVerificationFailedModal() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const VerificationFailedModal(
-        otp: '',
-      ),
+      builder: (context) => const VerificationFailedModal(),
     );
   }
 
@@ -414,36 +403,15 @@ class _VenVerScreenState extends State<VenVerScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => LoadingModal(
-        showNextModal: () {},
-      ),
+      builder: (context) => const LoadingModal(message: 'Resending OTP...'),
     );
   }
 }
 
-class LoadingModal extends StatefulWidget {
-  const LoadingModal({super.key, required this.showNextModal});
+class LoadingModal extends StatelessWidget {
+  final String message;
 
-  final Function showNextModal;
-
-  @override
-  LoadingModalState createState() => LoadingModalState();
-}
-
-class LoadingModalState extends State<LoadingModal> {
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
-
-  void _startTimer() {
-    Timer(const Duration(seconds: 5), () {
-      Navigator.of(context).pop();
-
-      widget.showNextModal();
-    });
-  }
+  const LoadingModal({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -458,12 +426,7 @@ class LoadingModalState extends State<LoadingModal> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: const BoxDecoration(
             color: Color(0xFFFAF6EB),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(4),
-              bottomRight: Radius.circular(4),
-              bottomLeft: Radius.circular(4),
-              topRight: Radius.circular(4),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -473,7 +436,7 @@ class LoadingModalState extends State<LoadingModal> {
               ),
               const SizedBox(width: 20),
               Text(
-                'Please wait...',
+                message,
                 style: GoogleFonts.nunito(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -490,7 +453,9 @@ class LoadingModalState extends State<LoadingModal> {
 }
 
 class VerificationSuccessModal extends StatelessWidget {
-  const VerificationSuccessModal({super.key, required otp});
+  final VoidCallback onContinue;
+
+  const VerificationSuccessModal({super.key, required this.onContinue});
 
   @override
   Widget build(BuildContext context) {
@@ -505,12 +470,7 @@ class VerificationSuccessModal extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
           decoration: const BoxDecoration(
             color: Color(0xFFFAF6EB),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
           ),
           child: Column(
             children: [
@@ -534,7 +494,7 @@ class VerificationSuccessModal extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Verification Successful',
+                      'Validation Successful',
                       style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -559,7 +519,8 @@ class VerificationSuccessModal extends StatelessWidget {
               const Spacer(),
               GestureDetector(
                 onTap: () {
-                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop();
+                  onContinue();
                 },
                 child: Container(
                   width: 265,
@@ -589,9 +550,8 @@ class VerificationSuccessModal extends StatelessWidget {
   }
 }
 
-class VerificationFailedModal extends StatelessWidget {
-  final String otp;
-  const VerificationFailedModal({super.key, required this.otp});
+class AccountCreationSuccessModal extends StatelessWidget {
+  const AccountCreationSuccessModal({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -606,12 +566,203 @@ class VerificationFailedModal extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
           decoration: const BoxDecoration(
             color: Color(0xFFFAF6EB),
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 222,
+                height: 139,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF00AC47),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Account created successfully',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "You can now log in to your account",
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF263238),
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: Container(
+                  width: 265,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBE5AA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Continue to Login',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF621B2B),
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AccountCreationFailedModal extends StatelessWidget {
+  final VoidCallback onTryAgain;
+
+  const AccountCreationFailedModal({super.key, required this.onTryAgain});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 329,
+          height: 287,
+          padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 222,
+                height: 160,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Account not created',
+                      style: GoogleFonts.nunito(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Server temporarily down. Please try again.',
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xFF263238),
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  onTryAgain();
+                },
+                child: Container(
+                  width: 265,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFBE5AA),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Try Again',
+                      style: GoogleFonts.nunito(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF621B2B),
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VerificationFailedModal extends StatelessWidget {
+  const VerificationFailedModal({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 375,
+      height: 812,
+      color: const Color(0xFF000000).withOpacity(0.7),
+      child: Center(
+        child: Container(
+          width: 329,
+          height: 287,
+          padding: const EdgeInsets.fromLTRB(32, 32, 32, 25),
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF6EB),
+            borderRadius: BorderRadius.all(Radius.circular(24)),
           ),
           child: Column(
             children: [
@@ -628,7 +779,7 @@ class VerificationFailedModal extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.cancel,
+                        Icons.close,
                         color: Colors.white,
                         size: 48,
                       ),
