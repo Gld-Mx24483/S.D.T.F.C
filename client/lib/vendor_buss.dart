@@ -141,13 +141,17 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
           _businessEmailController.text = storeDetails['email'] ?? '';
           _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
 
-          if (storeDetails['addresses'] != null &&
-              storeDetails['addresses'].isNotEmpty) {
-            final address = storeDetails['addresses'][0];
-            _businessStreetController.text = address['street'] ?? '';
-            _cityController.text = address['city'] ?? '';
-            _stateController.text = address['state'] ?? '';
-            _countryController.text = address['country'] ?? '';
+          if (storeDetails['address'] != null) {
+            _businessStreetController.text =
+                storeDetails['address']['street'] ?? '';
+            _cityController.text = storeDetails['address']['city'] ?? '';
+            _stateController.text = storeDetails['address']['state'] ?? '';
+            _countryController.text = storeDetails['address']['country'] ?? '';
+            if (storeDetails['address']['latitude'] != null &&
+                storeDetails['address']['longitude'] != null) {
+              _selectedLocation = LatLng(storeDetails['address']['latitude'],
+                  storeDetails['address']['longitude']);
+            }
           }
         });
       }
@@ -190,7 +194,9 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     final Map<String, dynamic> updateData = {
       "name": _businessNameController.text,
       "description": _businessDescriptionController.text,
-      "address": {
+      "phone": _businessPhoneNumberController.text,
+      "email": _businessEmailController.text,
+      "addressrequest": {
         "street": _businessStreetController.text,
         "city": _cityController.text,
         "state": _stateController.text,
@@ -198,9 +204,16 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
         "latitude": _selectedLocation?.latitude,
         "longitude": _selectedLocation?.longitude,
       },
-      "phone": _businessPhoneNumberController.text,
-      "email": _businessEmailController.text,
     };
+
+    // Print the address details being sent to the database
+    print('Sending Address Details to Database:');
+    print('Street: ${updateData['addressrequest']['street']}');
+    print('Country: ${updateData['addressrequest']['country']}');
+    print('State: ${updateData['addressrequest']['state']}');
+    print('City: ${updateData['addressrequest']['city']}');
+    print('Latitude: ${updateData['addressrequest']['latitude']}');
+    print('Longitude: ${updateData['addressrequest']['longitude']}');
 
     try {
       final result = await ApiService.updateStore(updateData);
@@ -209,6 +222,8 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
           const SnackBar(
               content: Text('Business details updated successfully')),
         );
+        // Fetch updated details after successful update
+        await _fetchBusinessDetails();
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

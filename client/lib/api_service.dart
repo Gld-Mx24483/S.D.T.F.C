@@ -396,6 +396,19 @@ class ApiService {
           print('No logo found in the store details');
         }
 
+        // Print address details
+        if (storeData != null && storeData['address'] != null) {
+          print('Fetched Address Details:');
+          print('Street: ${storeData['address']['street']}');
+          print('City: ${storeData['address']['city']}');
+          print('State: ${storeData['address']['state']}');
+          print('Country: ${storeData['address']['country']}');
+          print('Latitude: ${storeData['address']['latitude']}');
+          print('Longitude: ${storeData['address']['longitude']}');
+        } else {
+          print('No address details found in the store data');
+        }
+
         return storeData;
       } else {
         print('Failed to fetch store details: ${response.body}');
