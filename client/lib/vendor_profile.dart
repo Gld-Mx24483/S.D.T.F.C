@@ -10,7 +10,7 @@ import 'sign_out.dart';
 import 'vendor_acct.dart';
 import 'vendor_buss.dart';
 import 'vendor_loc.dart';
-import 'vendor_nots.dart';
+// import 'vendor_nots.dart';
 import 'vendor_pas.dart';
 import 'vendor_verification.dart';
 
@@ -243,28 +243,28 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 20),
-                  _buildFrameButton(
-                    icon: Icons.inventory_2_outlined,
-                    iconColor: const Color(0xFFA6A6A6),
-                    text: 'Inventory',
-                    onTap: () {
-                      // Add navigation or other logic here if needed
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  _buildFrameButton(
-                    icon: Icons.notifications_outlined,
-                    iconColor: const Color(0xFFA6A6A6),
-                    text: 'Notifications',
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const VendorNotsScreen()),
-                      );
-                    },
-                  ),
+                  // const SizedBox(height: 20),
+                  // _buildFrameButton(
+                  //   icon: Icons.inventory_2_outlined,
+                  //   iconColor: const Color(0xFFA6A6A6),
+                  //   text: 'Inventory',
+                  //   onTap: () {
+                  //     // Add navigation or other logic here if needed
+                  //   },
+                  // ),
+                  // const SizedBox(height: 20),
+                  // _buildFrameButton(
+                  //   icon: Icons.notifications_outlined,
+                  //   iconColor: const Color(0xFFA6A6A6),
+                  //   text: 'Notifications',
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (context) => const VendorNotsScreen()),
+                  //     );
+                  //   },
+                  // ),
                   const SizedBox(height: 20),
                   _buildFrameButton(
                     icon: Icons.location_on_outlined,

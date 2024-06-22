@@ -39,6 +39,7 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
   bool _isLoading = true;
   bool _useCurrentLocation = false;
   LatLng? _selectedLocation;
+  String? _addressId;
 
   @override
   void initState() {
@@ -126,6 +127,47 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     );
   }
 
+  // Future<void> _fetchBusinessDetails() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   try {
+  //     final storeDetails = await ApiService.fetchStoreDetails();
+  //     if (storeDetails != null) {
+  //       setState(() {
+  //         _businessNameController.text = storeDetails['name'] ?? '';
+  //         _businessDescriptionController.text =
+  //             storeDetails['description'] ?? '';
+  //         _businessEmailController.text = storeDetails['email'] ?? '';
+  //         _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
+
+  //         if (storeDetails['address'] != null) {
+  //           _businessStreetController.text =
+  //               storeDetails['address']['street'] ?? '';
+  //           _cityController.text = storeDetails['address']['city'] ?? '';
+  //           _stateController.text = storeDetails['address']['state'] ?? '';
+  //           _countryController.text = storeDetails['address']['country'] ?? '';
+  //           if (storeDetails['address']['latitude'] != null &&
+  //               storeDetails['address']['longitude'] != null) {
+  //             _selectedLocation = LatLng(storeDetails['address']['latitude'],
+  //                 storeDetails['address']['longitude']);
+  //           }
+  //         }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching business details: $e');
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Failed to load business details')),
+  //     );
+  //   } finally {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   Future<void> _fetchBusinessDetails() async {
     setState(() {
       _isLoading = true;
@@ -141,16 +183,20 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
           _businessEmailController.text = storeDetails['email'] ?? '';
           _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
 
-          if (storeDetails['address'] != null) {
-            _businessStreetController.text =
-                storeDetails['address']['street'] ?? '';
-            _cityController.text = storeDetails['address']['city'] ?? '';
-            _stateController.text = storeDetails['address']['state'] ?? '';
-            _countryController.text = storeDetails['address']['country'] ?? '';
-            if (storeDetails['address']['latitude'] != null &&
-                storeDetails['address']['longitude'] != null) {
-              _selectedLocation = LatLng(storeDetails['address']['latitude'],
-                  storeDetails['address']['longitude']);
+          // Check if addresses exist and is not empty
+          if (storeDetails['addresses'] != null &&
+              storeDetails['addresses'].isNotEmpty) {
+            // Use the first address in the list
+            final firstAddress = storeDetails['addresses'][0];
+            _addressId = firstAddress['id'];
+            _businessStreetController.text = firstAddress['street'] ?? '';
+            _cityController.text = firstAddress['city'] ?? '';
+            _stateController.text = firstAddress['state'] ?? '';
+            _countryController.text = firstAddress['country'] ?? '';
+            if (firstAddress['latitude'] != null &&
+                firstAddress['longitude'] != null) {
+              _selectedLocation =
+                  LatLng(firstAddress['latitude'], firstAddress['longitude']);
             }
           }
         });
@@ -196,42 +242,51 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
       "description": _businessDescriptionController.text,
       "phone": _businessPhoneNumberController.text,
       "email": _businessEmailController.text,
-      "addressrequest": {
-        "street": _businessStreetController.text,
-        "city": _cityController.text,
-        "state": _stateController.text,
-        "country": _countryController.text,
-        "latitude": _selectedLocation?.latitude,
-        "longitude": _selectedLocation?.longitude,
-      },
     };
 
-    // Print the address details being sent to the database
-    print('Sending Address Details to Database:');
-    print('Street: ${updateData['addressrequest']['street']}');
-    print('Country: ${updateData['addressrequest']['country']}');
-    print('State: ${updateData['addressrequest']['state']}');
-    print('City: ${updateData['addressrequest']['city']}');
-    print('Latitude: ${updateData['addressrequest']['latitude']}');
-    print('Longitude: ${updateData['addressrequest']['longitude']}');
+    final Map<String, dynamic> addressData = {
+      "street": _businessStreetController.text,
+      "city": _cityController.text,
+      "state": _stateController.text,
+      "country": _countryController.text,
+      "latitude": _selectedLocation?.latitude,
+      "longitude": _selectedLocation?.longitude,
+    };
+
+    // Include the ID if we have one (for updates)
+    if (_addressId != null) {
+      addressData["id"] = _addressId;
+    }
 
     try {
-      final result = await ApiService.updateStore(updateData);
-      if (result != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Business details updated successfully')),
-        );
-        // Fetch updated details after successful update
-        await _fetchBusinessDetails();
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update business details')),
-        );
+      // Update store details
+      final storeResult = await ApiService.updateStore(updateData);
+      if (storeResult == null) {
+        throw Exception('Failed to update store details');
       }
+
+      // Update or create store address
+      final addressResult =
+          await ApiService.updateOrCreateStoreAddress(addressData);
+      if (addressResult == null) {
+        throw Exception('Failed to update/create store address');
+      }
+
+      // Update the address ID if it's a new address
+      if (_addressId == null && addressResult['data'] != null) {
+        _addressId = addressResult['data']['id'];
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Business details and address updated successfully')),
+      );
+
+      // Fetch updated details after successful update
+      await _fetchBusinessDetails();
+      Navigator.pop(context);
     } catch (e) {
-      print('Error updating business details: $e');
+      print('Error updating business details or address: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred while updating')),
       );

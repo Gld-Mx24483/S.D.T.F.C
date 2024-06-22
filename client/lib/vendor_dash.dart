@@ -87,12 +87,20 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _emailAddress = storeDetails['email'] ?? '';
           _currentLogoUrl = storeDetails['logo'];
 
-          // Populate address details
-          if (storeDetails['address'] != null) {
-            _country = storeDetails['address']['country'] ?? '';
-            _state = storeDetails['address']['state'] ?? '';
-            _city = storeDetails['address']['city'] ?? '';
-            _street = storeDetails['address']['street'] ?? '';
+          // Populate address details using the first address in the addresses array
+          if (storeDetails['addresses'] != null &&
+              storeDetails['addresses'].isNotEmpty) {
+            final firstAddress = storeDetails['addresses'][0];
+            _country = firstAddress['country'] ?? '';
+            _state = firstAddress['state'] ?? '';
+            _city = firstAddress['city'] ?? '';
+            _street = firstAddress['street'] ?? '';
+          } else {
+            // Clear address fields if no address is available
+            _country = '';
+            _state = '';
+            _city = '';
+            _street = '';
           }
         });
       } else {

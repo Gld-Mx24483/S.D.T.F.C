@@ -396,19 +396,6 @@ class ApiService {
           print('No logo found in the store details');
         }
 
-        // Print address details
-        if (storeData != null && storeData['address'] != null) {
-          print('Fetched Address Details:');
-          print('Street: ${storeData['address']['street']}');
-          print('City: ${storeData['address']['city']}');
-          print('State: ${storeData['address']['state']}');
-          print('Country: ${storeData['address']['country']}');
-          print('Latitude: ${storeData['address']['latitude']}');
-          print('Longitude: ${storeData['address']['longitude']}');
-        } else {
-          print('No address details found in the store data');
-        }
-
         return storeData;
       } else {
         print('Failed to fetch store details: ${response.body}');
@@ -452,6 +439,39 @@ class ApiService {
       }
     } catch (e) {
       print('Error updating store logo: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> updateOrCreateStoreAddress(
+      Map<String, dynamic> addressData) async {
+    final url = Uri.parse('$baseUrl/stores/address');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(addressData),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to update/create store address: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error updating/creating store address: $e');
       return null;
     }
   }
