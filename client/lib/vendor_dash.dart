@@ -39,6 +39,9 @@ class _VendorDashboardState extends State<VendorDashboard> {
   bool _isLoading = true;
   String? _currentLogoUrl;
 
+  List<Map<String, dynamic>> _addresses = [];
+  int _currentAddressIndex = 0;
+
   late CloudinaryPublic cloudinary;
 
   @override
@@ -87,20 +90,11 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _emailAddress = storeDetails['email'] ?? '';
           _currentLogoUrl = storeDetails['logo'];
 
-          // Populate address details using the first address in the addresses array
           if (storeDetails['addresses'] != null &&
               storeDetails['addresses'].isNotEmpty) {
-            final firstAddress = storeDetails['addresses'][0];
-            _country = firstAddress['country'] ?? '';
-            _state = firstAddress['state'] ?? '';
-            _city = firstAddress['city'] ?? '';
-            _street = firstAddress['street'] ?? '';
-          } else {
-            // Clear address fields if no address is available
-            _country = '';
-            _state = '';
-            _city = '';
-            _street = '';
+            _addresses =
+                List<Map<String, dynamic>>.from(storeDetails['addresses']);
+            _updateCurrentAddress();
           }
         });
       } else {
@@ -113,6 +107,36 @@ class _VendorDashboardState extends State<VendorDashboard> {
         _isLoading = false;
       });
     }
+  }
+
+  void _updateCurrentAddress() {
+    if (_addresses.isNotEmpty) {
+      final currentAddress = _addresses[_currentAddressIndex];
+      _country = currentAddress['country'] ?? '';
+      _state = currentAddress['state'] ?? '';
+      _city = currentAddress['city'] ?? '';
+      _street = currentAddress['street'] ?? '';
+    } else {
+      _country = '';
+      _state = '';
+      _city = '';
+      _street = '';
+    }
+  }
+
+  void _nextAddress() {
+    setState(() {
+      _currentAddressIndex = (_currentAddressIndex + 1) % _addresses.length;
+      _updateCurrentAddress();
+    });
+  }
+
+  void _previousAddress() {
+    setState(() {
+      _currentAddressIndex =
+          (_currentAddressIndex - 1 + _addresses.length) % _addresses.length;
+      _updateCurrentAddress();
+    });
   }
 
   void _initializeBusinessHours() {
@@ -667,6 +691,37 @@ class _VendorDashboardState extends State<VendorDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Address ${_currentAddressIndex + 1} of ${_addresses.length}',
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_back_ios,
+                                          size: 18),
+                                      onPressed: _addresses.length > 1
+                                          ? _previousAddress
+                                          : null,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.arrow_forward_ios,
+                                          size: 18),
+                                      onPressed: _addresses.length > 1
+                                          ? _nextAddress
+                                          : null,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
                             _buildDisabledTextField('Country', _country),
                             const SizedBox(height: 18),
                             _buildDisabledTextField('State', _state),
