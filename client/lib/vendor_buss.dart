@@ -1,4 +1,4 @@
-//vendor_buss.dart
+// vendor_buss.dart
 // ignore_for_file: avoid_print, use_build_context_synchronously, unused_element, unused_import
 
 import 'package:country_state_city_pro/country_state_city_pro.dart';
@@ -39,12 +39,87 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
   bool _isLoading = true;
   bool _useCurrentLocation = false;
   LatLng? _selectedLocation;
-  String? _addressId;
+  List<Map<String, dynamic>> _addresses = [];
+  int _currentAddressIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchBusinessDetails();
+  }
+
+  Future<void> _fetchBusinessDetails() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final storeDetails = await ApiService.fetchStoreDetails();
+      if (storeDetails != null) {
+        setState(() {
+          _businessNameController.text = storeDetails['name'] ?? '';
+          _businessDescriptionController.text =
+              storeDetails['description'] ?? '';
+          _businessEmailController.text = storeDetails['email'] ?? '';
+          _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
+
+          if (storeDetails['addresses'] != null &&
+              storeDetails['addresses'].isNotEmpty) {
+            _addresses =
+                List<Map<String, dynamic>>.from(storeDetails['addresses']);
+            _updateCurrentAddress();
+          }
+        });
+      }
+    } catch (e) {
+      print('Error fetching business details: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load business details')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _updateCurrentAddress() {
+    if (_addresses.isNotEmpty) {
+      final currentAddress = _addresses[_currentAddressIndex];
+      _businessStreetController.text = currentAddress['street'] ?? '';
+      _cityController.text = currentAddress['city'] ?? '';
+      _stateController.text = currentAddress['state'] ?? '';
+      _countryController.text = currentAddress['country'] ?? '';
+      _selectedLocation = currentAddress['latitude'] != null &&
+              currentAddress['longitude'] != null
+          ? LatLng(currentAddress['latitude'], currentAddress['longitude'])
+          : null;
+    }
+  }
+
+  void _nextAddress() {
+    setState(() {
+      _currentAddressIndex = (_currentAddressIndex + 1) % _addresses.length;
+      _updateCurrentAddress();
+    });
+  }
+
+  void _previousAddress() {
+    setState(() {
+      _currentAddressIndex =
+          (_currentAddressIndex - 1 + _addresses.length) % _addresses.length;
+      _updateCurrentAddress();
+    });
+  }
+
+  void _clearAddressFields() {
+    setState(() {
+      _businessStreetController.clear();
+      _cityController.clear();
+      _stateController.clear();
+      _countryController.clear();
+      _selectedLocation = null;
+    });
   }
 
   Future<void> _checkLocationPermission() async {
@@ -70,147 +145,6 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     }
 
     _getCurrentLocation();
-  }
-
-  Widget _buildSaveButton() {
-    return Container(
-      width: double.infinity,
-      height: 50,
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      child: ElevatedButton(
-        onPressed: _saveChanges,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFBE5AA),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        child: Text(
-          'Save Changes',
-          style: GoogleFonts.nunito(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: const Color(0xFF621B2B),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLocationStatusIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color:
-            _useCurrentLocation ? Colors.green.shade100 : Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            _useCurrentLocation ? Icons.location_on : Icons.location_on,
-            size: 16,
-            color: _useCurrentLocation ? Colors.green : Colors.grey,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            _useCurrentLocation ? 'Current Location' : 'Inputted Location',
-            style: GoogleFonts.nunito(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: _useCurrentLocation ? Colors.green : Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Future<void> _fetchBusinessDetails() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-
-  //   try {
-  //     final storeDetails = await ApiService.fetchStoreDetails();
-  //     if (storeDetails != null) {
-  //       setState(() {
-  //         _businessNameController.text = storeDetails['name'] ?? '';
-  //         _businessDescriptionController.text =
-  //             storeDetails['description'] ?? '';
-  //         _businessEmailController.text = storeDetails['email'] ?? '';
-  //         _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
-
-  //         if (storeDetails['address'] != null) {
-  //           _businessStreetController.text =
-  //               storeDetails['address']['street'] ?? '';
-  //           _cityController.text = storeDetails['address']['city'] ?? '';
-  //           _stateController.text = storeDetails['address']['state'] ?? '';
-  //           _countryController.text = storeDetails['address']['country'] ?? '';
-  //           if (storeDetails['address']['latitude'] != null &&
-  //               storeDetails['address']['longitude'] != null) {
-  //             _selectedLocation = LatLng(storeDetails['address']['latitude'],
-  //                 storeDetails['address']['longitude']);
-  //           }
-  //         }
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching business details: $e');
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Failed to load business details')),
-  //     );
-  //   } finally {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
-  Future<void> _fetchBusinessDetails() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final storeDetails = await ApiService.fetchStoreDetails();
-      if (storeDetails != null) {
-        setState(() {
-          _businessNameController.text = storeDetails['name'] ?? '';
-          _businessDescriptionController.text =
-              storeDetails['description'] ?? '';
-          _businessEmailController.text = storeDetails['email'] ?? '';
-          _businessPhoneNumberController.text = storeDetails['phone'] ?? '';
-
-          // Check if addresses exist and is not empty
-          if (storeDetails['addresses'] != null &&
-              storeDetails['addresses'].isNotEmpty) {
-            // Use the first address in the list
-            final firstAddress = storeDetails['addresses'][0];
-            _addressId = firstAddress['id'];
-            _businessStreetController.text = firstAddress['street'] ?? '';
-            _cityController.text = firstAddress['city'] ?? '';
-            _stateController.text = firstAddress['state'] ?? '';
-            _countryController.text = firstAddress['country'] ?? '';
-            if (firstAddress['latitude'] != null &&
-                firstAddress['longitude'] != null) {
-              _selectedLocation =
-                  LatLng(firstAddress['latitude'], firstAddress['longitude']);
-            }
-          }
-        });
-      }
-    } catch (e) {
-      print('Error fetching business details: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load business details')),
-      );
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -253,28 +187,27 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
       "longitude": _selectedLocation?.longitude,
     };
 
-    // Include the ID if we have one (for updates)
-    if (_addressId != null) {
-      addressData["id"] = _addressId;
-    }
-
     try {
-      // Update store details
       final storeResult = await ApiService.updateStore(updateData);
       if (storeResult == null) {
         throw Exception('Failed to update store details');
       }
 
-      // Update or create store address
-      final addressResult =
-          await ApiService.updateOrCreateStoreAddress(addressData);
-      if (addressResult == null) {
-        throw Exception('Failed to update/create store address');
-      }
-
-      // Update the address ID if it's a new address
-      if (_addressId == null && addressResult['data'] != null) {
-        _addressId = addressResult['data']['id'];
+      if (_addresses.isNotEmpty) {
+        // Update existing address
+        addressData["id"] = _addresses[_currentAddressIndex]["id"];
+        final addressResult = await ApiService.updateStoreAddress(addressData);
+        if (addressResult == null) {
+          throw Exception('Failed to update store address');
+        }
+        _addresses[_currentAddressIndex] = addressData;
+      } else {
+        // Create new address
+        final addressResult = await ApiService.createStoreAddress(addressData);
+        if (addressResult == null) {
+          throw Exception('Failed to create store address');
+        }
+        _addresses.add(addressData);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -282,9 +215,7 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
             content: Text('Business details and address updated successfully')),
       );
 
-      // Fetch updated details after successful update
       await _fetchBusinessDetails();
-      Navigator.pop(context);
     } catch (e) {
       print('Error updating business details or address: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -419,15 +350,39 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Street',
-          style: GoogleFonts.nunito(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: -0.019,
-            color: Colors.black,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Street',
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+                letterSpacing: -0.019,
+                color: Colors.black,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, size: 18),
+                  onPressed: _addresses.length > 1 ? _previousAddress : null,
+                ),
+                Text(
+                  'Address ${_currentAddressIndex + 1} of ${_addresses.length}',
+                  style: GoogleFonts.nunito(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                  onPressed: _addresses.length > 1 ? _nextAddress : null,
+                ),
+              ],
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         Container(
@@ -495,23 +450,73 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Address',
-          style: GoogleFonts.nunito(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.5,
-            letterSpacing: -0.019,
-            color: Colors.black,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Address',
+              style: GoogleFonts.nunito(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+                letterSpacing: -0.019,
+                color: Colors.black,
+              ),
+            ),
+            TextButton(
+              onPressed: _clearAddressFields,
+              child: Text(
+                'Clear Fields',
+                style: GoogleFonts.nunito(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF621B2B),
+                ),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         CountryStateCityPicker(
           country: _countryController,
           state: _stateController,
           city: _cityController,
+          // textFieldInputBorder: OutlineInputBorder(
+          //   borderRadius: BorderRadius.circular(8),
+          //   borderSide: const BorderSide(color: Color(0xFFD8D7D7)),
+          // ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLocationStatusIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color:
+            _useCurrentLocation ? Colors.green.shade100 : Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            _useCurrentLocation ? Icons.location_on : Icons.location_off,
+            size: 16,
+            color: _useCurrentLocation ? Colors.green : Colors.grey,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _useCurrentLocation ? 'Current Location' : 'Inputted Location',
+            style: GoogleFonts.nunito(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: _useCurrentLocation ? Colors.green : Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -579,6 +584,31 @@ class _VendorBussScreenState extends State<VendorBussScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Container(
+      width: double.infinity,
+      height: 50,
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      child: ElevatedButton(
+        onPressed: _saveChanges,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFBE5AA),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          'Save Changes',
+          style: GoogleFonts.nunito(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFF621B2B),
+          ),
+        ),
+      ),
     );
   }
 }

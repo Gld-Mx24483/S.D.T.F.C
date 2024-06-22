@@ -443,7 +443,40 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>?> updateOrCreateStoreAddress(
+  static Future<Map<String, dynamic>?> updateStoreAddress(
+      Map<String, dynamic> addressData) async {
+    final url = Uri.parse('$baseUrl/stores/address/update');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(addressData),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        print('Failed to update store address: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error updating store address: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> createStoreAddress(
       Map<String, dynamic> addressData) async {
     final url = Uri.parse('$baseUrl/stores/address');
     final accessToken = await getAccessToken();
@@ -467,11 +500,11 @@ class ApiService {
         final responseData = jsonDecode(response.body);
         return responseData;
       } else {
-        print('Failed to update/create store address: ${response.body}');
+        print('Failed to create store address: ${response.body}');
         return null;
       }
     } catch (e) {
-      print('Error updating/creating store address: $e');
+      print('Error creating store address: $e');
       return null;
     }
   }
