@@ -32,6 +32,10 @@ class _VendorDashboardState extends State<VendorDashboard> {
   String _businessDescription = '';
   String _phoneNumber = '';
   String _emailAddress = '';
+  String _country = '';
+  String _state = '';
+  String _city = '';
+  String _street = '';
   bool _isLoading = true;
   String? _currentLogoUrl;
 
@@ -82,6 +86,14 @@ class _VendorDashboardState extends State<VendorDashboard> {
           _phoneNumber = storeDetails['phone'] ?? '';
           _emailAddress = storeDetails['email'] ?? '';
           _currentLogoUrl = storeDetails['logo'];
+
+          // Populate address details
+          if (storeDetails['address'] != null) {
+            _country = storeDetails['address']['country'] ?? '';
+            _state = storeDetails['address']['state'] ?? '';
+            _city = storeDetails['address']['city'] ?? '';
+            _street = storeDetails['address']['street'] ?? '';
+          }
         });
       } else {
         print('Failed to fetch store details');
@@ -647,11 +659,13 @@ class _VendorDashboardState extends State<VendorDashboard> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildDisabledTextField('Address', 'Enter address'),
+                            _buildDisabledTextField('Country', _country),
                             const SizedBox(height: 18),
-                            _buildDisabledTextField('City', 'Enter city'),
+                            _buildDisabledTextField('State', _state),
                             const SizedBox(height: 18),
-                            _buildDisabledTextField('Country', 'Enter country'),
+                            _buildDisabledTextField('City', _city),
+                            const SizedBox(height: 18),
+                            _buildDisabledTextField('Street', _street),
                           ],
                         ),
                       ),
