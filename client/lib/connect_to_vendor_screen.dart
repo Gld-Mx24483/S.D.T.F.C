@@ -1,4 +1,4 @@
-//connect_to_vendor_screen.dart
+// connect_to_vendor_screen.dart
 // ignore_for_file: unused_field, avoid_print
 
 import 'dart:async';
@@ -7,17 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'loading_modal.dart';
+import 'connect_loading_modal.dart';
 import 'map_view_screen.dart';
 import 'request_sent_modal.dart';
 
 class ConnectingToVendorScreen extends StatefulWidget {
-  final Map<String, dynamic> shopDetails;
+  final Map<String, dynamic> storeDetails;
   final LatLng initialPosition;
 
   const ConnectingToVendorScreen({
     super.key,
-    required this.shopDetails,
+    required this.storeDetails,
     required this.initialPosition,
   });
 
@@ -46,6 +46,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
+    print('Store Details in ConnectingToVendorScreen: ${widget.storeDetails}');
     print(
         'Initial Position in ConnectingToVendorScreen: ${widget.initialPosition}');
   }
@@ -76,9 +77,17 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
       builder: (BuildContext context) {
         return LoadingModal(
           showNextModal: _showRequestSentModal,
+          fetchDetails: _fetchRequiredDetails,
         );
       },
     );
+  }
+
+  Future<void> _fetchRequiredDetails() async {
+    // Simulate fetching details (replace with actual API calls or database queries)
+    await Future.delayed(const Duration(seconds: 4));
+    // Here you would typically update your state with the fetched details
+    // setState(() { ... });
   }
 
   void _showRequestSentModal() {
@@ -103,6 +112,16 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
 
   void _startAutoNavigationTimer() {
     _autoNavigationTimer = Timer(const Duration(seconds: 3), () {
+      // Extract latitude and longitude with null checks and default values
+      final double lat =
+          (widget.storeDetails['selectedAddress']['latitude'] as num?)
+                  ?.toDouble() ??
+              0.0;
+      final double lng =
+          (widget.storeDetails['selectedAddress']['longitude'] as num?)
+                  ?.toDouble() ??
+              0.0;
+
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
@@ -110,9 +129,9 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
             return FadeTransition(
               opacity: animation,
               child: MapViewScreen(
-                selectedLocation: widget.shopDetails['position'],
+                selectedLocation: LatLng(lat, lng),
                 initialPosition: widget.initialPosition,
-                shopDetails: widget.shopDetails,
+                shopDetails: widget.storeDetails,
               ),
             );
           },
@@ -155,6 +174,14 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
 
   @override
   Widget build(BuildContext context) {
+    final storeName = widget.storeDetails['name'] as String;
+    final selectedAddressIndex =
+        widget.storeDetails['selectedAddressIndex'] as int;
+    final identifier = widget.storeDetails['addresses'].length > 1
+        ? ' (${selectedAddressIndex + 1})'
+        : '';
+    final logoUrl = widget.storeDetails['logo'] as String;
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,10 +223,25 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
               ),
               child: Row(
                 children: [
-                  Image.asset(
-                    'pics/bigstore.png',
-                    width: 40,
-                    height: 40,
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.transparent,
+                    child: ClipOval(
+                      child: Image.network(
+                        logoUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'pics/bigstore.png',
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -207,7 +249,7 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.shopDetails['name'],
+                          '$storeName$identifier',
                           style: GoogleFonts.nunito(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -271,7 +313,6 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
               child: ElevatedButton(
                 onPressed: () {
                   if (_isRequestSent) {
-                    // Do nothing, as we'll automatically navigate after 3 seconds
                   } else {
                     setState(() {
                       _isProcessing = true;

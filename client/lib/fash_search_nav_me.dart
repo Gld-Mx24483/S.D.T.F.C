@@ -76,12 +76,20 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
             return {
               'id': store['id'],
               'name': store['name'],
+              'street': store['street'],
+              'city': store['city'],
+              'state': store['state'],
+              'country': store['country'],
               'logo': store['logo'] ?? 'pics/bigstore.png',
               'addresses': addresses.map((address) {
                 return {
                   'id': address['id'],
                   'latitude': address['latitude'],
                   'longitude': address['longitude'],
+                  'street': address['street'],
+                  'city': address['city'],
+                  'state': address['state'],
+                  'country': address['country'],
                 };
               }).toList(),
             };
@@ -110,7 +118,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
             return FadeTransition(
               opacity: animation,
               child: ConnectingToVendorScreen(
-                shopDetails: selectedStore!,
+                storeDetails: selectedStore!,
                 initialPosition: initialPosition,
               ),
             );

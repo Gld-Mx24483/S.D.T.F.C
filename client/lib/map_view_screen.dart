@@ -51,7 +51,12 @@ class _MapViewScreenState extends State<MapViewScreen>
   void initState() {
     super.initState();
     _setCustomMapIcons();
-    _setPolyline();
+    if (widget.selectedLocation.latitude != 0.0 ||
+        widget.selectedLocation.longitude != 0.0) {
+      _setPolyline();
+    } else {
+      print('Warning: Invalid location (0.0, 0.0)');
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setCameraToBounds();
     });
@@ -181,9 +186,10 @@ class _MapViewScreenState extends State<MapViewScreen>
       context,
       MaterialPageRoute(
         builder: (context) => VendorProfileDetails(
-          selectedLocationName: widget.shopDetails['name'],
-          address: '123 Main St, Anytown, NG',
-          phoneNumber: '08106775111',
+          selectedLocationName: widget.shopDetails['name'] as String,
+          address: widget.shopDetails['selectedAddress'] as String,
+          phoneNumber:
+              widget.shopDetails['phoneNumber'] as String? ?? '08106775111',
         ),
       ),
     );
@@ -202,6 +208,36 @@ class _MapViewScreenState extends State<MapViewScreen>
   }
 
   Widget _buildBottomSheetContent() {
+    final storeName = widget.shopDetails['name'] as String;
+    final selectedAddressIndex =
+        widget.shopDetails['selectedAddressIndex'] as int;
+    final addresses = widget.shopDetails['addresses'] as List;
+    final identifier =
+        addresses.length > 1 ? ' (${selectedAddressIndex + 1})' : '';
+    final logoUrl = widget.shopDetails['logo'] as String;
+    final selectedAddress = widget.shopDetails['selectedAddress'];
+
+    // Determine the address string based on the type of selectedAddress
+    String addressString;
+    if (selectedAddress is Map<String, dynamic>) {
+      // final street = selectedAddress['street'] as String? ?? '';
+      final city = selectedAddress['city'] as String? ?? '';
+      final state = selectedAddress['state'] as String? ?? '';
+      final country = selectedAddress['country'] as String? ?? '';
+
+      addressString = [city, state, country]
+          .where((element) => element.isNotEmpty)
+          .join(', ');
+
+      if (addressString.isEmpty) {
+        addressString = 'Address not available';
+      }
+    } else if (selectedAddress is String) {
+      addressString = selectedAddress;
+    } else {
+      addressString = 'Address not available';
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -243,19 +279,48 @@ class _MapViewScreenState extends State<MapViewScreen>
             ),
             child: Row(
               children: [
-                Image.asset(
-                  'pics/bigstore.png',
-                  width: 40,
-                  height: 40,
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.transparent,
+                  child: ClipOval(
+                    child: Image.network(
+                      logoUrl,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'pics/bigstore.png',
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Text(
-                    widget.shopDetails['name'],
-                    style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$storeName$identifier',
+                        style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        addressString,
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 GestureDetector(
@@ -286,8 +351,10 @@ class _MapViewScreenState extends State<MapViewScreen>
                   context,
                   MaterialPageRoute(
                     builder: (context) => FashvenChat(
-                      selectedLocationName: widget.shopDetails['name'],
-                      phoneNumber: '08106775111',
+                      selectedLocationName: '$storeName$identifier',
+                      phoneNumber:
+                          widget.shopDetails['phoneNumber'] as String? ??
+                              '08106775111',
                     ),
                   ),
                 );
@@ -339,7 +406,8 @@ class _MapViewScreenState extends State<MapViewScreen>
     return GestureDetector(
       onTap: () {
         if (icon == Icons.call_outlined) {
-          _makePhoneCall('08106775111');
+          _makePhoneCall(
+              widget.shopDetails['phoneNumber'] as String? ?? '08106775111');
         } else if (onTap != null) {
           onTap();
         }
