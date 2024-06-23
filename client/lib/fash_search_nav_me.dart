@@ -76,10 +76,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
             return {
               'id': store['id'],
               'name': store['name'],
-              'street': store['street'],
-              'city': store['city'],
-              'state': store['state'],
-              'country': store['country'],
+              'phone': store['phone'],
               'logo': store['logo'] ?? 'pics/bigstore.png',
               'addresses': addresses.map((address) {
                 return {

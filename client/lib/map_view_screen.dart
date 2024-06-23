@@ -181,21 +181,6 @@ class _MapViewScreenState extends State<MapViewScreen>
     );
   }
 
-  // void _navigateToVendorProfile() {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => VendorProfileDetails(
-  //         selectedLocationName: widget.shopDetails['name'] as String,
-  //         address: widget.shopDetails['selectedAddress'] as String,
-  //         phoneNumber:
-  //             widget.shopDetails['phoneNumber'] as String? ?? '08106775111',
-  //         logo: widget.shopDetails['logo'] as String,
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void _navigateToVendorProfile() {
     final selectedAddress = widget.shopDetails['selectedAddress'];
     String addressString;
@@ -224,8 +209,7 @@ class _MapViewScreenState extends State<MapViewScreen>
         builder: (context) => VendorProfileDetails(
           selectedLocationName: widget.shopDetails['name'] as String,
           address: addressString,
-          phoneNumber:
-              widget.shopDetails['phoneNumber'] as String? ?? '08106775111',
+          phoneNumber: widget.shopDetails['phone'] as String? ?? '08106775121',
           logo: widget.shopDetails['logo'] as String? ?? '',
         ),
       ),
@@ -412,9 +396,8 @@ class _MapViewScreenState extends State<MapViewScreen>
 
                       return FashvenChat(
                         selectedLocationName: '$storeName$identifier',
-                        phoneNumber:
-                            widget.shopDetails['phoneNumber'] as String? ??
-                                '08106775111',
+                        phoneNumber: widget.shopDetails['phone'] as String? ??
+                            '08106775121',
                         address: addressString,
                         logo: widget.shopDetails['logo'] as String? ?? '',
                       );
@@ -470,7 +453,7 @@ class _MapViewScreenState extends State<MapViewScreen>
       onTap: () {
         if (icon == Icons.call_outlined) {
           _makePhoneCall(
-              widget.shopDetails['phoneNumber'] as String? ?? '08106775111');
+              widget.shopDetails['phone'] as String? ?? '08106775121');
         } else if (onTap != null) {
           onTap();
         }
