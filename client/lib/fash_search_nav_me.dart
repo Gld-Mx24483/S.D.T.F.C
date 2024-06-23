@@ -1,14 +1,13 @@
 // fash_search_nav_me.dart
 // ignore_for_file: avoid_print, unnecessary_to_list_in_spreads, unused_field
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
 import 'package:google_places_autocomplete_text_field/model/prediction.dart';
 
+import 'api_service.dart';
 import 'connect_to_vendor_screen.dart';
 import 'loading_modal.dart';
 
@@ -34,9 +33,8 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
       TextEditingController();
   LatLng? _selectedLocation;
   LatLng? _marketLocation;
-  List<Map<String, dynamic>> nearbyLocations = [];
-  List<Map<String, dynamic>> allShops = [];
-  Map<String, dynamic>? selectedNearbyLocation;
+  List<Map<String, dynamic>> allStores = [];
+  Map<String, dynamic>? selectedStore;
   late AnimationController _animationController;
   late Animation<double> _animation;
   final FocusNode _startingPointFocusNode = FocusNode();
@@ -55,7 +53,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
       curve: Curves.easeInOut,
     );
     _selectedLocation = widget.initialPosition;
-    _generateAllShops();
+    _fetchAllStores();
   }
 
   @override
@@ -68,56 +66,36 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
     super.dispose();
   }
 
-  void _generateAllShops() {
-    final storeNames = [
-      'Gucci Shop',
-      'Zara Clothing Store',
-      'Nike Store',
-      'H&M',
-      'Adidas Store',
-      'Louis Vuitton',
-      'Prada',
-      'Chanel',
-      'Burberry',
-      'Versace',
-      'Fendi',
-      'Hermès',
-      'Dior',
-      'Dolce & Gabbana',
-      'Saint Laurent'
-    ];
-
-    final random = Random();
-    for (var storeName in storeNames) {
-      final lat = widget.initialPosition.latitude +
-          random.nextDouble() * 0.1 * (random.nextBool() ? 1 : -1);
-      final lng = widget.initialPosition.longitude +
-          random.nextDouble() * 0.1 * (random.nextBool() ? 1 : -1);
-      allShops.add({
-        'name': storeName,
-        'position': LatLng(lat, lng),
-      });
-    }
-  }
-
-  void _generateNearbyLocations() {
-    final random = Random();
-    final numberOfLocations = random.nextInt(5) + 3;
-
-    nearbyLocations = List.from(allShops)..shuffle();
-    nearbyLocations = nearbyLocations.take(numberOfLocations).toList();
-
-    for (var shop in nearbyLocations) {
-      final lat = _marketLocation!.latitude +
-          random.nextDouble() * 0.01 * (random.nextBool() ? 1 : -1);
-      final lng = _marketLocation!.longitude +
-          random.nextDouble() * 0.01 * (random.nextBool() ? 1 : -1);
-      shop['position'] = LatLng(lat, lng);
+  Future<void> _fetchAllStores() async {
+    try {
+      final stores = await ApiService.fetchAllStores();
+      if (stores != null) {
+        setState(() {
+          allStores = stores.map((store) {
+            final addresses = store['addresses'] as List<dynamic>;
+            return {
+              'id': store['id'],
+              'name': store['name'],
+              'logo': store['logo'] ?? 'pics/bigstore.png',
+              'addresses': addresses.map((address) {
+                return {
+                  'id': address['id'],
+                  'latitude': address['latitude'],
+                  'longitude': address['longitude'],
+                };
+              }).toList(),
+            };
+          }).toList();
+        });
+        print('Fetched stores: $allStores');
+      }
+    } catch (e) {
+      print('Error fetching stores: $e');
     }
   }
 
   void _navigateToShopDetails() {
-    if (selectedNearbyLocation != null) {
+    if (selectedStore != null) {
       final initialPosition =
           widget.isAddingNewLocation && _selectedLocation != null
               ? _selectedLocation!
@@ -132,7 +110,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
             return FadeTransition(
               opacity: animation,
               child: ConnectingToVendorScreen(
-                shopDetails: selectedNearbyLocation!,
+                shopDetails: selectedStore!,
                 initialPosition: initialPosition,
               ),
             );
@@ -159,24 +137,17 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
     );
   }
 
-  void _generateNearbyLocationsWithDelay() {
-    Future.delayed(const Duration(seconds: 5), () {
-      _generateNearbyLocations();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-            if (nearbyLocations.isNotEmpty) {
+            if (showAllShops) {
               setState(() {
-                nearbyLocations.clear();
-                selectedNearbyLocation = null;
-                _marketLocation = null;
                 showAllShops = false;
+                selectedStore = null;
+                _marketLocation = null;
               });
               _animationController.reverse();
             } else {
@@ -192,7 +163,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
         title: Padding(
           padding: const EdgeInsets.only(right: 40),
           child: Text(
-            nearbyLocations.isNotEmpty ? 'Connect to Vendor' : 'Your Shop',
+            showAllShops ? 'Connect to Vendor' : 'Your Shop',
             style: GoogleFonts.nunito(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -357,10 +328,9 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
                               _marketLocation = LatLng(
                                   double.parse(prediction.lat!),
                                   double.parse(prediction.lng!));
-                              showAllShops = false;
+                              showAllShops = true;
                             });
                             _showLoadingModal();
-                            _generateNearbyLocationsWithDelay();
                           },
                           itmClick: (Prediction prediction) {
                             _marketLocationController.text =
@@ -383,62 +353,92 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
                   child: Column(
                     children: [
                       const SizedBox(height: 20),
-                      ...(showAllShops ? allShops : nearbyLocations)
-                          .map((location) {
-                        final isSelected = selectedNearbyLocation == location;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedNearbyLocation = location;
-                            });
-                          },
-                          child: Container(
-                            width: 336,
-                            height: 72,
-                            margin: const EdgeInsets.only(bottom: 10, left: 12),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFFFBE5AA)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  'pics/bigstore.png',
-                                  width: 35.84,
-                                  height: 40,
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Text(
-                                    location['name'],
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                      ...allStores.expand((store) {
+                        return store['addresses'].asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final address = entry.value;
+                          final isSelected = selectedStore != null &&
+                              selectedStore!['id'] == store['id'] &&
+                              selectedStore!['selectedAddressIndex'] == index;
+                          final identifier = store['addresses'].length > 1
+                              ? ' (${index + 1})'
+                              : '';
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedStore = {
+                                  ...store,
+                                  'selectedAddress': address,
+                                  'selectedAddressIndex': index,
+                                };
+                              });
+                            },
+                            child: Container(
+                              width: 336,
+                              height: 72,
+                              margin:
+                                  const EdgeInsets.only(bottom: 10, left: 12),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFFFBE5AA)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25, // Increased size
+                                    backgroundColor: Colors.transparent,
+                                    child: ClipOval(
+                                      child: Image.network(
+                                        store['logo'],
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Image.asset(
+                                            'pics/bigstore.png',
+                                            width: 50,
+                                            height: 50,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 24,
-                                  color: Colors.black,
-                                ),
-                              ],
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Text(
+                                      '${store['name']}$identifier',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 24,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        });
                       }).toList(),
-                      if (!showAllShops && nearbyLocations.isNotEmpty)
+                      if (!showAllShops && allStores.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: ElevatedButton(
@@ -472,7 +472,7 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
               ],
             ),
           ),
-          if (selectedNearbyLocation != null)
+          if (selectedStore != null)
             Positioned(
               left: 0,
               right: 0,

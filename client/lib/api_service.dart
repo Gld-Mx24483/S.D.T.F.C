@@ -539,4 +539,35 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<List<dynamic>?> fetchAllStores() async {
+    final url = Uri.parse('$baseUrl/connects/stores/all');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData['data'];
+      } else {
+        print('Failed to fetch stores: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching stores: $e');
+      return null;
+    }
+  }
 }
