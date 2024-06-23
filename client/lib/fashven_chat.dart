@@ -14,13 +14,16 @@ import 'ven_proof_dets.dart';
 
 class FashvenChat extends StatefulWidget {
   final String selectedLocationName;
-  final String selectedLocationAddress = '123 Main Street, Anytown, CA 12345';
+  final String address;
   final String phoneNumber;
+  final String logo;
 
   const FashvenChat({
     super.key,
     required this.selectedLocationName,
+    required this.address,
     required this.phoneNumber,
+    required this.logo,
   });
 
   @override
@@ -58,9 +61,9 @@ class _FashvenChatState extends State<FashvenChat> {
               MaterialPageRoute(
                 builder: (context) => VendorProfileDetails(
                   selectedLocationName: widget.selectedLocationName,
-                  address: widget.selectedLocationAddress,
+                  address: widget.address,
                   phoneNumber: widget.phoneNumber,
-                  logo: '',
+                  logo: widget.logo,
                 ),
               ),
             );
@@ -89,6 +92,26 @@ class _FashvenChatState extends State<FashvenChat> {
                         ),
                         padding: const EdgeInsets.only(left: 4.42),
                       ),
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.transparent,
+                        child: ClipOval(
+                          child: Image.network(
+                            widget.logo,
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'pics/bigstore.png',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: 15),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +126,7 @@ class _FashvenChatState extends State<FashvenChat> {
                             ),
                           ),
                           Text(
-                            widget.selectedLocationAddress,
+                            widget.address,
                             style: GoogleFonts.nunito(
                               fontSize: 11,
                               fontWeight: FontWeight.w300,

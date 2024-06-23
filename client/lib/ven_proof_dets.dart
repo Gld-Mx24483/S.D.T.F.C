@@ -133,6 +133,8 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
                                 selectedLocationName:
                                     widget.selectedLocationName,
                                 phoneNumber: widget.phoneNumber,
+                                address: widget.address,
+                                logo: widget.logo,
                               ),
                             ),
                           );

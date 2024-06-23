@@ -101,6 +101,8 @@ class _FashProfileDetailsState extends State<FashProfileDetails> {
                             builder: (context) => FashvenChat(
                               selectedLocationName: widget.selectedLocationName,
                               phoneNumber: widget.phoneNumber,
+                              address: widget.address,
+                              logo: '',
                             ),
                           ),
                         );

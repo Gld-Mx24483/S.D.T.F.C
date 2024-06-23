@@ -386,12 +386,39 @@ class _MapViewScreenState extends State<MapViewScreen>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FashvenChat(
-                      selectedLocationName: '$storeName$identifier',
-                      phoneNumber:
-                          widget.shopDetails['phoneNumber'] as String? ??
-                              '08106775111',
-                    ),
+                    builder: (context) {
+                      final selectedAddress =
+                          widget.shopDetails['selectedAddress'];
+                      String addressString;
+
+                      if (selectedAddress is Map<String, dynamic>) {
+                        final city = selectedAddress['city'] as String? ?? '';
+                        final state = selectedAddress['state'] as String? ?? '';
+                        final country =
+                            selectedAddress['country'] as String? ?? '';
+
+                        addressString = [city, state, country]
+                            .where((element) => element.isNotEmpty)
+                            .join(', ');
+
+                        if (addressString.isEmpty) {
+                          addressString = 'Address not available';
+                        }
+                      } else if (selectedAddress is String) {
+                        addressString = selectedAddress;
+                      } else {
+                        addressString = 'Address not available';
+                      }
+
+                      return FashvenChat(
+                        selectedLocationName: '$storeName$identifier',
+                        phoneNumber:
+                            widget.shopDetails['phoneNumber'] as String? ??
+                                '08106775111',
+                        address: addressString,
+                        logo: widget.shopDetails['logo'] as String? ?? '',
+                      );
+                    },
                   ),
                 );
               }),
