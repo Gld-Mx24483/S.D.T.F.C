@@ -181,15 +181,52 @@ class _MapViewScreenState extends State<MapViewScreen>
     );
   }
 
+  // void _navigateToVendorProfile() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => VendorProfileDetails(
+  //         selectedLocationName: widget.shopDetails['name'] as String,
+  //         address: widget.shopDetails['selectedAddress'] as String,
+  //         phoneNumber:
+  //             widget.shopDetails['phoneNumber'] as String? ?? '08106775111',
+  //         logo: widget.shopDetails['logo'] as String,
+  //       ),
+  //     ),
+  //   );
+  // }
+
   void _navigateToVendorProfile() {
+    final selectedAddress = widget.shopDetails['selectedAddress'];
+    String addressString;
+
+    if (selectedAddress is Map<String, dynamic>) {
+      final city = selectedAddress['city'] as String? ?? '';
+      final state = selectedAddress['state'] as String? ?? '';
+      final country = selectedAddress['country'] as String? ?? '';
+
+      addressString = [city, state, country]
+          .where((element) => element.isNotEmpty)
+          .join(', ');
+
+      if (addressString.isEmpty) {
+        addressString = 'Address not available';
+      }
+    } else if (selectedAddress is String) {
+      addressString = selectedAddress;
+    } else {
+      addressString = 'Address not available';
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => VendorProfileDetails(
           selectedLocationName: widget.shopDetails['name'] as String,
-          address: widget.shopDetails['selectedAddress'] as String,
+          address: addressString,
           phoneNumber:
               widget.shopDetails['phoneNumber'] as String? ?? '08106775111',
+          logo: widget.shopDetails['logo'] as String? ?? '',
         ),
       ),
     );
@@ -220,7 +257,6 @@ class _MapViewScreenState extends State<MapViewScreen>
     // Determine the address string based on the type of selectedAddress
     String addressString;
     if (selectedAddress is Map<String, dynamic>) {
-      // final street = selectedAddress['street'] as String? ?? '';
       final city = selectedAddress['city'] as String? ?? '';
       final state = selectedAddress['state'] as String? ?? '';
       final country = selectedAddress['country'] as String? ?? '';

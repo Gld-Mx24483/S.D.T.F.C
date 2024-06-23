@@ -60,6 +60,7 @@ class _FashvenChatState extends State<FashvenChat> {
                   selectedLocationName: widget.selectedLocationName,
                   address: widget.selectedLocationAddress,
                   phoneNumber: widget.phoneNumber,
+                  logo: '',
                 ),
               ),
             );

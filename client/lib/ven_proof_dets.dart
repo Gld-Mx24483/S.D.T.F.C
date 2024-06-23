@@ -12,12 +12,14 @@ class VendorProfileDetails extends StatefulWidget {
   final String selectedLocationName;
   final String address;
   final String phoneNumber;
+  final String logo;
 
   const VendorProfileDetails({
     super.key,
     required this.selectedLocationName,
     required this.address,
     required this.phoneNumber,
+    required this.logo,
   });
 
   @override
@@ -49,135 +51,151 @@ class _VendorProfileDetailsState extends State<VendorProfileDetails> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Image.asset(
-              'pics/bigstore.png',
-              width: 90,
-              height: 90,
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: 250,
-              height: 140,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 2),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: Colors.transparent,
+                child: ClipOval(
+                  child: Image.network(
+                    widget.logo,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'pics/bigstore.png',
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.cover,
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.selectedLocationName,
-                    style: GoogleFonts.nunito(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF621B2B),
+              const SizedBox(height: 20),
+              Container(
+                width: 250,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildIconWithText(
-                          Icons.call_outlined, 'Call', 0xFF621B2B, () {
-                        _makePhoneCall(widget.phoneNumber);
-                      }),
-                      _buildIconWithText(
-                          Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FashvenChat(
-                              selectedLocationName: widget.selectedLocationName,
-                              phoneNumber: widget.phoneNumber,
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.selectedLocationName,
+                      style: GoogleFonts.nunito(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF621B2B),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.address,
+                      style: GoogleFonts.nunito(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        letterSpacing: -0.3,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildIconWithText(
+                            Icons.call_outlined, 'Call', 0xFF621B2B, () {
+                          _makePhoneCall(widget.phoneNumber);
+                        }),
+                        _buildIconWithText(
+                            Icons.chat_outlined, 'Chat', 0xFF621B2B, () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FashvenChat(
+                                selectedLocationName:
+                                    widget.selectedLocationName,
+                                phoneNumber: widget.phoneNumber,
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
-                ],
+                          );
+                        }),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              widget.address,
-              style: GoogleFonts.nunito(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                (index) => GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedStarIndex = index;
-                    });
-                  },
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    child: Icon(
-                      index < _selectedStarIndex + 1
-                          ? Icons.star
-                          : Icons.star_border,
-                      color: const Color(0xFFFAD776),
-                      size: 30,
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                  (index) => GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedStarIndex = index;
+                      });
+                    },
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(
+                        index <= _selectedStarIndex
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: const Color(0xFFFAD776),
+                        size: 30,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 40),
-            Container(
-              width: 333,
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10),
+              const SizedBox(height: 40),
+              Container(
+                width: 333,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildColumn('Products', '500'),
+                    _buildColumn('Shops', '10'),
+                    _buildColumn('Good Reviews', '100'),
+                    _buildColumn('Bad Reviews', '2'),
+                  ],
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildColumn('Products', '500'),
-                  _buildColumn('Shops', '10'),
-                  _buildColumn('Good Reviews', '100'),
-                  _buildColumn('Bad Reviews', '2'),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
