@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String baseUrl =
-      'https://b7d6-197-211-58-213.ngrok-free.app/api/v1';
+      'https://5841-62-173-45-238.ngrok-free.app/api/v1';
   static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   static Future<bool> signUpUser(
@@ -568,6 +568,44 @@ class ApiService {
     } catch (e) {
       print('Error fetching stores: $e');
       return null;
+    }
+  }
+
+  static Future<bool> sendConnectRequest(
+      String vendorId, String addressId) async {
+    final url = Uri.parse('$baseUrl/connects');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    final body = {
+      'vendorId': vendorId,
+      'addressId': addressId,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        print('Connect request sent successfully');
+        return true;
+      } else {
+        print('Failed to send connect request: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error sending connect request: $e');
+      return false;
     }
   }
 }

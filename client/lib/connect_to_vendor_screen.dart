@@ -1,5 +1,5 @@
 // connect_to_vendor_screen.dart
-// ignore_for_file: unused_field, avoid_print
+// ignore_for_file: unused_field, avoid_print, use_build_context_synchronously
 
 import 'dart:async';
 
@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'api_service.dart';
 import 'connect_loading_modal.dart';
 import 'map_view_screen.dart';
 import 'request_sent_modal.dart';
@@ -84,10 +85,34 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
   }
 
   Future<void> _fetchRequiredDetails() async {
-    // Simulate fetching details (replace with actual API calls or database queries)
-    await Future.delayed(const Duration(seconds: 4));
-    // Here you would typically update your state with the fetched details
-    // setState(() { ... });
+    print('Store Details: ${widget.storeDetails}');
+
+    final vendorId = widget.storeDetails['id'] as String;
+    final selectedAddressId =
+        widget.storeDetails['selectedAddress']['id'] as String;
+
+    print('Vendor ID: $vendorId');
+    print('Selected Address ID: $selectedAddressId');
+
+    bool connectRequestSent =
+        await ApiService.sendConnectRequest(vendorId, selectedAddressId);
+
+    if (connectRequestSent) {
+      print('Connect request sent successfully. Waiting for 4 seconds...');
+      await Future.delayed(const Duration(seconds: 4));
+    } else {
+      print('Failed to send connect request.');
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to connect to vendor. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        _isProcessing = false;
+      });
+    }
   }
 
   void _showRequestSentModal() {

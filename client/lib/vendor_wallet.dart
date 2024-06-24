@@ -28,15 +28,38 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
   int _walletPoints = 0;
   List<VendorTransactionItem> _transactions = [];
   bool _isLoading = true;
+  int _equivalentPoints = 0;
+  String? userEmail;
 
   @override
   void initState() {
     super.initState();
-
+    _amountController.addListener(_updateEquivalentPoints);
     fetchUserProfile().then((_) {
       _fetchData();
       fetchWalletBalance();
     });
+  }
+
+  @override
+  void dispose() {
+    _amountController.removeListener(_updateEquivalentPoints);
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _updateEquivalentPoints() {
+    String amountText = _amountController.text;
+    if (amountText.isNotEmpty) {
+      int amount = int.tryParse(amountText) ?? 0;
+      setState(() {
+        _equivalentPoints = amount ~/ 20;
+      });
+    } else {
+      setState(() {
+        _equivalentPoints = 0;
+      });
+    }
   }
 
   void _navigateToTransactionDetails(VendorTransactionItem transaction) {
@@ -63,8 +86,6 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
       _isLoading = false;
     });
   }
-
-  String? userEmail;
 
   Future<void> fetchUserProfile() async {
     final userProfile = await ApiService.getUserProfile();
@@ -178,9 +199,9 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
             date: formattedDate,
             points: '${isCredit ? '' : ''}${transaction['point'].round()}',
             isCredit: isCredit,
-            createdAt: transaction['createdAt'], // Add this line
-            amount: transaction['amount'].toString(), // Add this line
-            reference: transaction['reference'], // Add this line
+            createdAt: transaction['createdAt'],
+            amount: transaction['amount'].toString(),
+            reference: transaction['reference'],
           );
         }).toList();
       });
@@ -193,7 +214,7 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
   Widget build(BuildContext context) {
     return Stack(children: [
       if (_isLoading)
-        const AnyLoadingModal() // Show the loading modal if _isLoading is true
+        const AnyLoadingModal()
       else
         SingleChildScrollView(
           child: Padding(
@@ -367,7 +388,7 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              '100 Naira = 20 Points',
+                              '20 Naira = 1 Point',
                               style: GoogleFonts.nunito(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -624,7 +645,7 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
               ),
               child: Container(
                 width: 400,
-                height: 280,
+                height: 320,
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -682,7 +703,7 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                               ),
                             ),
                           ),
-                          hintText: '0.00',
+                          hintText: '500',
                           hintStyle: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -700,122 +721,35 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                           fontWeight: FontWeight.w400,
                           color: const Color(0xFF49454F),
                         ),
-                      ),
-                    ),
-                    Container(
-                      width: 265,
-                      height: 44,
-                      margin: const EdgeInsets.only(top: 38),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFBE5AA),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showPointsConversionModal(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFBE5AA),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                        ),
-                        child: Text(
-                          'Continue',
-                          style: GoogleFonts.nunito(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF621B2B),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void showPointsConversionModal(BuildContext context) {
-    final nairaAmount = double.parse(_amountController.text);
-    final pointsAmount = (nairaAmount / 100) * 20;
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Dialog(
-              backgroundColor: const Color(0xFFFFFFFF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                width: 400,
-                height: 280,
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 350,
-                        height: 29,
-                        margin: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          'Points to be received:',
-                          style: GoogleFonts.nunito(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF232323),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 48,
-                      height: 16,
-                      margin: const EdgeInsets.only(top: 31),
-                      child: Text(
-                        'Points',
-                        style: GoogleFonts.nunito(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          color: const Color(0xFF49454F),
-                        ),
+                        onChanged: (_) => setState(
+                            () {}), // This will trigger a rebuild when the text changes
                       ),
                     ),
                     Container(
                       width: 263,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: const Color(0xFFFBE5AA),
-                          width: 1.0,
-                        ),
-                      ),
+                      height: 20,
+                      margin: const EdgeInsets.only(top: 5, left: 2),
                       child: Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 16.0),
-                            child: Image.asset(
-                              'pics/coin.png',
-                              width: 20,
-                              height: 20,
+                          Text(
+                            'Equivalent Points: ',
+                            style: GoogleFonts.nunito(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: const Color(0xFF49454F),
                             ),
                           ),
-                          const SizedBox(width: 10),
+                          Image.asset(
+                            'pics/coin.png',
+                            width: 16,
+                            height: 16,
+                          ),
+                          const SizedBox(width: 4),
                           Text(
-                            pointsAmount.toInt().toString(),
+                            '$_equivalentPoints',
                             style: GoogleFonts.nunito(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
                               color: const Color(0xFF49454F),
                             ),
                           ),
@@ -827,7 +761,7 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                       height: 20,
                       margin: const EdgeInsets.only(top: 5, left: 2),
                       child: Text(
-                        '100 Naira = 20 Points',
+                        '20 Naira = 1 Point (Minimum: ₦500)',
                         style: GoogleFonts.nunito(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -844,11 +778,13 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: ElevatedButton(
-                        onPressed: () {
-                          initiatePaystackPayment(context);
-                        },
+                        onPressed: _equivalentPoints > 0
+                            ? () => initiatePaystackPayment(context)
+                            : null,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFBE5AA),
+                          backgroundColor: _equivalentPoints > 0
+                              ? const Color(0xFFFBE5AA)
+                              : Colors.grey,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -883,16 +819,28 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
       );
       return;
     }
+
+    final amount = int.parse(_amountController.text);
+    if (amount % 20 != 0 || amount < 500) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+              'Invalid amount. Please enter a multiple of 20, minimum ₦500.'),
+        ),
+      );
+      return;
+    }
+
     // const secretKey = 'sk_live_4063dacfcbf43aca67b282187d4c81cb0113e224';
     const secretKey = 'sk_test_17b7c77bf4e8f219d2dd44cc4f9a5c3f0b87db7a';
-    final amount = double.parse(_amountController.text) * 100;
-    final nairaAmount = double.parse(_amountController.text);
+    final paystackAmount = amount * 100; // Convert to kobo
     const currency = PaystackCurrency.ngn;
     final request = PaystackTransactionRequest(
       reference: 'ps_${DateTime.now().microsecondsSinceEpoch}',
       secretKey: secretKey,
       email: userEmail ?? '',
-      amount: amount,
+      amount: paystackAmount.toDouble(),
       currency: currency,
       channel: [
         PaystackPaymentChannel.card,
@@ -947,24 +895,30 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
       print('Reference: ${response.data.reference}');
       print('Id: ${response.data.id}');
       print('Email: ${request.email}');
-      print('Amount: $nairaAmount');
-      print('Points: ${(nairaAmount / 100) * 20}');
+      print('Amount: $amount');
+      print('Points: $_equivalentPoints');
       print('Date: ${formatter.format(dateTime)}');
 
       // Update wallet points
-      final pointsReceived = (nairaAmount / 100) * 20;
       setState(() {
-        _walletPoints += pointsReceived.toInt();
+        _walletPoints += _equivalentPoints;
         _transactions.insert(
           0,
           VendorTransactionItem(
             description: 'Top Up from NGN Wallet',
             date: formatter.format(dateTime),
-            points: '+${pointsReceived.toInt()}',
+            points: '+$_equivalentPoints',
             isCredit: true,
-            reference: '',
-            amount: '',
-            createdAt: [],
+            reference: response.data.reference,
+            amount: amount.toString(),
+            createdAt: [
+              dateTime.year,
+              dateTime.month,
+              dateTime.day,
+              dateTime.hour,
+              dateTime.minute,
+              dateTime.second
+            ],
           ),
         );
       });
@@ -974,8 +928,8 @@ class _VendorWalletScreenState extends State<VendorWalletScreen> {
         'reference': response.data.reference,
         'id': response.data.id,
         'email': request.email,
-        'amount': nairaAmount,
-        'points': pointsReceived.toInt(),
+        'amount': amount,
+        'points': _equivalentPoints,
       };
 
       final apiResponse =
