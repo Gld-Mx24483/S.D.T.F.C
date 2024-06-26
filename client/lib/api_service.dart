@@ -540,7 +540,7 @@ class ApiService {
     }
   }
 
-  static Future<List<dynamic>?> fetchAllStores() async {
+  static Future<List<Map<String, dynamic>>?> fetchAllStores() async {
     final url = Uri.parse('$baseUrl/connects/stores/all');
     final accessToken = await getAccessToken();
 
@@ -560,9 +560,23 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        return responseData['data'];
+        print('Fetch All Stores Response: $responseData');
+
+        if (responseData['data'] == null) {
+          print('API returned null data');
+          return [];
+        }
+
+        if (responseData['data'] is! List) {
+          print(
+              'API returned unexpected data type: ${responseData['data'].runtimeType}');
+          return [];
+        }
+
+        return List<Map<String, dynamic>>.from(responseData['data']);
       } else {
-        print('Failed to fetch stores: ${response.body}');
+        print(
+            'Failed to fetch stores: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {

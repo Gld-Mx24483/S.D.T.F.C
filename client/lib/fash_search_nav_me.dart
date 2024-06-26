@@ -72,27 +72,28 @@ class _FashSearchNavMeState extends State<FashSearchNavMe>
       if (stores != null) {
         setState(() {
           allStores = stores.map((store) {
-            final addresses = store['addresses'] as List<dynamic>;
+            final addresses = store['addresses'] as List<dynamic>? ?? [];
             return {
-              'id': store['id'],
-              'name': store['name'],
-              'phone': store['phone'],
+              'id': store['id'] ?? '',
+              'name': store['name'] ?? '',
+              'phone': store['phone'] ?? '',
               'logo': store['logo'] ?? 'pics/bigstore.png',
               'addresses': addresses.map((address) {
                 return {
-                  'id': address['id'],
-                  'latitude': address['latitude'],
-                  'longitude': address['longitude'],
-                  'street': address['street'],
-                  'city': address['city'],
-                  'state': address['state'],
-                  'country': address['country'],
+                  'id': address['id'] ?? '',
+                  'latitude': address['latitude'] ?? 0.0,
+                  'longitude': address['longitude'] ?? 0.0,
+                  'street': address['street'] ?? '',
+                  'city': address['city'] ?? '',
+                  'state': address['state'] ?? '',
+                  'country': address['country'] ?? '',
                 };
               }).toList(),
             };
           }).toList();
         });
-        print('Fetched stores: $allStores');
+      } else {
+        print('No stores fetched or an error occurred');
       }
     } catch (e) {
       print('Error fetching stores: $e');
