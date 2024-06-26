@@ -586,7 +586,7 @@ class ApiService {
   }
 
   static Future<bool> sendConnectRequest(
-      String vendorId, String addressId) async {
+      String storeId, String addressId) async {
     final url = Uri.parse('$baseUrl/connects');
     final accessToken = await getAccessToken();
 
@@ -596,7 +596,7 @@ class ApiService {
     }
 
     final body = {
-      'vendorId': vendorId,
+      'storeId': storeId,
       'addressId': addressId,
     };
 

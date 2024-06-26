@@ -87,15 +87,15 @@ class _ConnectingToVendorScreenState extends State<ConnectingToVendorScreen>
   Future<void> _fetchRequiredDetails() async {
     print('Store Details: ${widget.storeDetails}');
 
-    final vendorId = widget.storeDetails['id'] as String;
+    final storeId = widget.storeDetails['id'] as String;
     final selectedAddressId =
         widget.storeDetails['selectedAddress']['id'] as String;
 
-    print('Vendor ID: $vendorId');
+    print('Vendor ID: $storeId');
     print('Selected Address ID: $selectedAddressId');
 
     bool connectRequestSent =
-        await ApiService.sendConnectRequest(vendorId, selectedAddressId);
+        await ApiService.sendConnectRequest(storeId, selectedAddressId);
 
     if (connectRequestSent) {
       print('Connect request sent successfully. Waiting for 4 seconds...');
