@@ -622,4 +622,52 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<List<Map<String, dynamic>>?> fetchSentConnections() async {
+    final url = Uri.parse('$baseUrl/connects/sent-connections');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('Sent connections raw data: $responseData');
+
+        if (responseData['data'] != null && responseData['data'] is List) {
+          final connections =
+              List<Map<String, dynamic>>.from(responseData['data']);
+          for (var connection in connections) {
+            print('Connection: $connection');
+            print('Vendor Name: ${connection['vendorName']}');
+            print('User Name: ${connection['userName']}');
+            print('Store Name: ${connection['storeName']}');
+            print('Status: ${connection['status']}');
+            print('Date Created: ${connection['dateCreated']}');
+          }
+          return connections;
+        } else {
+          print('Unexpected data format: ${responseData['data']}');
+          return [];
+        }
+      } else {
+        print('Failed to fetch sent connections: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching sent connections: $e');
+      return null;
+    }
+  }
 }
