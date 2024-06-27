@@ -655,6 +655,7 @@ class ApiService {
             print('Store Name: ${connection['storeName']}');
             print('Status: ${connection['status']}');
             print('Date Created: ${connection['dateCreated']}');
+            print('Address: ${connection['address']}');
           }
           return connections;
         } else {
@@ -668,6 +669,37 @@ class ApiService {
     } catch (e) {
       print('Error fetching sent connections: $e');
       return null;
+    }
+  }
+
+  static Future<bool> deleteConnectRequest(String connectId) async {
+    final url = Uri.parse('$baseUrl/connects/delete/$connectId');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    try {
+      final response = await http.delete(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Connect request deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete connect request: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error deleting connect request: $e');
+      return false;
     }
   }
 }
