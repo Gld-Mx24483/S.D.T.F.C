@@ -784,4 +784,35 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<bool> acceptConnectRequest(String connectId) async {
+    final url = Uri.parse('$baseUrl/connects/accept/$connectId');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Connect request accepted successfully');
+        return true;
+      } else {
+        print('Failed to accept connect request: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error accepting connect request: $e');
+      return false;
+    }
+  }
 }

@@ -229,16 +229,15 @@ class _MapViewScreenState extends State<MapViewScreen>
   }
 
   Widget _buildBottomSheetContent() {
-    final storeName = widget.shopDetails['name'] as String;
+    final storeName = widget.shopDetails['name'] as String? ?? 'Store';
     final selectedAddressIndex =
-        widget.shopDetails['selectedAddressIndex'] as int;
-    final addresses = widget.shopDetails['addresses'] as List;
+        widget.shopDetails['selectedAddressIndex'] as int? ?? 0;
+    final addresses = widget.shopDetails['addresses'] as List? ?? [];
     final identifier =
         addresses.length > 1 ? ' (${selectedAddressIndex + 1})' : '';
-    final logoUrl = widget.shopDetails['logo'] as String;
+    final logoUrl = widget.shopDetails['logo'] as String? ?? '';
     final selectedAddress = widget.shopDetails['selectedAddress'];
 
-    // Determine the address string based on the type of selectedAddress
     String addressString;
     if (selectedAddress is Map<String, dynamic>) {
       final city = selectedAddress['city'] as String? ?? '';

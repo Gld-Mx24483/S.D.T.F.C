@@ -1,10 +1,11 @@
-//connect_to_fash_dgn.dart
-// ignore_for_file: avoid_print
+// connect_to_fash_dgn.dart
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'api_service.dart';
 import 'loading_modal.dart';
 import 'request_accepted_modal.dart';
 import 'vendor_cnt.dart';
@@ -13,11 +14,13 @@ import 'venfash_chat.dart';
 class ConnectToFashDgn extends StatefulWidget {
   final String designerName;
   final String? userImage;
+  final Map<String, dynamic> connectionDetails;
 
   const ConnectToFashDgn({
     super.key,
     required this.designerName,
     this.userImage,
+    required this.connectionDetails,
   });
 
   @override
@@ -28,6 +31,39 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
   bool _showBottomOptions = false;
   bool _isProcessing = false;
   bool _isRequestAccepted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _printConnectionDetails();
+  }
+
+  void _printConnectionDetails() {
+    print('Selected Connection Details:');
+    print(widget.connectionDetails);
+  }
+
+  Future<void> _acceptRequest() async {
+    setState(() {
+      _isProcessing = true;
+    });
+
+    final connectId = widget.connectionDetails['id'];
+    final success = await ApiService.acceptConnectRequest(connectId);
+
+    setState(() {
+      _isProcessing = false;
+    });
+
+    if (success) {
+      _showLoadingModal();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Failed to accept request. Please try again.')),
+      );
+    }
+  }
 
   Widget _buildContent() {
     return Column(
@@ -243,10 +279,7 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
                   ),
                 );
               } else {
-                setState(() {
-                  _isProcessing = true;
-                });
-                _showLoadingModal();
+                _acceptRequest();
               }
             },
             style: ElevatedButton.styleFrom(

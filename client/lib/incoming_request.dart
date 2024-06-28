@@ -68,6 +68,7 @@ class _IncomingRequestState extends State<IncomingRequest> {
         builder: (context) => ConnectToFashDgn(
           designerName: request['userName'] ?? 'Unknown Designer',
           userImage: request['userImage'],
+          connectionDetails: request,
         ),
       ),
     );
