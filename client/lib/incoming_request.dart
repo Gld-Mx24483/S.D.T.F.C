@@ -31,8 +31,12 @@ class _IncomingRequestState extends State<IncomingRequest> {
       final requests = await ApiService.fetchReceivedConnections();
       if (requests != null) {
         setState(() {
-          _incomingRequests = requests;
-          _showBottomOptions = List.generate(requests.length, (_) => false);
+          // Filter out ACCEPTED requests
+          _incomingRequests = requests
+              .where((request) => request['status'] != 'ACCEPTED')
+              .toList();
+          _showBottomOptions =
+              List.generate(_incomingRequests.length, (_) => false);
           _isLoading = false;
         });
         print('Fetched Incoming Requests:');

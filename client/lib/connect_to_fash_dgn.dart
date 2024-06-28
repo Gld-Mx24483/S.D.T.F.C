@@ -15,12 +15,14 @@ class ConnectToFashDgn extends StatefulWidget {
   final String designerName;
   final String? userImage;
   final Map<String, dynamic> connectionDetails;
+  final bool isAlreadyConnected;
 
   const ConnectToFashDgn({
     super.key,
     required this.designerName,
     this.userImage,
     required this.connectionDetails,
+    this.isAlreadyConnected = false,
   });
 
   @override
@@ -30,11 +32,12 @@ class ConnectToFashDgn extends StatefulWidget {
 class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
   bool _showBottomOptions = false;
   bool _isProcessing = false;
-  bool _isRequestAccepted = false;
+  late bool _isRequestAccepted;
 
   @override
   void initState() {
     super.initState();
+    _isRequestAccepted = widget.isAlreadyConnected;
     _printConnectionDetails();
   }
 
