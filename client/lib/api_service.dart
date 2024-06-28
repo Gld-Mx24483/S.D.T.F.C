@@ -385,11 +385,9 @@ class ApiService {
         final responseData = jsonDecode(response.body);
         final storeData = responseData['data'];
 
-        // Print fetched data to console
         print('Fetched store details:');
         print(storeData);
 
-        // Ensure the logo is included in the returned data
         if (storeData != null && storeData['logo'] != null) {
           print('Store logo URL: ${storeData['logo']}');
         } else {
@@ -739,6 +737,51 @@ class ApiService {
     } catch (e) {
       print('Error sending verification details: $e');
       return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>?> fetchReceivedConnections() async {
+    final url = Uri.parse('$baseUrl/connects/received-connections');
+    final accessToken = await getAccessToken();
+    if (accessToken == null) {
+      print('No access token found');
+      return null;
+    }
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('Received connections raw data: $responseData');
+        if (responseData['data'] != null && responseData['data'] is List) {
+          final connections =
+              List<Map<String, dynamic>>.from(responseData['data']);
+          for (var connection in connections) {
+            print('Connection: $connection');
+            print('Vendor Name: ${connection['vendorName']}');
+            print('User Name: ${connection['userName']}');
+            print('Store Name: ${connection['storeName']}');
+            print('Status: ${connection['status']}');
+            print('Date Created: ${connection['dateCreated']}');
+            print('Address: ${connection['address']}');
+          }
+          return connections;
+        } else {
+          print('Unexpected data format: ${responseData['data']}');
+          return [];
+        }
+      } else {
+        print('Failed to fetch received connections: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching received connections: $e');
+      return null;
     }
   }
 }

@@ -292,20 +292,6 @@ class ConnectionDetailsBottomSheet extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => ConnectingToVendorScreen(
-                                //     storeDetails: {
-                                //     'id': notification['vendorId'],
-                                //     'name': notification['storeName'],
-                                //     'logo': notification['storeLogo'] ?? 'pics/bigstore.png',
-                                //     'selectedAddress': notification['address'],
-                                //     'selectedAddressIndex': 0,  // Add this line
-                                //     'addresses': [notification['address']],  // Add this line
-                                //   },
-                                //   initialPosition: LatLng(
-                                //     notification['address']['latitude'] ?? 0.0,
-                                //     notification['address']['longitude'] ?? 0.0,
-                                //   ),
-                                //   status: notification['status'],
-                                // ),
                                 storeDetails: {
                                   'id': notification['vendorId'],
                                   'name': notification['storeName'],

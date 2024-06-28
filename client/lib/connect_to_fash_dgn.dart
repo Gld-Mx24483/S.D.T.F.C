@@ -1,10 +1,8 @@
-// connect_to_fash_dgn.dart
-// ignore_for_file: unused_element, avoid_print
+//connect_to_fash_dgn.dart
+// ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'loading_modal.dart';
@@ -13,127 +11,74 @@ import 'vendor_cnt.dart';
 import 'venfash_chat.dart';
 
 class ConnectToFashDgn extends StatefulWidget {
-  final LatLng initialPosition;
-  final LatLng selectedLocation;
   final String designerName;
+  final String? userImage;
 
   const ConnectToFashDgn({
     super.key,
-    required this.initialPosition,
-    required this.selectedLocation,
     required this.designerName,
+    this.userImage,
   });
 
   @override
   State<ConnectToFashDgn> createState() => _ConnectToFashDgnState();
 }
 
-class _ConnectToFashDgnState extends State<ConnectToFashDgn>
-    with TickerProviderStateMixin {
-  late GoogleMapController _mapController;
-  PolylinePoints polylinePoints = PolylinePoints();
+class _ConnectToFashDgnState extends State<ConnectToFashDgn> {
   bool _showBottomOptions = false;
-  BitmapDescriptor? _customIcon;
-  BitmapDescriptor? _defaultIcon;
-  late AnimationController _animationController;
-  late Animation<double> _animation;
-
   bool _isProcessing = false;
   bool _isRequestAccepted = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadCustomIcon();
-    _loadDefaultIcon();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setCameraToBounds();
-    });
-
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _mapController.dispose();
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _setCameraToBounds() {
-    LatLngBounds bounds;
-    if (widget.initialPosition.latitude > widget.selectedLocation.latitude &&
-        widget.initialPosition.longitude > widget.selectedLocation.longitude) {
-      bounds = LatLngBounds(
-        southwest: widget.selectedLocation,
-        northeast: widget.initialPosition,
-      );
-    } else {
-      bounds = LatLngBounds(
-        southwest: widget.initialPosition,
-        northeast: widget.selectedLocation,
-      );
-    }
-    _mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-  }
-
-  void _toggleBottomOptions() {
-    setState(() {
-      _showBottomOptions = !_showBottomOptions;
-    });
-
-    if (_showBottomOptions) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
-  }
-
-  Widget _buildBottomSheetContent() {
+  Widget _buildContent() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
-        Container(
-          width: 40,
-          height: 4,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(2),
+        Padding(
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                _isRequestAccepted
+                    ? 'Connected to Fashion Designer'
+                    : 'Connecting to Fashion Designer',
+                style: GoogleFonts.nunito(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 20),
-        Text(
-          _isRequestAccepted
-              ? 'Connected to Fashion Designer'
-              : 'Connecting to Fashion Designer',
-          style: GoogleFonts.nunito(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Container(
+        Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
               Container(
                 width: 50,
                 height: 50,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('pics/userreq1.png'),
-                    fit: BoxFit.cover,
-                  ),
+                  image: widget.userImage != null
+                      ? DecorationImage(
+                          image: NetworkImage(widget.userImage!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
+                child: widget.userImage == null
+                    ? Icon(Icons.person, size: 30, color: Colors.grey[600])
+                    : null,
               ),
               const SizedBox(width: 15),
               Expanded(
@@ -141,20 +86,11 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Designer 1',
+                      widget.designerName,
                       style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
-                      ),
-                    ),
-                    Text(
-                      '123 Main St, City',
-                      style: GoogleFonts.nunito(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w300,
-                        color: const Color(0xFFA6A6A6),
-                        letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -171,7 +107,11 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
                 ),
               ),
               GestureDetector(
-                onTap: _toggleBottomOptions,
+                onTap: () {
+                  setState(() {
+                    _showBottomOptions = !_showBottomOptions;
+                  });
+                },
                 child: AnimatedRotation(
                   turns: _showBottomOptions ? 0.25 : 0,
                   duration: const Duration(milliseconds: 300),
@@ -186,38 +126,38 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
           ),
         ),
         const SizedBox(height: 20),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: _showBottomOptions ? null : 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        if (_showBottomOptions)
+          Column(
             children: [
-              _buildIconWithText(
-                Icons.call_outlined,
-                'Call',
-                _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
-                _isRequestAccepted ? _makePhoneCall : null,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildIconWithText(
+                    Icons.call_outlined,
+                    'Call',
+                    _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+                    _isRequestAccepted ? _makePhoneCall : null,
+                  ),
+                  _buildIconWithText(
+                    Icons.chat_outlined,
+                    'Chat',
+                    _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
+                    _isRequestAccepted ? _navigateToChat : null,
+                  ),
+                  _buildIconWithText(
+                    Icons.cancel_outlined,
+                    'Cancel',
+                    0xFF621B2B,
+                  ),
+                ],
               ),
-              _buildIconWithText(
-                Icons.chat_outlined,
-                'Chat',
-                _isRequestAccepted ? 0xFF621B2B : 0xFFA6A6A6,
-                _isRequestAccepted ? _navigateToChat : null,
-              ),
-              _buildIconWithText(
-                Icons.cancel_outlined,
-                'Cancel',
-                0xFF621B2B,
-              ),
+              const SizedBox(height: 20),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          height: _showBottomOptions ? 0 : null,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Container(
-            width: 300,
+            width: double.infinity,
             height: 100,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -290,92 +230,72 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
             ),
           ),
         ),
-        const SizedBox(height: 65),
-        ElevatedButton(
-          onPressed: () {
-            if (_isRequestAccepted) {
-              // Navigate to ven_cnt.dart
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VenCnt(),
-                ),
-              );
-            } else {
-              setState(() {
-                _isProcessing = true;
-              });
-              _showLoadingModal();
-            }
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFBE5AA),
-            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: ElevatedButton(
+            onPressed: () {
+              if (_isRequestAccepted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const VenCnt(),
+                  ),
+                );
+              } else {
+                setState(() {
+                  _isProcessing = true;
+                });
+                _showLoadingModal();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFBE5AA),
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ),
-          child: Text(
-            _isProcessing
-                ? 'Processing...'
-                : (_isRequestAccepted ? 'Back to Connect' : 'Accept Request'),
-            style: GoogleFonts.nunito(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF621B2B),
+            child: Text(
+              _isProcessing
+                  ? 'Processing...'
+                  : (_isRequestAccepted ? 'Back to Connect' : 'Accept Request'),
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF621B2B),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 20),
       ],
     );
   }
 
   Widget _buildIconWithText(IconData icon, String text, int color,
       [Function? onTap]) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      height: _showBottomOptions ? null : 0,
-      child: AnimatedOpacity(
-        opacity: _showBottomOptions ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        child: GestureDetector(
-          onTap: onTap != null ? () => onTap() : null,
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 24,
-                color: Color(color),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                text,
-                style: GoogleFonts.nunito(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: Color(color),
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: onTap != null ? () => onTap() : null,
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: Color(color),
           ),
-        ),
+          const SizedBox(height: 4),
+          Text(
+            text,
+            style: GoogleFonts.nunito(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Color(color),
+              letterSpacing: -0.3,
+            ),
+          ),
+        ],
       ),
     );
-  }
-
-  Future<void> _loadCustomIcon() async {
-    _customIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(),
-      'pics/store.png',
-    );
-  }
-
-  Future<void> _loadDefaultIcon() async {
-    _defaultIcon =
-        BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen);
   }
 
   void _showLoadingModal() {
@@ -400,9 +320,7 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
             setState(() {
               _isProcessing = false;
               _isRequestAccepted = true;
-              _showBottomOptions = true;
             });
-            _animationController.forward();
           },
           onDismissed: () {},
         );
@@ -426,8 +344,8 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const VenfashChat(
-          selectedLocationName: 'Designer 1',
+        builder: (context) => VenfashChat(
+          selectedLocationName: widget.designerName,
           phoneNumber: '08106775111',
         ),
       ),
@@ -437,94 +355,8 @@ class _ConnectToFashDgnState extends State<ConnectToFashDgn>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: widget.selectedLocation,
-              zoom: 14.0,
-            ),
-            mapType: MapType.normal,
-            onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-              _setCameraToBounds();
-            },
-            markers: {
-              Marker(
-                markerId: const MarkerId('initial_location'),
-                position: widget.initialPosition,
-                icon: _customIcon ?? BitmapDescriptor.defaultMarker,
-              ),
-              Marker(
-                markerId: const MarkerId('selected_location'),
-                position: widget.selectedLocation,
-                icon: _defaultIcon ?? BitmapDescriptor.defaultMarker,
-              ),
-            },
-          ),
-          Positioned(
-            top: 50,
-            left: 30,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color.fromARGB(0, 255, 255, 255),
-                  border: Border.all(color: Colors.black, width: 2),
-                ),
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.black,
-                  size: 18,
-                ),
-              ),
-            ),
-          ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.1,
-            minChildSize: 0.1,
-            maxChildSize: 0.5,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return NotificationListener<DraggableScrollableNotification>(
-                onNotification: (notification) {
-                  _animationController.value = notification.extent;
-                  return true;
-                },
-                child: AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20 * _animation.value),
-                        topRight: Radius.circular(20 * _animation.value),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black
-                                  .withOpacity(0.1 * _animation.value),
-                              spreadRadius: 1,
-                              blurRadius: 10,
-                              offset: Offset(0, -5 * _animation.value),
-                            ),
-                          ],
-                        ),
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: _buildBottomSheetContent(),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+      body: SafeArea(
+        child: _buildContent(),
       ),
     );
   }

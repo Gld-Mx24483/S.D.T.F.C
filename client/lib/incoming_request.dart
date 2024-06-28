@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+// incoming_request.dart
+// ignore_for_file: avoid_print
 
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'api_service.dart';
 import 'connect_to_fash_dgn.dart';
 
 class IncomingRequest extends StatefulWidget {
@@ -13,47 +15,37 @@ class IncomingRequest extends StatefulWidget {
 }
 
 class _IncomingRequestState extends State<IncomingRequest> {
-  int _selectedIndex = 0;
-  final List<bool> _showBottomOptions = List.generate(3, (_) => false);
-  Position? _currentPosition;
-  final List<LatLng> _designerLocations = [
-    const LatLng(6.5244, 3.6792), // Designer 1 location (Lagos Island)
-    const LatLng(6.4542, 3.3943), // Designer 2 location (Ikeja)
-    const LatLng(6.6318, 3.3535), // Designer 3 location (Lekki)
-  ];
+  int _selectedIndex = -1;
+  late List<bool> _showBottomOptions = [];
+  List<Map<String, dynamic>> _incomingRequests = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _fetchIncomingRequests();
   }
 
-  Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+  Future<void> _fetchIncomingRequests() async {
+    try {
+      final requests = await ApiService.fetchReceivedConnections();
+      if (requests != null) {
+        setState(() {
+          _incomingRequests = requests;
+          _showBottomOptions = List.generate(requests.length, (_) => false);
+          _isLoading = false;
+        });
+        print('Fetched Incoming Requests:');
+        for (var request in _incomingRequests) {
+          print('Request: $request');
+        }
+      } else {
+        setState(() => _isLoading = false);
       }
+    } catch (e) {
+      print('Error fetching incoming requests: $e');
+      setState(() => _isLoading = false);
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    final position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _currentPosition = position;
-    });
   }
 
   void _selectUser(int index) {
@@ -69,19 +61,16 @@ class _IncomingRequestState extends State<IncomingRequest> {
   }
 
   void _navigateToConnectToFashDgn(int index) {
-    if (_currentPosition != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConnectToFashDgn(
-            initialPosition:
-                LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            selectedLocation: _designerLocations[index],
-            designerName: 'Designer ${index + 1}',
-          ),
+    final request = _incomingRequests[index];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConnectToFashDgn(
+          designerName: request['userName'] ?? 'Unknown Designer',
+          userImage: request['userImage'],
         ),
-      );
-    }
+      ),
+    );
   }
 
   Widget _buildIconWithText(IconData icon, String text, bool isDisabled) {
@@ -89,11 +78,7 @@ class _IncomingRequestState extends State<IncomingRequest> {
         isDisabled ? const Color(0xFFA6A6A6) : const Color(0xFF621B2B);
     return Column(
       children: [
-        Icon(
-          icon,
-          size: 24,
-          color: color,
-        ),
+        Icon(icon, size: 24, color: color),
         const SizedBox(height: 4),
         Text(
           text,
@@ -128,79 +113,83 @@ class _IncomingRequestState extends State<IncomingRequest> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () => _selectUser(index),
-                        child: RequestItem(
-                          name: 'Designer ${index + 1}',
-                          address: '123 Main St, City',
-                          imagePath: 'pics/userreq${index + 1}.png',
-                          isSelected: index == _selectedIndex,
-                          onToggleOptions: () => _toggleBottomOptions(index),
-                          showBottomOptions: _showBottomOptions[index],
-                        ),
-                      ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        height: _showBottomOptions[index] ? 60 : 0,
-                        child: AnimatedOpacity(
-                          opacity: _showBottomOptions[index] ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _buildIconWithText(
-                                Icons.call_outlined,
-                                'Call',
-                                true, // Disabled
-                              ),
-                              _buildIconWithText(
-                                Icons.chat_outlined,
-                                'Chat',
-                                true, // Disabled
-                              ),
-                              _buildIconWithText(
-                                Icons.cancel_outlined,
-                                'Cancel',
-                                false, // Enabled
-                              ),
-                            ],
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _incomingRequests.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No incoming requests',
+                            style: GoogleFonts.nunito(fontSize: 16),
                           ),
+                        )
+                      : ListView.builder(
+                          itemCount: _incomingRequests.length,
+                          itemBuilder: (context, index) {
+                            final request = _incomingRequests[index];
+                            return Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _selectUser(index),
+                                  child: RequestItem(
+                                    name: request['userName'] ?? 'Unknown User',
+                                    imagePath: request['userImage'],
+                                    isSelected: index == _selectedIndex,
+                                    onToggleOptions: () =>
+                                        _toggleBottomOptions(index),
+                                    showBottomOptions:
+                                        _showBottomOptions[index],
+                                  ),
+                                ),
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  height: _showBottomOptions[index] ? 60 : 0,
+                                  child: AnimatedOpacity(
+                                    opacity:
+                                        _showBottomOptions[index] ? 1.0 : 0.0,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        _buildIconWithText(
+                                            Icons.call_outlined, 'Call', true),
+                                        _buildIconWithText(
+                                            Icons.chat_outlined, 'Chat', true),
+                                        _buildIconWithText(
+                                            Icons.cancel_outlined,
+                                            'Cancel',
+                                            false),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: ElevatedButton(
-                onPressed: () {
-                  _navigateToConnectToFashDgn(_selectedIndex);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFBE5AA),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 80, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            if (_selectedIndex != -1)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: ElevatedButton(
+                  onPressed: () => _navigateToConnectToFashDgn(_selectedIndex),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFBE5AA),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 80, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
-                ),
-                child: Text(
-                  'Continue',
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF621B2B),
+                  child: Text(
+                    'Continue',
+                    style: GoogleFonts.nunito(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF621B2B),
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -210,8 +199,7 @@ class _IncomingRequestState extends State<IncomingRequest> {
 
 class RequestItem extends StatelessWidget {
   final String name;
-  final String address;
-  final String imagePath;
+  final String? imagePath;
   final bool isSelected;
   final VoidCallback onToggleOptions;
   final bool showBottomOptions;
@@ -219,8 +207,7 @@ class RequestItem extends StatelessWidget {
   const RequestItem({
     super.key,
     required this.name,
-    required this.address,
-    required this.imagePath,
+    this.imagePath,
     this.isSelected = false,
     required this.onToggleOptions,
     required this.showBottomOptions,
@@ -246,11 +233,14 @@ class RequestItem extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage(imagePath),
-                  fit: BoxFit.cover,
-                ),
+                image: imagePath != null
+                    ? DecorationImage(
+                        image: NetworkImage(imagePath!), fit: BoxFit.cover)
+                    : null,
               ),
+              child: imagePath == null
+                  ? Icon(Icons.person, size: 30, color: Colors.grey[600])
+                  : null,
             ),
           ),
           Positioned(
@@ -262,19 +252,6 @@ class RequestItem extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF111827),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 41,
-            left: 75,
-            child: Text(
-              address,
-              style: GoogleFonts.nunito(
-                fontSize: 11,
-                fontWeight: FontWeight.w300,
-                color: const Color(0xFFA6A6A6),
-                letterSpacing: -0.3,
               ),
             ),
           ),
