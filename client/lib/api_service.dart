@@ -702,4 +702,43 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> sendVerificationDetails(
+      String verificationType, String verificationId) async {
+    final url = Uri.parse('$baseUrl/users/verify-account');
+    final accessToken = await getAccessToken();
+
+    if (accessToken == null) {
+      print('No access token found');
+      return false;
+    }
+
+    final body = {
+      'verificationStatus': 'VERIFIED',
+      'verificationType': verificationType,
+      'verificationId': verificationId,
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        print('Verification details sent successfully');
+        return true;
+      } else {
+        print('Failed to send verification details: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error sending verification details: $e');
+      return false;
+    }
+  }
 }

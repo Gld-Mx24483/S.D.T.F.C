@@ -1,5 +1,5 @@
 // vendor_verification.dart
-// ignore_for_file: avoid_print, unused_import
+// ignore_for_file: avoid_print, unused_import, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +7,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_picker/image_picker.dart';
 
 import 'address_validator.dart';
+import 'api_service.dart';
 import 'driver_license_validator.dart';
 import 'international_passport_validator.dart';
 import 'nin_validator.dart';
@@ -23,8 +24,11 @@ class VendorVerificationScreen extends StatefulWidget {
 
 class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   final TextEditingController _officialEmailController =
-      TextEditingController(text: 'hemstofit_stores_official@gmail.com');
+      TextEditingController();
+  bool _isLoading = true;
   String _selectedIdType = 'International Passport';
+  String? _verificationId;
+  String? _verificationType;
   PickedFile? _idFile;
   PickedFile? _addressFile;
   String _idFileError = '';
@@ -46,6 +50,30 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
         _idFileError = '';
         _isIdFileValid = false;
         _validateIdFile();
+      });
+    }
+  }
+
+  Future<void> _fetchStoreDetails() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final storeDetails = await ApiService.fetchStoreDetails();
+      if (storeDetails != null && storeDetails['email'] != null) {
+        setState(() {
+          _officialEmailController.text = storeDetails['email'];
+        });
+      }
+    } catch (e) {
+      print('Error fetching store details: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load official email')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -75,20 +103,29 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
 
     if (_selectedIdType == 'National Identification Number') {
       isValid = await NinValidator.validateIdFile(_idFile!.path);
-      if (!isValid) {
+      if (isValid) {
+        _verificationId = NinValidator.getVerificationId();
+        _verificationType = 'NIN';
+      } else {
         _idFileError = 'Not a valid NIN';
       }
     } else if (_selectedIdType == 'International Passport') {
       isValid =
           await InternationalPassportValidator.recognizeAndValidatePassport(
               _idFile!.path);
-      if (!isValid) {
+      if (isValid) {
+        _verificationId = InternationalPassportValidator.getVerificationId();
+        _verificationType = 'INTERNATIONAL_PASSPORT';
+      } else {
         _idFileError = 'Not a valid International Passport';
       }
     } else if (_selectedIdType == "Driver's License") {
       isValid = await DriverLicenseValidator.recognizeAndValidateDriversLicense(
           _idFile!.path);
-      if (!isValid) {
+      if (isValid) {
+        _verificationId = DriverLicenseValidator.getVerificationId();
+        _verificationType = 'DRIVERS_LICENSE';
+      } else {
         _idFileError = 'Not a valid Driver License';
       }
     } else {
@@ -100,6 +137,74 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
       _isValidatingIdFile = false;
       _isIdFileValid = isValid;
     });
+  }
+
+  // Future<void> _sendVerificationDetails() async {
+  //   if (_verificationId != null && _verificationType != null) {
+  //     bool success = await ApiService.sendVerificationDetails(
+  //         _verificationType!, _verificationId!);
+  //     if (success) {
+  //       // Navigate to vendor_dash.dart
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => const VendorMainScreen(initialPage: 'Shop'),
+  //         ),
+  //       );
+  //     } else {
+  //       // Show error message
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content:
+  //               Text('Failed to send verification details. Please try again.'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   }
+  // }
+
+  Future<void> _sendVerificationDetails() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Send verification details to the database
+    bool success = await ApiService.sendVerificationDetails(
+        _verificationType!, _verificationId!);
+
+    // Hide loading indicator
+    Navigator.of(context).pop();
+
+    if (success) {
+      // Navigate to VendorMainScreen if verification was successful
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const VendorMainScreen(initialPage: 'Shop'),
+        ),
+      );
+    } else {
+      // Show error message if verification failed
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Failed to send verification details. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStoreDetails();
   }
 
   Future<void> _validateAddressFile() async {
@@ -123,168 +228,222 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          color: Colors.white,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 35),
-                child: Container(
-                  width: double.infinity,
-                  height: 56,
-                  decoration: const BoxDecoration(),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          margin: const EdgeInsets.only(left: 20),
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Color.fromARGB(255, 1, 1, 1),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Verification',
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF232323),
-                        ),
-                      ),
-                      const SizedBox(width: 44),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 33),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
                 child: Column(
                   children: [
-                    _buildTextField(
-                      label: 'Official Email Address',
-                      controller: _officialEmailController,
-                      hintText: 'Enter your official email address',
-                    ),
-                    const SizedBox(height: 36),
-                    _buildDropdownField(
-                      label: 'Proof of Identification',
-                      value: _selectedIdType,
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'International Passport',
-                          child: Text(
-                            'International Passport',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'National Identification Number',
-                          child: Text(
-                            'National Identification Number',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: "Driver's License",
-                          child: Text(
-                            "Driver's License",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      ],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedIdType = newValue!;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    _buildUploadButton(
-                      onTap: _pickIdFile,
-                      file: _idFile,
-                      isValidating: _isValidatingIdFile,
-                      isValid: _isIdFileValid,
-                      errorText: _idFileError,
-                    ),
-                    const SizedBox(height: 36),
-                    _buildUploadButton(
-                      label: 'Upload Proof of Address',
-                      onTap: _pickAddressFile,
-                      file: _addressFile,
-                      isValidating: _isValidatingAddressFile,
-                      isValid: _isAddressFileValid,
-                      errorText: _addressFileError,
-                    ),
-                    const SizedBox(height: 32),
-                    const SizedBox(height: 50),
-                    GestureDetector(
-                      onTap: _isVerified
-                          ? () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const VendorMainScreen(
-                                      initialPage: 'Shop'),
-                                ),
-                              );
-                            }
-                          : null,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 35),
                       child: Container(
                         width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: _isVerified
-                              ? const Color(0xFFFBE5AA)
-                              : Colors.grey,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: Center(
-                            child: Text(
-                              'Save',
+                        height: 56,
+                        decoration: const BoxDecoration(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(left: 20),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: const Icon(
+                                  Icons.arrow_back,
+                                  color: Color.fromARGB(255, 1, 1, 1),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'Verification',
                               style: GoogleFonts.nunito(
-                                fontSize: 16,
+                                fontSize: 18,
                                 fontWeight: FontWeight.w700,
+                                color: const Color(0xFF232323),
+                              ),
+                            ),
+                            const SizedBox(width: 44),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 33),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        children: [
+                          _buildTextField(
+                            label: 'Official Email Address',
+                            controller: _officialEmailController,
+                            hintText: 'Official email address',
+                            enabled: false,
+                          ),
+                          const SizedBox(height: 36),
+                          _buildDropdownField(
+                            label: 'Proof of Identification',
+                            value: _selectedIdType,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'International Passport',
+                                child: Text(
+                                  'International Passport',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: 'National Identification Number',
+                                child: Text(
+                                  'National Identification Number',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              DropdownMenuItem(
+                                value: "Driver's License",
+                                child: Text(
+                                  "Driver's License",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedIdType = newValue!;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          _buildUploadButton(
+                            onTap: _pickIdFile,
+                            file: _idFile,
+                            isValidating: _isValidatingIdFile,
+                            isValid: _isIdFileValid,
+                            errorText: _idFileError,
+                          ),
+                          const SizedBox(height: 36),
+                          _buildUploadButton(
+                            label: 'Upload Proof of Address',
+                            onTap: _pickAddressFile,
+                            file: _addressFile,
+                            isValidating: _isValidatingAddressFile,
+                            isValid: _isAddressFileValid,
+                            errorText: _addressFileError,
+                          ),
+                          const SizedBox(height: 32),
+                          const SizedBox(height: 50),
+                          GestureDetector(
+                            onTap:
+                                _isVerified ? _sendVerificationDetails : null,
+                            child: Container(
+                              width: double.infinity,
+                              height: 50,
+                              decoration: BoxDecoration(
                                 color: _isVerified
-                                    ? const Color(0xFF621B2B)
-                                    : Colors.white,
+                                    ? const Color(0xFFFBE5AA)
+                                    : Colors.grey,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Center(
+                                  child: Text(
+                                    'Save',
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: _isVerified
+                                          ? const Color(0xFF621B2B)
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+//                     GestureDetector(
+//   onTap: _isVerified
+//       ? () async {
+//           // Show loading indicator
+//           showDialog(
+//             context: context,
+//             barrierDismissible: false,
+//             builder: (BuildContext context) {
+//               return const Center(child: CircularProgressIndicator());
+//             },
+//           );
+
+//           // Send verification details to the database
+//           bool success = await ApiService.sendVerificationDetails(_verificationType!, _verificationId!);
+
+//           // Hide loading indicator
+//           Navigator.of(context).pop();
+
+//           if (success) {
+//             // Navigate to VendorMainScreen if verification was successful
+//             Navigator.pushReplacement(
+//               context,
+//               MaterialPageRoute(
+//                 builder: (context) => const VendorMainScreen(initialPage: 'Shop'),
+//               ),
+//             );
+//           } else {
+//             // Show error message if verification failed
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               const SnackBar(
+//                 content: Text('Failed to send verification details. Please try again.'),
+//                 backgroundColor: Colors.red,
+//               ),
+//             );
+//           }
+//         }
+//       : null,
+//   child: Container(
+//     width: double.infinity,
+//     height: 50,
+//     decoration: BoxDecoration(
+//       color: _isVerified ? const Color(0xFFFBE5AA) : Colors.grey,
+//       borderRadius: BorderRadius.circular(8),
+//     ),
+//     child: Padding(
+//       padding: const EdgeInsets.only(top: 10.0),
+//       child: Center(
+//         child: Text(
+//           'Save',
+//           style: GoogleFonts.nunito(
+//             fontSize: 16,
+//             fontWeight: FontWeight.w700,
+//             color: _isVerified ? const Color(0xFF621B2B) : Colors.white,
+//           ),
+//         ),
+//       ),
+//     ),
+//   ),
+// ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
       bottomNavigationBar: VendorBottomNavigationBar(
         onItemTapped: (label) {
           // Handle bottom navigation bar item taps
@@ -299,6 +458,7 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     required String label,
     required TextEditingController controller,
     required String hintText,
+    bool enabled = true,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,8 +476,11 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
         const SizedBox(height: 10),
         TextField(
           controller: controller,
+          enabled: enabled,
           decoration: InputDecoration(
-            fillColor: const Color.fromARGB(45, 215, 215, 215),
+            fillColor: enabled
+                ? const Color.fromARGB(45, 215, 215, 215)
+                : Colors.grey[200],
             filled: true,
             hintText: hintText,
             hintStyle: const TextStyle(
@@ -339,6 +502,12 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(
                 color: Color(0xFF621B2B),
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.grey[400]!,
               ),
             ),
           ),
