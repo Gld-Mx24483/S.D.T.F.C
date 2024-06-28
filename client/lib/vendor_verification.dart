@@ -13,6 +13,7 @@ import 'international_passport_validator.dart';
 import 'nin_validator.dart';
 import 'vendor_bottom_navigation_bar.dart';
 import 'vendor_main_screen.dart';
+import 'verification_success_modal.dart';
 
 class VendorVerificationScreen extends StatefulWidget {
   const VendorVerificationScreen({super.key});
@@ -182,12 +183,26 @@ class _VendorVerificationScreenState extends State<VendorVerificationScreen> {
     Navigator.of(context).pop();
 
     if (success) {
-      // Navigate to VendorMainScreen if verification was successful
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const VendorMainScreen(initialPage: 'Shop'),
-        ),
+      // Show verification success modal
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return VerificationSuccessModal(
+            onContinue: () {
+              // Close the modal
+              Navigator.of(context).pop();
+              // Navigate to VendorMainScreen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const VendorMainScreen(initialPage: 'Shop'),
+                ),
+              );
+            },
+          );
+        },
       );
     } else {
       // Show error message if verification failed
